@@ -5,8 +5,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { 
   Home, 
-  ClipboardCheck, 
-  Package, 
   Users, 
   User, 
   DollarSign, 
@@ -22,8 +20,7 @@ const AdminLayout = () => {
   
   const navigations = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: <Home size={20} /> },
-    { name: 'Fluxo de Anamnese', path: '/admin/anamnese', icon: <ClipboardCheck size={20} /> },
-    { name: 'Planos de Tratamento', path: '/admin/planos', icon: <Package size={20} /> },
+    // Removed Anamnese Flow and Treatment Plans navigation items
     { name: 'Usuários', path: '/admin/usuarios', icon: <Users size={20} /> },
     { name: 'Médicos', path: '/admin/medicos', icon: <User size={20} /> },
     { name: 'Financeiro', path: '/admin/financeiro', icon: <DollarSign size={20} /> },

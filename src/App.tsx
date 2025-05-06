@@ -38,10 +38,6 @@ import DoctorProfile from "./pages/doctor/Profile";
 // Admin Pages
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
-import AdminAnamneseFlow from "./pages/admin/AnamneseFlow";
-import AdminAnamneseCreate from "./pages/admin/AnamneseCreate";
-import AdminAnamneseEdit from "./pages/admin/AnamneseEdit";
-import AdminTreatmentPlans from "./pages/admin/TreatmentPlans";
 import AdminUsers from "./pages/admin/Users";
 import AdminDoctors from "./pages/admin/Doctors";
 import AdminFinancial from "./pages/admin/Financial";
@@ -116,10 +112,7 @@ const App = () => (
             }
           >
             <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="anamnese" element={<AdminAnamneseFlow />} />
-            <Route path="anamnese/criar" element={<AdminAnamneseCreate />} />
-            <Route path="anamnese/:id" element={<AdminAnamneseEdit />} />
-            <Route path="planos" element={<AdminTreatmentPlans />} />
+            {/* Removed references to AnamneseFlow, AnamneseCreate, AnamneseEdit, and TreatmentPlans */}
             <Route path="usuarios" element={<AdminUsers />} />
             <Route path="medicos" element={<AdminDoctors />} />
             <Route path="financeiro" element={<AdminFinancial />} />

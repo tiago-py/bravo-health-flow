@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,233 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/sonner';
-import { ArrowLeft, Save, Plus, Eye } from 'lucide-react';
-import { DndContext, closestCenter, DragEndEvent, DragStartEvent, DragOverlay } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-
-// Import custom components
-import { QuestionEditor } from '@/components/anamnese/QuestionEditor';
-import { SortableQuestion } from '@/components/anamnese/SortableQuestion';
-import { DraggableQuestion } from '@/components/anamnese/DraggableQuestion';
-import { AnamnesePreview } from '@/components/anamnese/AnamnesePreview';
-import { DiagnosticRulesList } from '@/components/anamnese/DiagnosticRulesList';
-import { DiagnosisPreview } from '@/components/anamnese/DiagnosisPreview';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-type QuestionType = 'text' | 'number' | 'boolean' | 'single-choice' | 'multiple-choice';
-
-interface Question {
-  id: string;
-  text: string;
-  type: QuestionType;
-  options?: string[];
-  imageUrl?: string;
-  imageSize?: 'small' | 'medium' | 'large';
-}
-
-interface DiagnosticRule {
-  id: string;
-  internalName: string;
-  title: string;
-  description: string;
-  phaseName: string;
-  phaseDuration?: string;
-  priority: number;
-  activationTags: string[];
-  tagLogic: 'AND' | 'OR';
-  isActive: boolean;
-  imageUrl?: string;
-}
-
-interface LinkedPlan {
-  planId: string;
-  name: string;
-  price: number;
-  description: string;
-  tags: string[];
-}
+import { ArrowLeft, Save } from 'lucide-react';
 
 const AdminAnamneseEdit = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | undefined>();
-  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
-  const [linkedPlans, setLinkedPlans] = useState<LinkedPlan[]>([]);
-  const [diagnosticRules, setDiagnosticRules] = useState<DiagnosticRule[]>([]);
-  const [activeTab, setActiveTab] = useState<string>('questions');
-  const [previewDiagnosticRule, setPreviewDiagnosticRule] = useState<DiagnosticRule | undefined>();
-
-  // Available tags (in a real app, this would be fetched from the backend or derived from plan tags)
-  const availableTags = [
-    'queda_leve',
-    'queda_moderada',
-    'queda_severa',
-    'disfuncao_leve',
-    'disfuncao_moderada',
-    'disfuncao_severa',
-    'iniciante',
-    'avancado',
-    'já_usou_finasterida',
-    'uso_anterior_medicação'
-  ];
-
-  useEffect(() => {
-    // Mock data loading based on ID
-    if (id === '1') {
-      setTitle('Anamnese para Queda Capilar');
-      setDescription('Formulário para avaliação inicial de pacientes com queda capilar.');
-      setQuestions([
-        { id: '1', text: 'Você notou um aumento na queda de cabelo?', type: 'boolean' },
-        { id: '2', text: 'Quantos fios de cabelo você perde por dia?', type: 'number' },
-        { id: '3', text: 'Você tem histórico familiar de calvície?', type: 'boolean' },
-      ]);
-      setLinkedPlans([
-        {
-          planId: '1',
-          name: 'Plano Básico - Queda Capilar',
-          price: 99.90,
-          description: 'Tratamento inicial para queda leve de cabelo',
-          tags: ['queda_leve', 'iniciante']
-        },
-        {
-          planId: '2',
-          name: 'Plano Premium - Queda Capilar',
-          price: 199.90,
-          description: 'Tratamento avançado para queda severa de cabelo',
-          tags: ['queda_severa', 'avancado']
-        }
-      ]);
-      setDiagnosticRules([
-        {
-          id: '1',
-          internalName: 'Queda Leve - Inicial',
-          title: 'Você apresenta um quadro de queda capilar leve',
-          description: 'Com base nas suas respostas, identificamos que sua queda de cabelo está em estágio inicial. Nessa fase, é recomendável iniciar um tratamento preventivo para interromper a progressão da queda e fortalecer os fios existentes.',
-          phaseName: 'Fase 1 - Prevenção',
-          phaseDuration: '1 a 3 meses',
-          priority: 1,
-          activationTags: ['queda_leve', 'iniciante'],
-          tagLogic: 'AND',
-          isActive: true
-        }
-      ]);
-    } else if (id === '2') {
-      setTitle('Anamnese para Disfunção Erétil');
-      setDescription('Formulário para avaliação inicial de pacientes com disfunção erétil.');
-      setQuestions([
-        { id: '4', text: 'Você tem dificuldades em obter ou manter uma ereção?', type: 'boolean' },
-        { id: '5', text: 'Com que frequência você consegue ter uma relação sexual satisfatória?', type: 'text' },
-        { id: '6', text: 'Você está tomando alguma medicação?', type: 'boolean' },
-      ]);
-      setLinkedPlans([
-        {
-          planId: '3',
-          name: 'Plano Básico - Disfunção Erétil',
-          price: 129.90,
-          description: 'Tratamento inicial para disfunção leve',
-          tags: ['disfuncao_leve']
-        },
-        {
-          planId: '4',
-          name: 'Plano Premium - Disfunção Erétil',
-          price: 249.90,
-          description: 'Tratamento completo para casos moderados e severos',
-          tags: ['disfuncao_severa', 'disfuncao_moderada']
-        }
-      ]);
-    }
-  }, [id]);
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    
-    if (over && active.id !== over.id) {
-      setQuestions((questions) => {
-        const oldIndex = questions.findIndex((q) => q.id === active.id);
-        const newIndex = questions.findIndex((q) => q.id === over.id);
-        
-        return arrayMove(questions, oldIndex, newIndex);
-      });
-    }
-    
-    setActiveId(null);
-  };
-
-  const addQuestion = () => {
-    setCurrentQuestion(undefined);
-    setIsEditing(true);
-  };
-
-  const editQuestion = (id: string) => {
-    const question = questions.find(q => q.id === id);
-    if (question) {
-      setCurrentQuestion(question);
-      setIsEditing(true);
-    }
-  };
-
-  const removeQuestion = (id: string) => {
-    setQuestions(questions.filter(question => question.id !== id));
-    toast.success('Pergunta removida com sucesso');
-  };
-
-  const saveQuestion = (question: Question) => {
-    if (currentQuestion) {
-      // Edit existing question
-      setQuestions(questions.map(q => 
-        q.id === question.id ? question : q
-      ));
-      toast.success('Pergunta atualizada com sucesso');
-    } else {
-      // Add new question
-      setQuestions([...questions, question]);
-      toast.success('Pergunta adicionada com sucesso');
-    }
-    setIsEditing(false);
-  };
-
-  // Diagnostic rule handlers
-  const handleAddDiagnosticRule = (rule: DiagnosticRule) => {
-    setDiagnosticRules([...diagnosticRules, rule]);
-    toast.success('Regra de diagnóstico adicionada com sucesso');
-  };
-
-  const handleUpdateDiagnosticRule = (rule: DiagnosticRule) => {
-    setDiagnosticRules(diagnosticRules.map(r => r.id === rule.id ? rule : r));
-    toast.success('Regra de diagnóstico atualizada com sucesso');
-  };
-
-  const handleRemoveDiagnosticRule = (id: string) => {
-    setDiagnosticRules(diagnosticRules.filter(rule => rule.id !== id));
-    toast.success('Regra de diagnóstico removida com sucesso');
-  };
-
-  const handleDuplicateDiagnosticRule = (id: string) => {
-    const ruleToDuplicate = diagnosticRules.find(rule => rule.id === id);
-    if (ruleToDuplicate) {
-      const duplicatedRule = {
-        ...ruleToDuplicate,
-        id: Date.now().toString(),
-        internalName: `${ruleToDuplicate.internalName} (cópia)`,
-        priority: ruleToDuplicate.priority + 1
-      };
-      setDiagnosticRules([...diagnosticRules, duplicatedRule]);
-      toast.success('Regra de diagnóstico duplicada com sucesso');
-    }
-  };
-
-  const handleReorderDiagnosticRules = (reorderedRules: DiagnosticRule[]) => {
-    setDiagnosticRules(reorderedRules);
-  };
 
   const saveAnamnese = () => {
     // Validation
@@ -247,25 +27,9 @@ const AdminAnamneseEdit = () => {
       return;
     }
     
-    if (questions.length === 0) {
-      toast.error('Por favor, adicione pelo menos uma pergunta');
-      return;
-    }
-    
     // Save logic would go here
     toast.success('Anamnese salva com sucesso!');
-    navigate('/admin/anamnese');
-  };
-
-  const previewQuestion = (id: string) => {
-    // In a real app, you might want to show a preview of just this question
-    // For now, we'll just open the full preview
-    setIsPreviewOpen(true);
-  };
-
-  const handleViewDiagnosticRulePreview = (id: string) => {
-    const rule = diagnosticRules.find(r => r.id === id);
-    setPreviewDiagnosticRule(rule);
+    navigate('/admin/dashboard');
   };
 
   return (
@@ -276,14 +40,10 @@ const AdminAnamneseEdit = () => {
             Editar Anamnese
           </h1>
           <p className="text-gray-600">
-            Edite o formulário de anamnese para os diferentes tipos de tratamento
+            Esta página está em construção. Voltaremos em breve com uma nova versão.
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setIsPreviewOpen(true)}>
-            <Eye size={16} className="mr-2" />
-            Preview
-          </Button>
           <Button onClick={saveAnamnese}>
             <Save size={16} className="mr-2" />
             Salvar
@@ -291,174 +51,43 @@ const AdminAnamneseEdit = () => {
         </div>
       </div>
 
-      {isEditing ? (
-        <QuestionEditor 
-          question={currentQuestion} 
-          onSave={saveQuestion} 
-          onCancel={() => setIsEditing(false)} 
-        />
-      ) : (
-        <div className="grid grid-cols-1 gap-6">
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle>Informações da Anamnese</CardTitle>
-              <CardDescription>
-                Atualize as informações gerais do formulário de anamnese.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Título</Label>
-                <Input
-                  id="title"
-                  placeholder="Título da Anamnese"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Descrição da Anamnese"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-2">
-              <TabsTrigger value="questions">Perguntas</TabsTrigger>
-              <TabsTrigger value="diagnostics">Diagnóstico e Tratamento</TabsTrigger>
-            </TabsList>
-            <TabsContent value="questions" className="mt-4">
-              <Card className="shadow-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Perguntas</span>
-                    <Button onClick={addQuestion}>
-                      <Plus size={16} className="mr-2" />
-                      Adicionar Pergunta
-                    </Button>
-                  </CardTitle>
-                  <CardDescription>
-                    Arraste e solte para reorganizar as perguntas do formulário de anamnese.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <DndContext
-                    collisionDetection={closestCenter}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext
-                      items={questions.map(q => q.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <div className="space-y-2">
-                        {questions.map((question) => (
-                          <SortableQuestion
-                            key={question.id}
-                            id={question.id}
-                            question={question}
-                            onRemove={removeQuestion}
-                            onEdit={editQuestion}
-                            onPreview={previewQuestion}
-                          />
-                        ))}
-                      </div>
-                    </SortableContext>
-
-                    <DragOverlay>
-                      {activeId ? (
-                        <DraggableQuestion
-                          id={activeId}
-                          question={questions.find(q => q.id === activeId)!}
-                          onRemove={removeQuestion}
-                          onEdit={editQuestion}
-                          onPreview={previewQuestion}
-                        />
-                      ) : null}
-                    </DragOverlay>
-                  </DndContext>
-
-                  {questions.length === 0 && (
-                    <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-md">
-                      <p className="text-gray-500">Nenhuma pergunta adicionada ainda</p>
-                      <Button 
-                        variant="outline" 
-                        onClick={addQuestion} 
-                        className="mt-2"
-                      >
-                        <Plus size={16} className="mr-2" />
-                        Adicionar Pergunta
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="diagnostics" className="mt-4">
-              <Card className="shadow-sm">
-                <CardHeader>
-                  <CardTitle>Diagnóstico e Tratamento Sugerido</CardTitle>
-                  <CardDescription>
-                    Configure as regras para exibir diagnósticos personalizados com base nas respostas do usuário.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="font-medium mb-3">Regras e Configuração</h3>
-                      <DiagnosticRulesList
-                        rules={diagnosticRules}
-                        onAddRule={handleAddDiagnosticRule}
-                        onUpdateRule={handleUpdateDiagnosticRule}
-                        onRemoveRule={handleRemoveDiagnosticRule}
-                        onDuplicateRule={handleDuplicateDiagnosticRule}
-                        onReorderRules={handleReorderDiagnosticRules}
-                        availableTags={availableTags}
-                      />
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="font-medium mb-3">Preview do Diagnóstico</h3>
-                      <DiagnosisPreview 
-                        rule={previewDiagnosticRule || (diagnosticRules.length > 0 ? diagnosticRules[0] : undefined)}
-                      />
-                      <p className="text-sm text-gray-500 mt-2">
-                        Esse bloco será exibido automaticamente ao usuário ao final do fluxo, antes da apresentação dos planos de tratamento.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
-      )}
+      <div className="grid grid-cols-1 gap-6">
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle>Informações da Anamnese</CardTitle>
+            <CardDescription>
+              Atualize as informações gerais do formulário de anamnese.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Título</Label>
+              <Input
+                id="title"
+                placeholder="Título da Anamnese"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Descrição</Label>
+              <Textarea
+                id="description"
+                placeholder="Descrição da Anamnese"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="mt-4">
-        <Button variant="ghost" onClick={() => navigate('/admin/anamnese')}>
+        <Button variant="ghost" onClick={() => navigate('/admin/dashboard')}>
           <ArrowLeft size={16} className="mr-2" />
           Voltar
         </Button>
       </div>
-
-      {/* Preview Modal */}
-      <AnamnesePreview
-        flow={{
-          id: id || '1',
-          title,
-          description,
-          questions
-        }}
-        linkedPlans={linkedPlans}
-        diagnosticRules={diagnosticRules}
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-      />
     </div>
   );
 };
