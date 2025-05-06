@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -267,7 +266,10 @@ export function AnamnesePreview({ flow, linkedPlans, diagnosticRules = [], isOpe
       return (
         <CheckoutBlock 
           plan={{
-            ...recommendedPlan,
+            id: recommendedPlan.planId, // Adding the id field and mapping from planId
+            name: recommendedPlan.name,
+            price: recommendedPlan.price,
+            description: recommendedPlan.description,
             features: recommendedPlan.features || [
               'Consulta médica online',
               'Medicamentos por 1 mês',
@@ -275,7 +277,8 @@ export function AnamnesePreview({ flow, linkedPlans, diagnosticRules = [], isOpe
               'Acompanhamento personalizado',
               'Acesso ao app exclusivo'
             ],
-            interval: 'mensal'
+            interval: 'mensal',
+            tags: recommendedPlan.tags
           }} 
           onCheckout={handleCheckout}
           isLoading={isLoading}
