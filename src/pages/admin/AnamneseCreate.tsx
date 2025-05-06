@@ -9,16 +9,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/components/ui/sonner';
+import { Badge } from '@/components/ui/badge';
 import { 
   PlusCircle, 
   Trash2, 
   GripVertical, 
   ArrowLeft, 
   Save,
-  CheckCircle
+  CheckCircle,
+  Image as ImageIcon,
+  Link as LinkIcon
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-type QuestionType = 'text' | 'radio' | 'checkbox' | 'select' | 'textarea';
+interface ConditionalLogic {
+  questionId: string;
+  operator: 'equals' | 'contains' | 'greater_than' | 'less_than';
+  value: string;
+  tag: string;
+}
+
+type QuestionType = 'text' | 'radio' | 'checkbox' | 'select' | 'textarea' | 'image';
 
 interface AnamneseQuestion {
   id: string;
@@ -27,14 +46,49 @@ interface AnamneseQuestion {
   required: boolean;
   options?: string[];
   description?: string;
+  imageUrl?: string;
+  conditionalLogic?: ConditionalLogic[];
+}
+
+interface LinkedPlan {
+  planId: string;
+  name: string;
+  tags: string[];
+  priority: number;
 }
 
 interface AnamneseFlow {
   title: string;
   type: 'queda-capilar' | 'disfuncao-eretil';
   description: string;
+  active: boolean;
   questions: AnamneseQuestion[];
+  linkedPlans: LinkedPlan[];
 }
+
+// Mock treatment plan data
+const mockTreatmentPlans = [
+  {
+    id: '1',
+    name: 'Plano Básico - Queda Capilar',
+    type: 'queda-capilar'
+  },
+  {
+    id: '2',
+    name: 'Plano Premium - Queda Capilar',
+    type: 'queda-capilar'
+  },
+  {
+    id: '3',
+    name: 'Plano Básico - Disfunção Erétil',
+    type: 'disfuncao-eretil'
+  },
+  {
+    id: '4',
+    name: 'Plano Premium - Disfunção Erétil',
+    type: 'disfuncao-eretil'
+  }
+];
 
 const AdminAnamneseCreate = () => {
   const navigate = useNavigate();
@@ -44,19 +98,32 @@ const AdminAnamneseCreate = () => {
     title: '',
     type: 'queda-capilar',
     description: '',
+    active: true,
+    linkedPlans: [],
     questions: [
       {
         id: '1',
         question: '',
         type: 'text',
         required: true,
-        options: []
+        options: [],
+        conditionalLogic: []
       }
     ]
   });
   
+  // Tags state
+  const [availableTags, setAvailableTags] = useState<string[]>(['queda_leve', 'queda_moderada', 'queda_severa', 'iniciante', 'avancado']);
+  const [currentQuestionWithLogic, setCurrentQuestionWithLogic] = useState<AnamneseQuestion | null>(null);
+  const [currentTag, setCurrentTag] = useState('');
+  
+  // Plan linking state
+  const [selectedPlan, setSelectedPlan] = useState<string>("");
+  const [planTags, setPlanTags] = useState<string[]>([]);
+  const [planPriority, setPlanPriority] = useState<number>(1);
+  
   // Handle change to flow details
-  const handleFlowChange = (field: keyof Omit<AnamneseFlow, 'questions'>, value: string) => {
+  const handleFlowChange = (field: keyof Omit<AnamneseFlow, 'questions' | 'linkedPlans'>, value: any) => {
     setAnamneseFlow(prev => ({
       ...prev,
       [field]: value
@@ -141,7 +208,8 @@ const AdminAnamneseCreate = () => {
           question: '',
           type: 'text',
           required: true,
-          options: []
+          options: [],
+          conditionalLogic: []
         }
       ]
     }));
@@ -158,6 +226,104 @@ const AdminAnamneseCreate = () => {
       ...prev,
       questions: prev.questions.filter(q => q.id !== questionId)
     }));
+  };
+  
+  // Add conditional logic to a question
+  const addConditionalLogic = (questionId: string) => {
+    const question = anamneseFlow.questions.find(q => q.id === questionId);
+    if (question) {
+      setCurrentQuestionWithLogic(question);
+    }
+  };
+  
+  // Save conditional logic
+  const saveConditionalLogic = () => {
+    if (!currentQuestionWithLogic || !currentTag) return;
+    
+    setAnamneseFlow(prev => ({
+      ...prev,
+      questions: prev.questions.map(q => {
+        if (q.id === currentQuestionWithLogic.id) {
+          const newLogic: ConditionalLogic = {
+            questionId: currentQuestionWithLogic.id,
+            operator: 'equals',
+            value: currentQuestionWithLogic.type === 'radio' && currentQuestionWithLogic.options ? 
+                   currentQuestionWithLogic.options[0] : '',
+            tag: currentTag
+          };
+          
+          return {
+            ...q,
+            conditionalLogic: [...(q.conditionalLogic || []), newLogic]
+          };
+        }
+        return q;
+      })
+    }));
+    
+    setCurrentQuestionWithLogic(null);
+    setCurrentTag('');
+  };
+  
+  // Remove conditional logic
+  const removeConditionalLogic = (questionId: string, logicIndex: number) => {
+    setAnamneseFlow(prev => ({
+      ...prev,
+      questions: prev.questions.map(q => {
+        if (q.id === questionId && q.conditionalLogic) {
+          return {
+            ...q,
+            conditionalLogic: q.conditionalLogic.filter((_, i) => i !== logicIndex)
+          };
+        }
+        return q;
+      })
+    }));
+  };
+  
+  // Add plan to linked plans
+  const addPlan = () => {
+    if (!selectedPlan || planTags.length === 0) {
+      toast.error('Selecione um plano e pelo menos uma tag para vinculá-lo');
+      return;
+    }
+    
+    const planToAdd = mockTreatmentPlans.find(p => p.id === selectedPlan);
+    if (!planToAdd) return;
+    
+    const newLinkedPlan: LinkedPlan = {
+      planId: selectedPlan,
+      name: planToAdd.name,
+      tags: [...planTags],
+      priority: planPriority
+    };
+    
+    setAnamneseFlow(prev => ({
+      ...prev,
+      linkedPlans: [...prev.linkedPlans, newLinkedPlan]
+    }));
+    
+    // Reset form
+    setSelectedPlan("");
+    setPlanTags([]);
+    setPlanPriority(1);
+  };
+  
+  // Remove linked plan
+  const removePlan = (index: number) => {
+    setAnamneseFlow(prev => ({
+      ...prev,
+      linkedPlans: prev.linkedPlans.filter((_, i) => i !== index)
+    }));
+  };
+  
+  // Toggle tag selection
+  const toggleTag = (tag: string) => {
+    if (planTags.includes(tag)) {
+      setPlanTags(planTags.filter(t => t !== tag));
+    } else {
+      setPlanTags([...planTags, tag]);
+    }
   };
   
   // Save anamnese flow
@@ -201,6 +367,9 @@ const AdminAnamneseCreate = () => {
     // Redirect to anamnese list
     navigate('/admin/anamnese');
   };
+  
+  // Filter plans based on selected type
+  const filteredPlans = mockTreatmentPlans.filter(plan => plan.type === anamneseFlow.type);
   
   return (
     <div>
@@ -272,6 +441,110 @@ const AdminAnamneseCreate = () => {
                 rows={3}
               />
             </div>
+            
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="active"
+                checked={anamneseFlow.active}
+                onCheckedChange={(checked) => handleFlowChange('active', checked)}
+              />
+              <Label htmlFor="active">Ativo</Label>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Linked Plans */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Planos Vinculados</CardTitle>
+            <CardDescription>
+              Configure os planos de tratamento que serão recomendados com base nas respostas
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* List of linked plans */}
+            {anamneseFlow.linkedPlans.map((plan, index) => (
+              <div 
+                key={index} 
+                className="border border-gray-200 rounded-lg p-4 relative"
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={() => removePlan(index)}
+                >
+                  <Trash2 size={14} className="text-red-500" />
+                </Button>
+                
+                <div className="mb-4">
+                  <h3 className="font-medium">{plan.name}</h3>
+                  <p className="text-sm text-gray-500">Prioridade: {plan.priority}</p>
+                </div>
+                
+                <div>
+                  <p className="text-sm font-medium mb-2">Tags ativadoras:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {plan.tags.map((tag, tagIndex) => (
+                      <Badge key={tagIndex} variant="outline">{tag}</Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {/* Add new plan form */}
+            <div className="border border-dashed border-gray-200 rounded-lg p-4 space-y-4">
+              <h3 className="font-medium">Adicionar novo plano</h3>
+              
+              <div className="space-y-2">
+                <Label>Selecione o plano</Label>
+                <Select value={selectedPlan} onValueChange={setSelectedPlan}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um plano" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredPlans.map(plan => (
+                      <SelectItem key={plan.id} value={plan.id}>{plan.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Prioridade</Label>
+                <Input 
+                  type="number" 
+                  min={1} 
+                  max={10} 
+                  value={planPriority}
+                  onChange={(e) => setPlanPriority(parseInt(e.target.value) || 1)}
+                />
+                <p className="text-xs text-gray-500">Prioridade maior será exibida primeiro caso múltiplas tags sejam ativadas</p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Tags ativadoras</Label>
+                <div className="flex flex-wrap gap-2">
+                  {availableTags.map((tag) => (
+                    <Badge 
+                      key={tag} 
+                      variant={planTags.includes(tag) ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() => toggleTag(tag)}
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500">Selecione as tags que, quando presentes, ativam este plano</p>
+              </div>
+              
+              <Button onClick={addPlan} className="w-full">
+                <PlusCircle size={16} className="mr-2" />
+                Adicionar Plano
+              </Button>
+            </div>
           </CardContent>
         </Card>
         
@@ -337,6 +610,7 @@ const AdminAnamneseCreate = () => {
                           <SelectItem value="radio">Múltipla escolha (uma resposta)</SelectItem>
                           <SelectItem value="checkbox">Múltipla escolha (várias respostas)</SelectItem>
                           <SelectItem value="select">Lista suspensa</SelectItem>
+                          <SelectItem value="image">Imagem</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -352,16 +626,46 @@ const AdminAnamneseCreate = () => {
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id={`required-${question.id}`}
-                      checked={question.required}
-                      onCheckedChange={(checked) => handleQuestionChange(question.id, 'required', checked)}
-                    />
-                    <Label htmlFor={`required-${question.id}`}>
-                      Resposta obrigatória
-                    </Label>
-                  </div>
+                  {question.type === 'image' && (
+                    <div className="space-y-2">
+                      <Label htmlFor={`imageUrl-${question.id}`}>URL da imagem</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id={`imageUrl-${question.id}`}
+                          value={question.imageUrl || ''}
+                          onChange={(e) => handleQuestionChange(question.id, 'imageUrl', e.target.value)}
+                          placeholder="https://exemplo.com/imagem.jpg"
+                        />
+                        <Button variant="outline" size="sm">
+                          <ImageIcon size={14} className="mr-1" />
+                          Upload
+                        </Button>
+                      </div>
+                      
+                      {question.imageUrl && (
+                        <div className="mt-2 max-w-sm mx-auto border rounded overflow-hidden">
+                          <img 
+                            src={question.imageUrl} 
+                            alt={question.question} 
+                            className="w-full h-auto" 
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {question.type !== 'image' && (
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id={`required-${question.id}`}
+                        checked={question.required}
+                        onCheckedChange={(checked) => handleQuestionChange(question.id, 'required', checked)}
+                      />
+                      <Label htmlFor={`required-${question.id}`}>
+                        Resposta obrigatória
+                      </Label>
+                    </div>
+                  )}
                   
                   {/* Options for radio, checkbox, select */}
                   {['radio', 'checkbox', 'select'].includes(question.type) && (
@@ -404,6 +708,105 @@ const AdminAnamneseCreate = () => {
                           </p>
                         )}
                       </div>
+                    </div>
+                  )}
+                  
+                  {/* Conditional Logic */}
+                  {question.type !== 'image' && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label>Lógica condicional</Label>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" onClick={() => addConditionalLogic(question.id)}>
+                              <LinkIcon size={14} className="mr-1" />
+                              Adicionar condição
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Adicionar lógica condicional</DialogTitle>
+                              <DialogDescription>
+                                Defina regras baseadas nas respostas para atribuir tags
+                              </DialogDescription>
+                            </DialogHeader>
+                            
+                            <div className="space-y-4 py-4">
+                              <div className="grid grid-cols-4 gap-4 items-center">
+                                <div className="col-span-1">Se resposta</div>
+                                <Select
+                                  defaultValue="equals"
+                                  className="col-span-1"
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="equals">Igual a</SelectItem>
+                                    <SelectItem value="contains">Contém</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                
+                                <Input 
+                                  className="col-span-2"
+                                  placeholder="Valor"
+                                />
+                              </div>
+                              
+                              <div>
+                                <Label className="block mb-2">Atribuir tag</Label>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                  {availableTags.map(tag => (
+                                    <Badge 
+                                      key={tag}
+                                      variant={currentTag === tag ? "default" : "outline"}
+                                      className="cursor-pointer"
+                                      onClick={() => setCurrentTag(tag)}
+                                    >
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                </div>
+                                
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Input 
+                                    placeholder="Nova tag..." 
+                                    value={currentTag} 
+                                    onChange={e => setCurrentTag(e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <DialogFooter>
+                              <Button onClick={() => saveConditionalLogic()}>Adicionar</Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                      
+                      {/* Show existing logic */}
+                      {question.conditionalLogic && question.conditionalLogic.length > 0 && (
+                        <div className="space-y-2 mt-2">
+                          {question.conditionalLogic.map((logic, logicIndex) => (
+                            <div key={logicIndex} className="flex items-center gap-2 bg-gray-50 p-2 rounded text-sm">
+                              <span>Se resposta</span>
+                              <span className="font-medium">{logic.operator === 'equals' ? 'igual a' : 'contém'}</span>
+                              <span className="font-medium italic">"{logic.value}"</span>
+                              <span>então tag:</span>
+                              <Badge>{logic.tag}</Badge>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="ml-auto"
+                                onClick={() => removeConditionalLogic(question.id, logicIndex)}
+                              >
+                                <Trash2 size={14} className="text-red-500" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>
