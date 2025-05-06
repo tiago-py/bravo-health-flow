@@ -1,19 +1,20 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-// Define user roles
-export type UserRole = 'client' | 'doctor' | 'admin';
+// Define user role type
+export type UserRole = 'admin' | 'doctor' | 'client';
 
-// Define user type
+// Define User interface
 export interface User {
   id: string;
   name: string;
   email: string;
   role: UserRole;
+  // Add any other user properties here
 }
 
-// Define auth context type
-interface AuthContextType {
+// Define AuthContext interface
+export interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -22,30 +23,39 @@ interface AuthContextType {
   forgotPassword: (email: string) => Promise<void>;
 }
 
-// Create the context
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Create context with default values
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  login: async () => {},
+  register: async () => {},
+  logout: () => {},
+  forgotPassword: async () => {},
+});
 
-// Auth Provider props
+// Auth provider props
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Create provider component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
-  // Check if user is logged in on initial load
+  // Check if user is authenticated on component mount
   useEffect(() => {
+    // Simulate checking for an authenticated user
     const checkAuth = async () => {
       try {
-        // In a real app, this would verify the token with a backend
-        const storedUser = localStorage.getItem('bravoUser');
+        // In a real app, this would make an API call to verify the token
+        const storedUser = localStorage.getItem('user');
         if (storedUser) {
           setUser(JSON.parse(storedUser));
         }
       } catch (error) {
-        console.error('Error checking auth:', error);
+        console.error('Authentication error:', error);
+        // Clear any invalid session data
+        localStorage.removeItem('user');
       } finally {
         setLoading(false);
       }
@@ -54,60 +64,64 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuth();
   }, []);
 
-  // Mock login function - would call API in a real app
+  // Login function
   const login = async (email: string, password: string) => {
-    setLoading(true);
-    
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      // In a real app, this would make an API call to authenticate
+      // For demo purposes, we'll use mock data
       
-      // For demo purposes, create mock users based on email
-      let mockUser: User | null = null;
+      setLoading(true);
       
-      if (email.includes('admin')) {
-        mockUser = { id: '1', name: 'Admin', email, role: 'admin' };
-      } else if (email.includes('doctor') || email.includes('medico')) {
-        mockUser = { id: '2', name: 'Dr. Bravo', email, role: 'doctor' };
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock users for different roles
+      let mockUser: User;
+      
+      if (email === 'admin@example.com') {
+        mockUser = { id: '1', name: 'Admin User', email, role: 'admin' };
+      } else if (email === 'doctor@example.com') {
+        mockUser = { id: '2', name: 'Doctor User', email, role: 'doctor' };
       } else {
-        mockUser = { id: '3', name: 'Cliente Bravo', email, role: 'client' };
+        mockUser = { id: '3', name: 'Client User', email, role: 'client' };
       }
       
-      // Save user in local storage
-      localStorage.setItem('bravoUser', JSON.stringify(mockUser));
+      // Save user to local storage
+      localStorage.setItem('user', JSON.stringify(mockUser));
       setUser(mockUser);
       
     } catch (error) {
       console.error('Login error:', error);
-      throw new Error('Falha no login. Verifique suas credenciais.');
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Mock register function
+  // Register function
   const register = async (name: string, email: string, password: string) => {
-    setLoading(true);
-    
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      // In a real app, this would make an API call to create a new user
+      setLoading(true);
       
-      // Create a new client user
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Create a new user (always a client for new registrations)
       const newUser: User = {
-        id: Math.random().toString(36).substring(2, 9),
+        id: Math.random().toString(36).substring(2, 15),
         name,
         email,
         role: 'client'
       };
       
-      // Save user in local storage
-      localStorage.setItem('bravoUser', JSON.stringify(newUser));
+      // Save user to local storage
+      localStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);
       
     } catch (error) {
       console.error('Registration error:', error);
-      throw new Error('Falha no registro. Tente novamente.');
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -115,39 +129,45 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Logout function
   const logout = () => {
-    localStorage.removeItem('bravoUser');
+    localStorage.removeItem('user');
     setUser(null);
   };
 
-  // Mock forgot password function
-  const forgotPassword = async (email: string) => {
+  // Forgot password function
+  const forgotPassword = async (email: string): Promise<void> => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      return true;
+      // In a real app, this would make an API call to send reset password email
+      setLoading(true);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // For demo purposes, we'll just console log
+      console.log(`Password reset email sent to ${email}`);
+      
     } catch (error) {
       console.error('Forgot password error:', error);
-      throw new Error('Falha ao enviar email de recuperação. Tente novamente.');
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const value = {
-    user,
-    loading,
-    login,
-    register,
-    logout,
-    forgotPassword
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        forgotPassword
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-// Create useAuth hook
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+// Custom hook to use the auth context
+export const useAuth = () => useContext(AuthContext);
