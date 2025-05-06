@@ -16,7 +16,6 @@ export function DroppableContainer({ id, items, children }: DroppableContainerPr
 
   return (
     <SortableContext 
-      id={id}
       items={items}
       strategy={verticalListSortingStrategy}
     >

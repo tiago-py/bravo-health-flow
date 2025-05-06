@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { DiagnosisDisplay } from './DiagnosisDisplay';
 
 type QuestionType = 'text' | 'number' | 'boolean' | 'single-choice' | 'multiple-choice';
 
@@ -20,6 +21,20 @@ interface Question {
   options?: string[];
   imageUrl?: string;
   imageSize?: 'small' | 'medium' | 'large';
+}
+
+interface DiagnosticRule {
+  id: string;
+  internalName: string;
+  title: string;
+  description: string;
+  phaseName: string;
+  phaseDuration?: string;
+  priority: number;
+  activationTags: string[];
+  tagLogic: 'AND' | 'OR';
+  isActive: boolean;
+  imageUrl?: string;
 }
 
 interface AnamneseFlow {
@@ -40,14 +55,17 @@ interface LinkedPlan {
 interface AnamnesePreviewProps {
   flow: AnamneseFlow;
   linkedPlans: LinkedPlan[];
+  diagnosticRules?: DiagnosticRule[];
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function AnamnesePreview({ flow, linkedPlans, isOpen, onClose }: AnamnesePreviewProps) {
+export function AnamnesePreview({ flow, linkedPlans, diagnosticRules = [], isOpen, onClose }: AnamnesePreviewProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [showDiagnosis, setShowDiagnosis] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [appliedTags, setAppliedTags] = useState<string[]>(['queda_moderada']); // Mock tags that would come from answers
   
   // Group questions in steps of 2 for simplicity in this demo
   const questionsPerStep = 2;
@@ -62,13 +80,27 @@ export function AnamnesePreview({ flow, linkedPlans, isOpen, onClose }: Anamnese
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Last step - show checkout
-      setShowCheckout(true);
+      // Last step - show diagnosis if available, otherwise show checkout
+      if (diagnosticRules.length > 0) {
+        setShowDiagnosis(true);
+      } else {
+        setShowCheckout(true);
+      }
     }
   };
 
   const handlePrevious = () => {
-    if (currentStep > 0) {
+    if (showCheckout) {
+      setShowCheckout(false);
+      if (diagnosticRules.length > 0) {
+        setShowDiagnosis(true);
+      } else {
+        setCurrentStep(totalSteps - 1);
+      }
+    } else if (showDiagnosis) {
+      setShowDiagnosis(false);
+      setCurrentStep(totalSteps - 1);
+    } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
@@ -83,6 +115,7 @@ export function AnamnesePreview({ flow, linkedPlans, isOpen, onClose }: Anamnese
   const handleReset = () => {
     setCurrentStep(0);
     setAnswers({});
+    setShowDiagnosis(false);
     setShowCheckout(false);
   };
 
@@ -168,11 +201,33 @@ export function AnamnesePreview({ flow, linkedPlans, isOpen, onClose }: Anamnese
   };
 
   const getProgress = () => {
-    return ((currentStep) / totalSteps) * 100;
+    if (showCheckout) return 100;
+    if (showDiagnosis) return 90;
+    return ((currentStep) / totalSteps) * 80; // Max 80% when questions are done
+  };
+
+  // Find the applicable diagnostic rule based on applied tags
+  const findApplicableDiagnosticRule = () => {
+    if (!diagnosticRules || diagnosticRules.length === 0) return null;
+    
+    // Sort rules by priority
+    const activeRules = diagnosticRules
+      .filter(rule => rule.isActive)
+      .sort((a, b) => a.priority - b.priority);
+    
+    // Find first matching rule
+    return activeRules.find(rule => {
+      if (rule.tagLogic === 'AND') {
+        return rule.activationTags.every(tag => appliedTags.includes(tag));
+      } else {
+        return rule.activationTags.some(tag => appliedTags.includes(tag));
+      }
+    });
   };
 
   // Simplified logic to determine plan - in reality this would match tags from answers
   const recommendedPlan = linkedPlans.length > 0 ? linkedPlans[0] : null;
+  const applicableDiagnosticRule = findApplicableDiagnosticRule();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -187,7 +242,7 @@ export function AnamnesePreview({ flow, linkedPlans, isOpen, onClose }: Anamnese
           </DialogDescription>
         </DialogHeader>
 
-        {!showCheckout ? (
+        {!showDiagnosis && !showCheckout ? (
           <div className="mt-2">
             {/* Progress bar */}
             <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
@@ -254,9 +309,57 @@ export function AnamnesePreview({ flow, linkedPlans, isOpen, onClose }: Anamnese
               </Button>
             </div>
           </div>
+        ) : showDiagnosis ? (
+          /* Diagnosis screen */
+          <div className="mt-2">
+            {/* Progress bar */}
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+              <div 
+                className="bg-blue-600 h-2.5 rounded-full" 
+                style={{width: `${getProgress()}%`}}
+              ></div>
+            </div>
+            
+            {applicableDiagnosticRule ? (
+              <DiagnosisDisplay
+                title={applicableDiagnosticRule.title}
+                description={applicableDiagnosticRule.description}
+                phaseName={applicableDiagnosticRule.phaseName}
+                phaseDuration={applicableDiagnosticRule.phaseDuration}
+                imageUrl={applicableDiagnosticRule.imageUrl}
+                onContinue={() => setShowCheckout(true)}
+              />
+            ) : (
+              <div className="text-center py-6">
+                <h2 className="text-xl font-bold mb-2">Diagnóstico não encontrado</h2>
+                <p className="text-gray-600 mb-6">
+                  Não encontramos uma regra de diagnóstico aplicável para suas respostas.
+                </p>
+                <Button onClick={() => setShowCheckout(true)}>
+                  Ver planos disponíveis
+                  <ArrowRight size={16} className="ml-1" />
+                </Button>
+              </div>
+            )}
+
+            <div className="flex justify-between mt-6">
+              <Button variant="outline" onClick={handlePrevious}>
+                <ArrowLeft size={16} className="mr-1" />
+                Voltar
+              </Button>
+            </div>
+          </div>
         ) : (
           /* Checkout screen */
           <div className="mt-2">
+            {/* Progress bar */}
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+              <div 
+                className="bg-blue-600 h-2.5 rounded-full" 
+                style={{width: `${getProgress()}%`}}
+              ></div>
+            </div>
+            
             <Card className="mb-6 border-green-100">
               <CardHeader className="bg-green-50 pb-2">
                 <CardTitle className="text-lg">Plano recomendado com base nas suas respostas</CardTitle>
@@ -293,7 +396,7 @@ export function AnamnesePreview({ flow, linkedPlans, isOpen, onClose }: Anamnese
             </Card>
 
             <div className="flex justify-between">
-              <Button variant="outline" onClick={() => setShowCheckout(false)}>
+              <Button variant="outline" onClick={handlePrevious}>
                 <ArrowLeft size={16} className="mr-1" />
                 Voltar
               </Button>
