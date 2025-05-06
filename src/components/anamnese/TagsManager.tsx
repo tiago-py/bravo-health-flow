@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Plus, X, Tag as TagIcon, Search, CircleCheck, 
-  CircleX, Tag
+  CircleX, Tag, FileText
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { 
