@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -376,10 +377,10 @@ export function AnamnesePreview({ flow, linkedPlans, diagnosticRules = [], isOpe
                       </ul>
                     </div>
                   </CardContent>
-                  <CardFooter className="p-6 pt-0">
+                  <CardFooter className="p-6 bg-gray-50">
                     <Button 
                       onClick={handleSelectPlan} 
-                      className="w-full py-6 text-lg font-medium"
+                      className="w-full py-6 text-lg font-medium bg-green-600 hover:bg-green-700"
                     >
                       Escolher este plano
                       <ArrowRight className="ml-2" size={18} />
@@ -398,7 +399,7 @@ export function AnamnesePreview({ flow, linkedPlans, diagnosticRules = [], isOpe
             <div className="flex justify-between mt-6">
               <Button variant="outline" onClick={handlePrevious}>
                 <ArrowLeft size={16} className="mr-2" />
-                Voltar
+                Voltar para o diagnóstico
               </Button>
               <Button variant="outline" onClick={handleReset}>
                 Reiniciar Preview
@@ -424,7 +425,7 @@ export function AnamnesePreview({ flow, linkedPlans, diagnosticRules = [], isOpe
           <div className="fixed bottom-6 left-6">
             <Button variant="outline" onClick={handlePrevious} className="rounded-full px-4">
               <ArrowLeft size={16} className="mr-2" />
-              Voltar
+              Voltar para o questionário
             </Button>
           </div>
           
@@ -514,8 +515,8 @@ export function AnamnesePreview({ flow, linkedPlans, diagnosticRules = [], isOpe
               <ArrowLeft size={16} className="mr-1" />
               Voltar
             </Button>
-            <Button onClick={handleNext} size="lg">
-              {currentStep === totalSteps - 1 ? 'Finalizar' : 'Próximo'}
+            <Button onClick={handleNext} size="lg" className="bg-blue-600 hover:bg-blue-700">
+              {currentStep === totalSteps - 1 ? 'Ver diagnóstico' : 'Próximo'}
               <ArrowRight size={16} className="ml-1" />
             </Button>
           </div>

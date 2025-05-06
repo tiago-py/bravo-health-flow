@@ -2,6 +2,8 @@
 import { DiagnosisDisplay } from './DiagnosisDisplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 interface DiagnosticRule {
   id: string;
@@ -23,6 +25,8 @@ interface DiagnosisPreviewProps {
 }
 
 export function DiagnosisPreview({ rule, isFullscreen = false }: DiagnosisPreviewProps) {
+  const [showFullscreen, setShowFullscreen] = useState(false);
+  
   if (!rule) {
     return (
       <Card className="text-center p-8 border-2 border-dashed border-gray-200 rounded-md">
@@ -36,22 +40,44 @@ export function DiagnosisPreview({ rule, isFullscreen = false }: DiagnosisPrevie
     );
   }
 
-  if (isFullscreen) {
+  if (isFullscreen || showFullscreen) {
     return (
-      <DiagnosisDisplay
-        title={rule.title}
-        description={rule.description}
-        phaseName={rule.phaseName}
-        phaseDuration={rule.phaseDuration}
-        imageUrl={rule.imageUrl}
-        onContinue={() => {}}
-      />
+      <div className="relative">
+        <DiagnosisDisplay
+          title={rule.title}
+          description={rule.description}
+          phaseName={rule.phaseName}
+          phaseDuration={rule.phaseDuration}
+          imageUrl={rule.imageUrl}
+          onContinue={() => setShowFullscreen(false)}
+        />
+        {!isFullscreen && (
+          <div className="absolute top-4 right-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowFullscreen(false)}
+              className="rounded-full bg-white/80 backdrop-blur-sm"
+            >
+              Fechar Preview
+            </Button>
+          </div>
+        )}
+      </div>
     );
   }
 
   return (
-    <Card className="border-2 border-blue-100 overflow-hidden shadow-md">
+    <Card className="border-2 border-blue-100 overflow-hidden shadow-md relative group">
       <CardContent className="p-0">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+          <Button 
+            onClick={() => setShowFullscreen(true)} 
+            className="bg-white text-blue-600 hover:bg-blue-50"
+          >
+            Ver em tela cheia
+          </Button>
+        </div>
+        
         <div className="bg-blue-600 text-white py-3 px-5">
           <h3 className="text-xl font-bold">{rule.title}</h3>
         </div>
