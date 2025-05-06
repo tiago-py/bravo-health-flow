@@ -31,14 +31,14 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50">
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200">
+      <aside className="hidden md:flex md:flex-col w-64 bg-white border-r border-gray-200">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
           <span className="text-xl font-montserrat font-bold text-bravo-blue">Bravo Admin</span>
         </div>
         
-        <div className="flex-1 py-6 flex flex-col px-4 space-y-1">
+        <div className="flex-1 py-6 flex flex-col px-4 space-y-1 overflow-y-auto">
           {navigations.map((item) => (
             <NavLink
               key={item.path}
@@ -134,8 +134,8 @@ const AdminLayout = () => {
       )}
       
       {/* Main Content */}
-      <div className="flex-1 md:ml-64 mt-16 md:mt-0">
-        <div className="container mx-auto px-4 py-6">
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-full">
           <Outlet />
         </div>
       </div>
