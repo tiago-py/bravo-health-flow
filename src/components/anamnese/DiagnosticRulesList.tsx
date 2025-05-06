@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { DiagnosticRuleEditor } from './DiagnosticRuleEditor';
 import { DroppableContainer } from './DroppableContainer';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Tag, Plus, Copy, Edit, Trash2, ArrowUp, ArrowDown, FileText } from 'lucide-react';
+import { Tag, Plus, Copy, Edit, Trash2, ArrowUp, ArrowDown, FileText, Eye } from 'lucide-react';
 
 interface DiagnosticRule {
   id: string;
@@ -29,7 +29,9 @@ interface DiagnosticRulesListProps {
   onRemoveRule: (id: string) => void;
   onDuplicateRule: (id: string) => void;
   onReorderRules: (rules: DiagnosticRule[]) => void;
+  onPreviewRule?: (id: string) => void;
   availableTags: string[];
+  onAddTag?: (tag: string) => void;
 }
 
 export function DiagnosticRulesList({
@@ -39,7 +41,9 @@ export function DiagnosticRulesList({
   onRemoveRule,
   onDuplicateRule,
   onReorderRules,
-  availableTags
+  onPreviewRule,
+  availableTags,
+  onAddTag
 }: DiagnosticRulesListProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentRule, setCurrentRule] = useState<DiagnosticRule | undefined>();
@@ -52,6 +56,12 @@ export function DiagnosticRulesList({
   const handleEditRule = (rule: DiagnosticRule) => {
     setCurrentRule(rule);
     setIsEditing(true);
+  };
+  
+  const handlePreviewRule = (id: string) => {
+    if (onPreviewRule) {
+      onPreviewRule(id);
+    }
   };
   
   const handleSaveRule = (rule: DiagnosticRule) => {
@@ -96,6 +106,7 @@ export function DiagnosticRulesList({
         onSave={handleSaveRule}
         onCancel={() => setIsEditing(false)}
         availableTags={availableTags}
+        onAddTag={onAddTag}
       />
     );
   }
@@ -105,8 +116,11 @@ export function DiagnosticRulesList({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Regras de Diagnóstico</h3>
-        <Button onClick={handleAddRule}>
+        <h3 className="text-lg font-medium flex items-center gap-2">
+          <FileText size={18} className="text-blue-700" />
+          Regras de Diagnóstico
+        </h3>
+        <Button onClick={handleAddRule} className="bg-blue-600">
           <Plus size={16} className="mr-2" />
           Adicionar Regra
         </Button>
@@ -128,8 +142,8 @@ export function DiagnosticRulesList({
       )}
 
       {sortedRules.map((rule, index) => (
-        <Card key={rule.id} className={`overflow-hidden ${!rule.isActive ? 'opacity-60' : ''}`}>
-          <CardHeader className="pb-3 bg-gray-50">
+        <Card key={rule.id} className={`overflow-hidden shadow-sm transition-all hover:shadow-md ${!rule.isActive ? 'opacity-60' : ''}`}>
+          <CardHeader className="pb-3 bg-blue-50">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -168,10 +182,19 @@ export function DiagnosticRulesList({
                 >
                   <Edit size={16} />
                 </Button>
+                {onPreviewRule && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => handlePreviewRule(rule.id)}
+                  >
+                    <Eye size={16} />
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-red-600 hover:text-red-700"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   onClick={() => onRemoveRule(rule.id)}
                 >
                   <Trash2 size={16} />
