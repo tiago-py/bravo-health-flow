@@ -1,313 +1,328 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
-import { toast } from '@/components/ui/sonner';
-import { Edit2, Archive, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/components/ui/sonner';
+import { Plus, Pencil, MoreVertical, CheckCircle } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-interface Plan {
+interface PlanFeature {
   id: string;
   name: string;
-  description: string;
+  included: boolean;
+}
+
+interface TreatmentPlan {
+  id: string;
+  name: string;
   type: 'queda-capilar' | 'disfuncao-eretil';
+  status: 'active' | 'inactive' | 'draft';
   price: number;
-  active: boolean;
-  benefits: string[];
-  details: {
-    medications: string[];
-    consultations: number;
-    duration: string;
-    shipping: boolean;
-  };
+  interval: 'monthly' | 'quarterly' | 'semiannual' | 'annual';
+  description: string;
+  features: PlanFeature[];
+  popular?: boolean;
 }
 
 const AdminTreatmentPlans = () => {
-  const [filterType, setFilterType] = useState<'all' | 'queda-capilar' | 'disfuncao-eretil'>('all');
-  const [showArchived, setShowArchived] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-
-  // Mock plans data
-  const plans: Plan[] = [
+  const [activeTab, setActiveTab] = useState<string>('queda-capilar');
+  
+  // Mock treatment plan data
+  const treatmentPlans: TreatmentPlan[] = [
     {
       id: '1',
-      name: 'Queda Capilar - Básico',
-      description: 'Plano inicial para tratamento de queda capilar',
+      name: 'Plano Básico - Queda Capilar',
       type: 'queda-capilar',
-      price: 99.90,
-      active: true,
-      benefits: [
-        'Minoxidil 5%',
-        'Avaliação médica online',
-        'Entrega mensal',
-        'Suporte por e-mail'
+      status: 'active',
+      price: 149.9,
+      interval: 'monthly',
+      description: 'Tratamento básico para queda capilar com medicamentos essenciais.',
+      features: [
+        { id: '1-1', name: 'Minoxidil 5%', included: true },
+        { id: '1-2', name: 'Finasterida 1mg', included: true },
+        { id: '1-3', name: 'Consulta médica online', included: true },
+        { id: '1-4', name: 'Entrega mensal', included: true },
+        { id: '1-5', name: 'Acompanhamento semanal', included: false },
+        { id: '1-6', name: 'Complexo vitamínico', included: false }
       ],
-      details: {
-        medications: ['Minoxidil 5%'],
-        consultations: 1,
-        duration: '3 meses',
-        shipping: true
-      }
+      popular: false
     },
     {
       id: '2',
-      name: 'Queda Capilar - Premium',
-      description: 'Tratamento completo para queda capilar',
+      name: 'Plano Premium - Queda Capilar',
       type: 'queda-capilar',
-      price: 149.90,
-      active: true,
-      benefits: [
-        'Minoxidil 5%',
-        'Finasterida 1mg',
-        'Complexo vitamínico',
-        'Acompanhamento mensal',
-        'Suporte prioritário'
+      status: 'active',
+      price: 249.9,
+      interval: 'monthly',
+      description: 'Tratamento completo para queda capilar com todos os medicamentos e acompanhamento.',
+      features: [
+        { id: '2-1', name: 'Minoxidil 5%', included: true },
+        { id: '2-2', name: 'Finasterida 1mg', included: true },
+        { id: '2-3', name: 'Consulta médica online', included: true },
+        { id: '2-4', name: 'Entrega mensal', included: true },
+        { id: '2-5', name: 'Acompanhamento semanal', included: true },
+        { id: '2-6', name: 'Complexo vitamínico', included: true }
       ],
-      details: {
-        medications: ['Minoxidil 5%', 'Finasterida 1mg', 'Complexo vitamínico'],
-        consultations: 4,
-        duration: '3 meses',
-        shipping: true
-      }
+      popular: true
     },
     {
       id: '3',
-      name: 'Disfunção Erétil - Básico',
-      description: 'Tratamento inicial para disfunção erétil',
+      name: 'Plano Básico - Disfunção Erétil',
       type: 'disfuncao-eretil',
-      price: 119.90,
-      active: true,
-      benefits: [
-        'Medicação sob demanda',
-        'Avaliação médica online',
-        'Entrega discreta',
-        'Suporte por e-mail'
+      status: 'active',
+      price: 159.9,
+      interval: 'monthly',
+      description: 'Tratamento básico para disfunção erétil com medicamentos essenciais.',
+      features: [
+        { id: '3-1', name: 'Sildenafila 50mg', included: true },
+        { id: '3-2', name: 'Consulta médica online', included: true },
+        { id: '3-3', name: 'Entrega mensal discreta', included: true },
+        { id: '3-4', name: 'Acompanhamento mensal', included: false },
+        { id: '3-5', name: 'Tadalafila 5mg', included: false }
       ],
-      details: {
-        medications: ['Sildenafila 50mg'],
-        consultations: 1,
-        duration: '3 meses',
-        shipping: true
-      }
+      popular: false
     },
     {
       id: '4',
-      name: 'Disfunção Erétil - Premium',
-      description: 'Tratamento avançado para disfunção erétil',
+      name: 'Plano Premium - Disfunção Erétil',
       type: 'disfuncao-eretil',
-      price: 189.90,
-      active: true,
-      benefits: [
-        'Medicação diária',
-        'Acompanhamento médico',
-        'Entrega discreta',
-        'Suporte prioritário'
+      status: 'active',
+      price: 259.9,
+      interval: 'monthly',
+      description: 'Tratamento completo para disfunção erétil com todos os medicamentos e acompanhamento.',
+      features: [
+        { id: '4-1', name: 'Sildenafila 50mg', included: true },
+        { id: '4-2', name: 'Tadalafila 5mg', included: true },
+        { id: '4-3', name: 'Consulta médica online', included: true },
+        { id: '4-4', name: 'Entrega mensal discreta', included: true },
+        { id: '4-5', name: 'Acompanhamento semanal', included: true }
       ],
-      details: {
-        medications: ['Tadalafila 5mg'],
-        consultations: 4,
-        duration: '3 meses',
-        shipping: true
-      }
+      popular: true
+    },
+    {
+      id: '5',
+      name: 'Plano Anual - Queda Capilar',
+      type: 'queda-capilar',
+      status: 'draft',
+      price: 1999.9,
+      interval: 'annual',
+      description: 'Tratamento anual para queda capilar com desconto de 30% em relação ao plano mensal.',
+      features: [
+        { id: '5-1', name: 'Minoxidil 5%', included: true },
+        { id: '5-2', name: 'Finasterida 1mg', included: true },
+        { id: '5-3', name: 'Consulta médica online', included: true },
+        { id: '5-4', name: 'Entrega mensal', included: true },
+        { id: '5-5', name: 'Acompanhamento semanal', included: true },
+        { id: '5-6', name: 'Complexo vitamínico', included: true }
+      ],
+      popular: false
     }
   ];
 
-  // Filter plans based on type and search query
-  const filteredPlans = plans.filter(plan => {
-    const matchesType = filterType === 'all' || plan.type === filterType;
-    const matchesSearch = plan.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         plan.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesArchived = showArchived ? !plan.active : plan.active;
-    return matchesType && matchesSearch && matchesArchived;
-  });
-
-  const handleEditPlan = (plan: Plan) => {
-    setSelectedPlan(plan);
-    setEditDialogOpen(true);
+  // Filter plans by type
+  const filteredPlans = treatmentPlans.filter(plan => plan.type === activeTab);
+  
+  // Toggle plan status
+  const togglePlanStatus = (planId: string) => {
+    // In a real app, this would update the plan status through an API
+    toast.success('Status do plano atualizado com sucesso!');
   };
-
-  const togglePlanStatus = (planId: string, currentStatus: boolean) => {
-    // In a real app, this would update the plan status via API
-    toast.success(`Plano ${currentStatus ? 'arquivado' : 'ativado'} com sucesso`);
+  
+  // Edit plan
+  const editPlan = (planId: string) => {
+    // In a real app, this would navigate to plan edit page
+    toast.info('Funcionalidade de edição em desenvolvimento.');
+  };
+  
+  // Duplicate plan
+  const duplicatePlan = (planId: string) => {
+    // In a real app, this would duplicate the plan
+    toast.success('Plano duplicado com sucesso!');
+  };
+  
+  // Format price with currency
+  const formatPrice = (price: number, interval: string) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(price);
   };
 
   return (
     <div>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-bravo-blue mb-4 md:mb-0">
-          Planos de Tratamento
-        </h1>
+        <div>
+          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Planos de Tratamento</h1>
+          <p className="text-gray-600">
+            Gerencie os planos de tratamento disponíveis na plataforma
+          </p>
+        </div>
         
-        <Button>
+        <Button className="mt-4 md:mt-0">
           <Plus size={16} className="mr-2" />
-          Criar novo plano
+          Adicionar Plano
         </Button>
       </div>
       
-      {/* Filters */}
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <CardTitle>Filtros</CardTitle>
-          <CardDescription>
-            Filtre e pesquise os planos de tratamento
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="lg:col-span-2">
-              <Input
-                placeholder="Buscar por nome ou descrição..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+      {/* Treatment Plans Tabs */}
+      <Tabs defaultValue="queda-capilar" onValueChange={setActiveTab} className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="queda-capilar">Queda Capilar</TabsTrigger>
+          <TabsTrigger value="disfuncao-eretil">Disfunção Erétil</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="queda-capilar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredPlans.map(plan => (
+              <PlanCard 
+                key={plan.id} 
+                plan={plan} 
+                onToggleStatus={togglePlanStatus}
+                onEdit={editPlan}
+                onDuplicate={duplicatePlan}
               />
-            </div>
-            
-            <div>
-              <Tabs value={filterType} onValueChange={(value: any) => setFilterType(value)}>
-                <TabsList className="w-full">
-                  <TabsTrigger value="all" className="flex-1">Todos</TabsTrigger>
-                  <TabsTrigger value="queda-capilar" className="flex-1">Queda Capilar</TabsTrigger>
-                  <TabsTrigger value="disfuncao-eretil" className="flex-1">Disfunção Erétil</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="show-archived"
-                checked={showArchived}
-                onCheckedChange={setShowArchived}
-              />
-              <label htmlFor="show-archived" className="text-sm text-gray-700">
-                Mostrar planos arquivados
-              </label>
-            </div>
+            ))}
           </div>
-        </CardContent>
-      </Card>
-      
-      {/* Plans List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredPlans.map((plan) => (
-          <Card key={plan.id}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="flex items-center">
-                    {plan.name}
-                    {!plan.active && (
-                      <Badge variant="outline" className="ml-2">
-                        Arquivado
-                      </Badge>
-                    )}
-                  </CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
-                </div>
-                <div className="text-2xl font-bold text-bravo-blue">
-                  R$ {plan.price.toFixed(2)}
-                  <span className="text-sm font-normal text-gray-500">/mês</span>
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium mb-2">Benefícios inclusos:</h4>
-                  <ul className="space-y-2">
-                    {plan.benefits.map((benefit, index) => (
-                      <li key={index} className="flex items-center text-sm text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-bravo-blue rounded-full mr-2" />
-                        {benefit}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500">Duração:</span>
-                    <p className="font-medium">{plan.details.duration}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Consultas:</span>
-                    <p className="font-medium">{plan.details.consultations}</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-            
-            <CardFooter className="border-t border-gray-100 pt-4">
-              <div className="flex justify-between w-full">
-                <Button
-                  variant={plan.active ? "destructive" : "default"}
-                  onClick={() => togglePlanStatus(plan.id, plan.active)}
-                >
-                  <Archive size={16} className="mr-2" />
-                  {plan.active ? 'Arquivar' : 'Ati
-var'}
-                </Button>
-                <Button variant="outline" onClick={() => handleEditPlan(plan)}>
-                  <Edit2 size={16} className="mr-2" />
-                  Editar
-                </Button>
-              </div>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-      
-      {filteredPlans.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">Nenhum plano encontrado com os filtros selecionados.</p>
-        </div>
-      )}
-      
-      {/* Edit Plan Dialog */}
-      {selectedPlan && (
-        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Editar Plano</DialogTitle>
-              <DialogDescription>
-                Faça as alterações necessárias no plano de tratamento.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="grid gap-4 py-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Nome do plano</label>
-                <Input 
-                  value={selectedPlan.name}
-                  onChange={() => {}}  // In a real app, this would update the plan
-                />
-              </div>
-              
-              {/* Add more fields here */}
-            </div>
-            
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={() => {
-                // In a real app, this would save the changes
-                toast.success('Plano atualizado com sucesso!');
-                setEditDialogOpen(false);
-              }}>
-                Salvar alterações
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+        </TabsContent>
+        
+        <TabsContent value="disfuncao-eretil">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredPlans.map(plan => (
+              <PlanCard 
+                key={plan.id} 
+                plan={plan} 
+                onToggleStatus={togglePlanStatus}
+                onEdit={editPlan}
+                onDuplicate={duplicatePlan}
+              />
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
+  );
+};
+
+// Treatment Plan Card Component
+const PlanCard = ({ 
+  plan, 
+  onToggleStatus, 
+  onEdit, 
+  onDuplicate 
+}: { 
+  plan: TreatmentPlan, 
+  onToggleStatus: (id: string) => void,
+  onEdit: (id: string) => void,
+  onDuplicate: (id: string) => void
+}) => {
+  return (
+    <Card className={`border ${plan.popular ? 'border-bravo-blue' : 'border-gray-200'}`}>
+      <CardHeader className={`${plan.popular ? 'bg-bravo-beige bg-opacity-20' : ''}`}>
+        <div className="flex items-start justify-between">
+          <div>
+            <CardTitle className="flex items-center">
+              {plan.name}
+              {plan.popular && (
+                <Badge className="ml-2 bg-bravo-blue">Popular</Badge>
+              )}
+            </CardTitle>
+            <CardDescription>
+              {plan.status === 'active' ? (
+                <span className="flex items-center text-green-600">
+                  <CheckCircle size={14} className="mr-1" />
+                  Ativo
+                </span>
+              ) : plan.status === 'draft' ? (
+                <span className="text-amber-600">Rascunho</span>
+              ) : (
+                <span className="text-gray-500">Inativo</span>
+              )}
+            </CardDescription>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onEdit(plan.id)}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Editar plano
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDuplicate(plan.id)}>
+                Duplicar plano
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onToggleStatus(plan.id)}>
+                {plan.status === 'active' ? 'Desativar plano' : 'Ativar plano'}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </CardHeader>
+      <CardContent className="p-6 space-y-4">
+        <div className="flex items-baseline">
+          <span className="text-3xl font-bold">
+            {new Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }).format(plan.price)}
+          </span>
+          <span className="text-gray-500 ml-2">
+            /{plan.interval === 'monthly' ? 'mês' : 
+              plan.interval === 'quarterly' ? 'trimestre' : 
+              plan.interval === 'semiannual' ? 'semestre' : 'ano'}
+          </span>
+        </div>
+        
+        <p className="text-gray-600">{plan.description}</p>
+        
+        <div className="space-y-2 mt-4">
+          <h4 className="text-sm font-medium">Características do plano:</h4>
+          <ul className="space-y-1">
+            {plan.features.map(feature => (
+              <li 
+                key={feature.id} 
+                className={`flex items-center text-sm ${feature.included ? 'text-gray-900' : 'text-gray-400 line-through'}`}
+              >
+                <CheckCircle 
+                  size={16} 
+                  className={`mr-2 ${feature.included ? 'text-green-500' : 'text-gray-300'}`} 
+                />
+                {feature.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </CardContent>
+      <CardFooter className="border-t border-gray-100 pt-4 flex justify-between">
+        <Button variant="outline" onClick={() => onEdit(plan.id)}>
+          <Pencil size={14} className="mr-2" />
+          Editar
+        </Button>
+        <div className="flex items-center space-x-2">
+          <Label htmlFor={`status-${plan.id}`} className="text-sm">
+            {plan.status === 'active' ? 'Ativo' : 'Inativo'}
+          </Label>
+          <Switch
+            id={`status-${plan.id}`}
+            checked={plan.status === 'active'}
+            onCheckedChange={() => onToggleStatus(plan.id)}
+          />
+        </div>
+      </CardFooter>
+    </Card>
   );
 };
 
