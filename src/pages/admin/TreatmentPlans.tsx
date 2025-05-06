@@ -9,6 +9,13 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/sonner';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -17,7 +24,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, MoreVertical, CheckCircle, Image as ImageIcon } from 'lucide-react';
+import { 
+  Plus, 
+  Pencil, 
+  MoreVertical, 
+  CheckCircle, 
+  Image as ImageIcon,
+  Trash2
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
