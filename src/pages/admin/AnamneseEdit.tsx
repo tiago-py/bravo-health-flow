@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -176,6 +177,7 @@ const AdminAnamneseEdit = () => {
             <Label htmlFor="type">Tipo de Pergunta</Label>
             <Select 
               defaultValue="text" 
+              value={questionType}
               onValueChange={(value) => setQuestionType(value as QuestionType)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione o tipo de pergunta" />
@@ -222,10 +224,12 @@ const AdminAnamneseEdit = () => {
         </CardContent>
       </Card>
 
-      <Button variant="ghost" asChild>
-        <ArrowLeft size={16} className="mr-2" />
-        <a href="/admin/anamnese">Voltar</a>
-      </Button>
+      <div className="mt-4">
+        <Button variant="ghost" onClick={() => navigate('/admin/anamnese')}>
+          <ArrowLeft size={16} className="mr-2" />
+          Voltar
+        </Button>
+      </div>
     </div>
   );
 };

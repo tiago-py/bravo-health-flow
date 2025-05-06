@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from 'react';
 
 // Public Pages
 import HomePage from "./pages/public/HomePage";
@@ -55,86 +54,84 @@ import RequireAuth from "./components/guards/RequireAuth";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/tratamento/:type" element={<TreatmentPage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:slug" element={<BlogPostPage />} />
-            <Route path="/politica-de-privacidade" element={<PrivacyPolicyPage />} />
-            <Route path="/termos" element={<TermsPage />} />
-            <Route path="/contato" element={<ContactPage />} />
-            <Route path="/anamnese/:type" element={<AnamneseFlowPage />} />
-            
-            {/* Auth Routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/registrar" element={<RegisterPage />} />
-            <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
-            
-            {/* Client Routes - Protected */}
-            <Route 
-              path="/cliente" 
-              element={
-                <RequireAuth role="client">
-                  <ClientLayout />
-                </RequireAuth>
-              }
-            >
-              <Route path="dashboard" element={<ClientDashboard />} />
-              <Route path="prescricoes" element={<ClientPrescriptions />} />
-              <Route path="historico" element={<ClientHistory />} />
-              <Route path="perfil" element={<ClientProfile />} />
-              <Route path="suporte" element={<ClientSupport />} />
-            </Route>
-            
-            {/* Doctor Routes - Protected */}
-            <Route 
-              path="/medico" 
-              element={
-                <RequireAuth role="doctor">
-                  <DoctorLayout />
-                </RequireAuth>
-              }
-            >
-              <Route path="dashboard" element={<DoctorDashboard />} />
-              <Route path="paciente/:id" element={<DoctorPatientDetail />} />
-              <Route path="historico" element={<DoctorHistory />} />
-              <Route path="perfil" element={<DoctorProfile />} />
-            </Route>
-            
-            {/* Admin Routes - Protected */}
-            <Route 
-              path="/admin" 
-              element={
-                <RequireAuth role="admin">
-                  <AdminLayout />
-                </RequireAuth>
-              }
-            >
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="anamnese" element={<AdminAnamneseFlow />} />
-              <Route path="anamnese/criar" element={<AdminAnamneseCreate />} />
-              <Route path="anamnese/:id" element={<AdminAnamneseEdit />} />
-              <Route path="planos" element={<AdminTreatmentPlans />} />
-              <Route path="usuarios" element={<AdminUsers />} />
-              <Route path="medicos" element={<AdminDoctors />} />
-              <Route path="financeiro" element={<AdminFinancial />} />
-              <Route path="configuracoes" element={<AdminSettings />} />
-            </Route>
-            
-            {/* 404 Route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/tratamento/:type" element={<TreatmentPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
+          <Route path="/politica-de-privacidade" element={<PrivacyPolicyPage />} />
+          <Route path="/termos" element={<TermsPage />} />
+          <Route path="/contato" element={<ContactPage />} />
+          <Route path="/anamnese/:type" element={<AnamneseFlowPage />} />
+          
+          {/* Auth Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/registrar" element={<RegisterPage />} />
+          <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
+          
+          {/* Client Routes - Protected */}
+          <Route 
+            path="/cliente" 
+            element={
+              <RequireAuth role="client">
+                <ClientLayout />
+              </RequireAuth>
+            }
+          >
+            <Route path="dashboard" element={<ClientDashboard />} />
+            <Route path="prescricoes" element={<ClientPrescriptions />} />
+            <Route path="historico" element={<ClientHistory />} />
+            <Route path="perfil" element={<ClientProfile />} />
+            <Route path="suporte" element={<ClientSupport />} />
+          </Route>
+          
+          {/* Doctor Routes - Protected */}
+          <Route 
+            path="/medico" 
+            element={
+              <RequireAuth role="doctor">
+                <DoctorLayout />
+              </RequireAuth>
+            }
+          >
+            <Route path="dashboard" element={<DoctorDashboard />} />
+            <Route path="paciente/:id" element={<DoctorPatientDetail />} />
+            <Route path="historico" element={<DoctorHistory />} />
+            <Route path="perfil" element={<DoctorProfile />} />
+          </Route>
+          
+          {/* Admin Routes - Protected */}
+          <Route 
+            path="/admin" 
+            element={
+              <RequireAuth role="admin">
+                <AdminLayout />
+              </RequireAuth>
+            }
+          >
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="anamnese" element={<AdminAnamneseFlow />} />
+            <Route path="anamnese/criar" element={<AdminAnamneseCreate />} />
+            <Route path="anamnese/:id" element={<AdminAnamneseEdit />} />
+            <Route path="planos" element={<AdminTreatmentPlans />} />
+            <Route path="usuarios" element={<AdminUsers />} />
+            <Route path="medicos" element={<AdminDoctors />} />
+            <Route path="financeiro" element={<AdminFinancial />} />
+            <Route path="configuracoes" element={<AdminSettings />} />
+          </Route>
+          
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;

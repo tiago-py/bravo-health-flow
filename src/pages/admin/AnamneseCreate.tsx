@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,7 @@ import {
   Plus, 
   Trash2,
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -213,15 +215,16 @@ const AdminAnamneseCreate = () => {
               {options.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {options.map((option) => (
-                    <Badge key={option} className="gap-1">
+                    <Badge key={option} className="gap-1 flex items-center">
                       {option}
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
+                        className="h-4 w-4 p-0 ml-1"
                         onClick={() => removeOption(option)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </Badge>
                   ))}
