@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { 
   MessageSquare, FileText, Tag, GripVertical, Check, 
   Eye, Copy, Edit, Trash2, GripHorizontal, Blocks, 
-  CreditCard, AlertTriangle
+  CreditCard, AlertTriangle, ShieldCheck, Package
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -63,21 +63,21 @@ export function FlowBlockItem({
   const getIcon = () => {
     switch (type) {
       case 'question':
-        return <MessageSquare size={16} />;
+        return <MessageSquare size={16} className="text-green-600" />;
       case 'diagnosis':
-        return <FileText size={16} />;
+        return <ShieldCheck size={16} className="text-blue-600" />;
       case 'plan-selection':
-        return <Check size={16} />;
+        return <Package size={16} className="text-amber-600" />;
       case 'checkout':
-        return <CreditCard size={16} />;
+        return <CreditCard size={16} className="text-green-600" />;
       case 'conditional':
-        return <AlertTriangle size={16} />;
+        return <AlertTriangle size={16} className="text-red-600" />;
       case 'tag':
-        return <Tag size={16} />;
+        return <Tag size={16} className="text-purple-600" />;
       case 'group':
-        return <Blocks size={16} />;
+        return <Blocks size={16} className="text-indigo-600" />;
       default:
-        return <MessageSquare size={16} />;
+        return <MessageSquare size={16} className="text-green-600" />;
     }
   };
 
@@ -88,7 +88,7 @@ export function FlowBlockItem({
       case 'diagnosis':
         return 'Diagnóstico';
       case 'plan-selection':
-        return 'Seleção de Plano';
+        return 'Planos';
       case 'checkout':
         return 'Checkout';
       case 'conditional':
@@ -101,13 +101,56 @@ export function FlowBlockItem({
         return 'Bloco';
     }
   };
+  
+  const getBlockClasses = () => {
+    switch (type) {
+      case 'question':
+        return 'border-green-200 hover:border-green-300';
+      case 'diagnosis':
+        return 'border-blue-200 hover:border-blue-300';
+      case 'plan-selection':
+        return 'border-amber-200 hover:border-amber-300';
+      case 'checkout':
+        return 'border-green-200 hover:border-green-300';
+      case 'conditional':
+        return 'border-red-200 hover:border-red-300';
+      case 'tag':
+        return 'border-purple-200 hover:border-purple-300';
+      case 'group':
+        return 'border-indigo-200 hover:border-indigo-300';
+      default:
+        return 'border-gray-200 hover:border-gray-300';
+    }
+  };
+
+  const getTypeColor = () => {
+    switch (type) {
+      case 'question':
+        return 'bg-green-100 text-green-800';
+      case 'diagnosis':
+        return 'bg-blue-100 text-blue-800';
+      case 'plan-selection':
+        return 'bg-amber-100 text-amber-800';
+      case 'checkout':
+        return 'bg-green-100 text-green-800';
+      case 'conditional':
+        return 'bg-red-100 text-red-800';
+      case 'tag':
+        return 'bg-purple-100 text-purple-800';
+      case 'group':
+        return 'bg-indigo-100 text-indigo-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
     <Card 
       ref={setNodeRef} 
       style={style} 
       className={cn(
-        "border transition-all shadow-sm",
+        "border-2 transition-all shadow-sm",
+        getBlockClasses(),
         isDragging ? "shadow-md z-50" : "",
         disabled ? "opacity-60" : "",
         !active ? "border-dashed opacity-70" : "",
@@ -125,10 +168,10 @@ export function FlowBlockItem({
           </div>
           
           <div className="flex items-center gap-1.5">
-            <span className="bg-gray-100 p-1 rounded-md">
+            <span className={cn("bg-gray-100 p-1 rounded-md", getTypeColor())}>
               {getIcon()}
             </span>
-            <Badge variant="outline" className="font-normal text-xs">
+            <Badge variant="outline" className={cn("font-normal text-xs", getTypeColor())}>
               {getTypeLabel()}
             </Badge>
             {required && (
@@ -155,7 +198,7 @@ export function FlowBlockItem({
               <Edit size={14} />
             </Button>
           )}
-          {onDuplicate && (
+          {onDuplicate && type !== 'checkout' && (
             <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => onDuplicate(id)}>
               <Copy size={14} />
             </Button>

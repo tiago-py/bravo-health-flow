@@ -1,7 +1,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { ArrowRight, FileText } from 'lucide-react';
+import { ArrowRight, FileText, Leaf, Shield, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import {
   Tooltip,
@@ -27,6 +27,19 @@ export function DiagnosisDisplay({
   imageUrl,
   onContinue
 }: DiagnosisDisplayProps) {
+  // Choose an icon based on the phase name
+  const getPhaseIcon = () => {
+    if (phaseName?.toLowerCase().includes('estabilização')) {
+      return <Shield className="text-blue-700 mr-3" size={24} />;
+    } else if (phaseName?.toLowerCase().includes('crescimento')) {
+      return <Leaf className="text-green-700 mr-3" size={24} />;
+    } else if (phaseName?.toLowerCase().includes('manutenção')) {
+      return <Award className="text-amber-700 mr-3" size={24} />;
+    } else {
+      return <FileText className="text-blue-700 mr-3" size={24} />;
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -67,7 +80,7 @@ export function DiagnosisDisplay({
             
             <div className="p-8 space-y-8">
               <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-                {imageUrl && (
+                {imageUrl ? (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -80,9 +93,20 @@ export function DiagnosisDisplay({
                       className="max-h-[220px] object-contain rounded-md shadow-md"
                     />
                   </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.9, duration: 0.5 }}
+                    className="md:w-1/3 flex justify-center"
+                  >
+                    <div className="w-32 h-32 bg-blue-50 rounded-full flex items-center justify-center">
+                      <Shield className="text-blue-500" size={64} />
+                    </div>
+                  </motion.div>
                 )}
                 
-                <div className={imageUrl ? "md:w-2/3" : "w-full"}>
+                <div className={imageUrl || true ? "md:w-2/3" : "w-full"}>
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -98,7 +122,7 @@ export function DiagnosisDisplay({
                     transition={{ delay: 1.2, duration: 0.5 }}
                     className="flex items-center px-5 py-4 bg-blue-50 rounded-md border border-blue-100"
                   >
-                    <FileText className="text-blue-700 mr-3" size={24} />
+                    {getPhaseIcon()}
                     <div>
                       <TooltipProvider>
                         <Tooltip>

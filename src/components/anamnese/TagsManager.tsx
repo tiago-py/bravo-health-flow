@@ -8,7 +8,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Plus, X, Tag as TagIcon, Search, CircleCheck, 
-  CircleX, Tag, FileText
+  CircleX, Tag, FileText, MessageSquare, Star,
+  ArrowRight, ArrowDown, ShieldCheck
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { 
@@ -55,6 +56,7 @@ export function TagsManager({
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<string>('selected');
   const [showTagHelp, setShowTagHelp] = useState(false);
+  const [showFlowExplanation, setShowFlowExplanation] = useState(false);
 
   const addTag = (tag: string) => {
     if (!selectedTags.includes(tag)) {
@@ -83,9 +85,9 @@ export function TagsManager({
       case 'diagnosis':
         return <FileText size={18} className="text-blue-600" />;
       case 'question':
-        return <CircleCheck size={18} className="text-green-600" />;
+        return <MessageSquare size={18} className="text-green-600" />;
       case 'plan':
-        return <Tag size={18} className="text-amber-600" />;
+        return <Star size={18} className="text-amber-600" />;
       default:
         return <TagIcon size={18} />;
     }
@@ -125,26 +127,75 @@ export function TagsManager({
             {getTagSourceIcon()}
             <span>{getTagSourceTitle()}</span>
           </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full"
-                  onClick={() => setShowTagHelp(!showTagHelp)}
-                >
-                  <span className="text-xs font-bold border-2 border-gray-400 rounded-full h-5 w-5 flex items-center justify-center">?</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent className="w-80 p-4">
-                <p className="text-sm">
-                  {getTagSourceDescription()}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={() => setShowFlowExplanation(!showFlowExplanation)}
+            >
+              <span className="text-xs font-bold border-2 border-blue-400 rounded-full h-5 w-5 flex items-center justify-center text-blue-500">?</span>
+            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full"
+                    onClick={() => setShowTagHelp(!showTagHelp)}
+                  >
+                    <span className="text-xs font-bold border-2 border-gray-400 rounded-full h-5 w-5 flex items-center justify-center">i</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="w-80 p-4">
+                  <p className="text-sm">
+                    {getTagSourceDescription()}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </CardTitle>
+        
+        {showFlowExplanation && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }} 
+            animate={{ opacity: 1, height: "auto" }}
+            className="text-sm text-gray-600 bg-blue-50 p-4 rounded-md mt-2 border border-blue-100 space-y-3"
+          >
+            <div className="font-medium text-blue-700">Fluxo de Tags no Sistema</div>
+            
+            <div className="flex items-center gap-2 py-1">
+              <MessageSquare size={16} className="text-green-600" />
+              <span>Perguntas</span>
+              <ArrowRight size={16} className="mx-1 text-gray-400" />
+              <Tag size={16} className="text-purple-600" />
+              <span>Tags Atribuídas</span>
+            </div>
+            
+            <div className="flex items-center gap-2 py-1">
+              <Tag size={16} className="text-purple-600" />
+              <span>Tags Ativas</span>
+              <ArrowRight size={16} className="mx-1 text-gray-400" />
+              <ShieldCheck size={16} className="text-blue-600" />
+              <span>Diagnóstico</span>
+            </div>
+            
+            <div className="flex items-center gap-2 py-1">
+              <Tag size={16} className="text-purple-600" />
+              <span>Tags Ativas</span>
+              <ArrowRight size={16} className="mx-1 text-gray-400" />
+              <Star size={16} className="text-amber-600" />
+              <span>Planos Recomendados</span>
+            </div>
+            
+            <p className="pt-2 border-t border-blue-200 mt-2">
+              As tags conectam todas as partes do fluxo: perguntas geram tags, que ativam diagnósticos, que direcionam para planos específicos.
+            </p>
+          </motion.div>
+        )}
+        
         {showTagHelp && (
           <motion.div 
             initial={{ opacity: 0, height: 0 }} 
@@ -156,35 +207,45 @@ export function TagsManager({
           </motion.div>
         )}
       </CardHeader>
+      
       <CardContent className="space-y-4">
+        {/* Tag Logic Selection */}
+        {tagLogic !== undefined && onTagLogicChange && (
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <div className="text-sm font-medium text-gray-700 mb-2">Lógica de ativação:</div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant={tagLogic === 'AND' ? 'default' : 'outline'}
+                onClick={() => onTagLogicChange('AND')}
+                className="h-8 text-xs flex-1"
+              >
+                <CircleCheck size={14} className="mr-1" />
+                Todas as tags (E)
+              </Button>
+              <Button
+                size="sm"
+                variant={tagLogic === 'OR' ? 'default' : 'outline'}
+                onClick={() => onTagLogicChange('OR')}
+                className="h-8 text-xs flex-1"
+              >
+                <CircleX size={14} className="mr-1" />
+                Qualquer tag (OU)
+              </Button>
+            </div>
+            <div className="text-xs text-gray-500 mt-2">
+              {tagLogic === 'AND' 
+                ? 'Todas as tags precisam estar ativas para este item ser ativado.' 
+                : 'Qualquer uma destas tags ativa este item.'}
+            </div>
+          </div>
+        )}
+        
         {/* Selected Tags */}
         {selectedTags.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium text-gray-500">Tags selecionadas</h4>
-              
-              {tagLogic !== undefined && onTagLogicChange && (
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant={tagLogic === 'AND' ? 'default' : 'outline'}
-                    onClick={() => onTagLogicChange('AND')}
-                    className="h-7 px-2 text-xs"
-                  >
-                    <CircleCheck size={14} className="mr-1" />
-                    Todas (E)
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={tagLogic === 'OR' ? 'default' : 'outline'}
-                    onClick={() => onTagLogicChange('OR')}
-                    className="h-7 px-2 text-xs"
-                  >
-                    <CircleX size={14} className="mr-1" />
-                    Qualquer (OU)
-                  </Button>
-                </div>
-              )}
             </div>
             
             <div className="flex flex-wrap gap-2">
