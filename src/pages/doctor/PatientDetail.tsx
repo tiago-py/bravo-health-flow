@@ -252,19 +252,19 @@ const DoctorPatientDetail = () => {
                 
                 {patient.previousEvaluations.length > 0 && (
                   <TabsContent value="history" className="space-y-4">
-                    {patient.previousEvaluations.map((eval, index) => (
+                    {patient.previousEvaluations.map((evaluation, index) => (
                       <div key={index} className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex items-center text-sm text-gray-500 mb-2">
                           <Calendar size={14} className="mr-1" />
-                          <span>{new Date(eval.date).toLocaleDateString('pt-BR')}</span>
+                          <span>{new Date(evaluation.date).toLocaleDateString('pt-BR')}</span>
                         </div>
                         <div className="mb-3">
                           <h4 className="font-medium text-sm text-gray-700">Observações:</h4>
-                          <p className="text-gray-900 mt-1">{eval.observations}</p>
+                          <p className="text-gray-900 mt-1">{evaluation.observations}</p>
                         </div>
                         <div>
                           <h4 className="font-medium text-sm text-gray-700">Prescrição:</h4>
-                          <p className="text-gray-900 mt-1">{eval.prescription}</p>
+                          <p className="text-gray-900 mt-1">{evaluation.prescription}</p>
                         </div>
                       </div>
                     ))}
