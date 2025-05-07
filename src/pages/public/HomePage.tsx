@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import PublicLayout from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
@@ -43,48 +44,6 @@ const HomePage = () => {
       price: 'R$ XX/mês',
       image: '/lovable-uploads/22d996f6-2053-4905-b9d5-8c64a604e6c7.png',
       path: '/tratamento/combinacao',
-    },
-  ];
-
-  const testimonials = [
-    {
-      id: 1,
-      name: 'Gustavo Faria',
-      text: 'Equipe maravilhosa e com bom atendimento, trabalho 100% garantido.',
-      image: '/lovable-uploads/ec3a20ac-e0c1-4795-81a1-1db372988776.png',
-      beforeAfter: '/lovable-uploads/0923a035-69ed-49d0-a802-8755eff0a0ea.png',
-    },
-    {
-      id: 2,
-      name: 'Sandro Campanaro',
-      text: 'Ótimo atendimento, Ótima equipe!!! Adorei o resultado do meu procedimento!!!',
-      image: '/lovable-uploads/ec3a20ac-e0c1-4795-81a1-1db372988776.png',
-      beforeAfter: '/lovable-uploads/0923a035-69ed-49d0-a802-8755eff0a0ea.png',
-    },
-    {
-      id: 3,
-      name: 'Leandro Aparecido Rodrigues',
-      text: 'Equipe muito atenciosa e com excelência no atendimento, procedimento maravilhoso!!!',
-      image: '/lovable-uploads/ec3a20ac-e0c1-4795-81a1-1db372988776.png',
-      beforeAfter: '/lovable-uploads/0923a035-69ed-49d0-a802-8755eff0a0ea.png',
-    },
-  ];
-
-  const faqs = [
-    {
-      id: 1,
-      question: 'É seguro comprar Bravo Hair e Bravo Max?',
-      answer: 'Sim! Todos os nossos produtos têm prescrição médica quando necessário e passam por controle de qualidade rigoroso.',
-    },
-    {
-      id: 2,
-      question: 'Em quanto tempo vejo resultado?',
-      answer: 'Depende do seu caso – mas muitos homens notam mudanças a partir da 3ª semana.',
-    },
-    {
-      id: 3,
-      question: 'Como é feita a entrega?',
-      answer: 'Discreta, rápida e com toda segurança. Ninguém precisa saber do seu tratamento – só você.',
     },
   ];
 
