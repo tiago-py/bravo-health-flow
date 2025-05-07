@@ -12,10 +12,10 @@ const BravoMaxSection = () => {
           <p className="text-xl text-gray-700">Para sua potência não falhar</p>
         </div>
         
-        <div className="flex justify-center">
-          <div className="w-full max-w-3xl mx-auto">
-            {/* Card Container - Positioned slightly to the right */}
-            <div className="relative w-full max-w-2xl bg-bravo-beige rounded-xl overflow-hidden ml-auto mr-[10%]">
+        <div className="flex justify-start">
+          <div className="w-full max-w-3xl">
+            {/* Card Container - Positioned to the right */}
+            <div className="relative w-full max-w-2xl bg-bravo-beige rounded-xl overflow-hidden ml-auto mr-0">
               {/* Imagem com os rótulos informativos */}
               <div className="relative">
                 <img 

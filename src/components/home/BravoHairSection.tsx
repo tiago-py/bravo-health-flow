@@ -11,10 +11,10 @@ const BravoHairSection = () => {
           <p className="text-xl text-gray-700">Tratamento completo contra queda de cabelo</p>
         </div>
 
-        <div className="flex justify-center">
-          <div className="w-full max-w-3xl mx-auto">
-            {/* Card Container - Positioned slightly to the left */}
-            <div className="relative w-full max-w-2xl bg-white rounded-xl overflow-hidden mr-auto ml-[10%]">
+        <div className="flex justify-end">
+          <div className="w-full max-w-3xl">
+            {/* Card Container - Positioned to the left */}
+            <div className="relative w-full max-w-2xl bg-white rounded-xl overflow-hidden ml-0 mr-auto">
               {/* Imagem principal */}
               <img 
                 src="/lovable-uploads/d33e3010-a4d3-4b53-a946-47d98363f585.png" 
