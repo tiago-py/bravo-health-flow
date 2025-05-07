@@ -1,13 +1,10 @@
-
 import { Link } from 'react-router-dom';
 import PublicLayout from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-
 const TratamentoCapilarPage = () => {
-  return (
-    <PublicLayout>
+  return <PublicLayout>
       {/* Hero Section */}
       <section className="py-20 bg-bravo-beige">
         <div className="container mx-auto px-4">
@@ -33,11 +30,7 @@ const TratamentoCapilarPage = () => {
               </div>
             </div>
             <div className="md:w-1/2">
-              <img 
-                src="/lovable-uploads/d33e3010-a4d3-4b53-a946-47d98363f585.png" 
-                alt="Homem com cabelo saudável" 
-                className="w-full rounded-lg shadow-lg" 
-              />
+              <img src="/lovable-uploads/d33e3010-a4d3-4b53-a946-47d98363f585.png" alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
@@ -60,11 +53,11 @@ const TratamentoCapilarPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M13 2.05C13 2.05 16 6 16 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M11 2.05C11 2.05 8 6 8 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M2.63 15.5H21.37" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M2.63 8.5H21.37" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M13 2.05C13 2.05 16 6 16 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M11 2.05C11 2.05 8 6 8 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M2.63 15.5H21.37" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M2.63 8.5H21.37" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Genética</h3>
@@ -78,9 +71,9 @@ const TratamentoCapilarPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 9L12 5L21 9L12 13L3 9Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M21 9V15" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M7 11.5V16.5C7 16.5 9 18.5 12 18.5C15 18.5 17 16.5 17 16.5V11.5" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M3 9L12 5L21 9L12 13L3 9Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M21 9V15" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M7 11.5V16.5C7 16.5 9 18.5 12 18.5C15 18.5 17 16.5 17 16.5V11.5" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Hormônios</h3>
@@ -94,9 +87,9 @@ const TratamentoCapilarPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 8V16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M8 12H16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 8V16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M8 12H16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Estresse</h3>
@@ -149,11 +142,7 @@ const TratamentoCapilarPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img 
-                src="/lovable-uploads/0923a035-69ed-49d0-a802-8755eff0a0ea.png" 
-                alt="Produto Bravo Hair" 
-                className="w-full rounded-lg shadow-lg" 
-              />
+              
             </div>
           </div>
 
@@ -185,11 +174,7 @@ const TratamentoCapilarPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img 
-                src="/lovable-uploads/f5fb3b69-6193-48fd-a44e-976b67f2a722.png" 
-                alt="Médico Bravo Hair" 
-                className="w-full rounded-lg shadow-lg" 
-              />
+              <img src="/lovable-uploads/f5fb3b69-6193-48fd-a44e-976b67f2a722.png" alt="Médico Bravo Hair" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
@@ -197,111 +182,7 @@ const TratamentoCapilarPage = () => {
 
       {/* Resultados section */}
       <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Resultados <span className="text-bravo-blue">reais</span>
-            </h2>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-              Veja o que nossos clientes conquistaram com o tratamento Bravo Hair.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-6 md:gap-8">
-            <Card className="overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow max-w-[220px]">
-              <CardContent className="p-3">
-                <div className="flex justify-center mb-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-700 mb-3 text-center text-xs italic">"Equipe maravilhosa e com bom atendimento, trabalho 100% garantido."</p>
-                <div className="flex gap-1 rounded overflow-hidden">
-                  <div className="w-1/2">
-                    <img 
-                      src="/lovable-uploads/47eb143c-647b-4ea2-ac9e-647d921c48a4.png" 
-                      alt="Antes" 
-                      className="w-full h-auto object-cover" 
-                    />
-                  </div>
-                  <div className="w-1/2">
-                    <img 
-                      src="/lovable-uploads/185c713d-af26-4728-8fb5-8fdf1bf94b0a.png" 
-                      alt="Depois" 
-                      className="w-full h-auto object-cover" 
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow max-w-[220px]">
-              <CardContent className="p-3">
-                <div className="flex justify-center mb-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-700 mb-3 text-center text-xs italic">"Ótimo atendimento, Ótima equipe!!! Adorei o resultado do meu procedimento!!!"</p>
-                <div className="flex gap-1 rounded overflow-hidden">
-                  <div className="w-1/2">
-                    <img 
-                      src="/lovable-uploads/41b68a51-63b0-4551-bcfb-685740ef870d.png" 
-                      alt="Antes" 
-                      className="w-full h-auto object-cover" 
-                    />
-                  </div>
-                  <div className="w-1/2">
-                    <img 
-                      src="/lovable-uploads/64b4be0c-85da-4089-8c5d-a9da4a8e3548.png" 
-                      alt="Depois" 
-                      className="w-full h-auto object-cover" 
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow max-w-[220px]">
-              <CardContent className="p-3">
-                <div className="flex justify-center mb-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-700 mb-3 text-center text-xs italic">"Equipe muito atenciosa e com excelência no atendimento, procedimento maravilhoso!!!"</p>
-                <div className="flex gap-1 rounded overflow-hidden">
-                  <div className="w-1/2">
-                    <img 
-                      src="/lovable-uploads/6157c83c-8e39-4868-a2c7-9bae96c63ec0.png" 
-                      alt="Antes" 
-                      className="w-full h-auto object-cover" 
-                    />
-                  </div>
-                  <div className="w-1/2">
-                    <img 
-                      src="/lovable-uploads/8aa55960-a17a-42e7-8352-d332a64b7f67.png" 
-                      alt="Depois" 
-                      className="w-full h-auto object-cover" 
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        
       </section>
 
       {/* CTA section */}
@@ -371,8 +252,6 @@ const TratamentoCapilarPage = () => {
         </div>
       </section>
 
-    </PublicLayout>
-  );
+    </PublicLayout>;
 };
-
 export default TratamentoCapilarPage;
