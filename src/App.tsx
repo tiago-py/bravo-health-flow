@@ -42,6 +42,8 @@ import AdminUsers from "./pages/admin/Users";
 import AdminDoctors from "./pages/admin/Doctors";
 import AdminFinancial from "./pages/admin/Financial";
 import AdminSettings from "./pages/admin/Settings";
+import AdminAnamneseEdit from "./pages/admin/AnamneseEdit";
+import FlowBuilder from "./pages/admin/FlowBuilder";
 
 // Auth Guards
 import RequireAuth from "./components/guards/RequireAuth";
@@ -112,7 +114,8 @@ const App = () => (
             }
           >
             <Route path="dashboard" element={<AdminDashboard />} />
-            {/* Removed references to AnamneseFlow, AnamneseCreate, AnamneseEdit, and TreatmentPlans */}
+            <Route path="anamnese/editar/:id" element={<AdminAnamneseEdit />} />
+            <Route path="flow-builder" element={<FlowBuilder />} />
             <Route path="usuarios" element={<AdminUsers />} />
             <Route path="medicos" element={<AdminDoctors />} />
             <Route path="financeiro" element={<AdminFinancial />} />

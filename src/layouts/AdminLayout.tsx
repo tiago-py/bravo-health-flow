@@ -11,7 +11,9 @@ import {
   Settings, 
   LogOut, 
   Menu, 
-  X 
+  X, 
+  FileText,
+  Tag
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -20,7 +22,7 @@ const AdminLayout = () => {
   
   const navigations = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: <Home size={20} /> },
-    // Removed Anamnese Flow and Treatment Plans navigation items
+    { name: 'Construtor de Fluxos', path: '/admin/flow-builder', icon: <FileText size={20} /> },
     { name: 'Usuários', path: '/admin/usuarios', icon: <Users size={20} /> },
     { name: 'Médicos', path: '/admin/medicos', icon: <User size={20} /> },
     { name: 'Financeiro', path: '/admin/financeiro', icon: <DollarSign size={20} /> },
@@ -131,8 +133,8 @@ const AdminLayout = () => {
       )}
       
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-full">
+      <div className="flex-1 overflow-auto pt-16 md:pt-0">
+        <div className="max-w-full p-4">
           <Outlet />
         </div>
       </div>
