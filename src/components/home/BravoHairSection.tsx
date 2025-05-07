@@ -11,8 +11,8 @@ const BravoHairSection = () => {
           <p className="text-xl text-gray-700">Tratamento completo contra queda de cabelo</p>
         </div>
 
-        <div className="flex justify-center mt-12">
-          <div className="relative w-full max-w-3xl bg-bravo-beige rounded-xl overflow-hidden">
+        <div className="flex justify-start mt-12">
+          <div className="relative w-full max-w-3xl bg-bravo-beige rounded-xl overflow-hidden ml-0 mr-auto">
             {/* Imagem principal com o fundo transparente */}
             <img 
               src="/lovable-uploads/d33e3010-a4d3-4b53-a946-47d98363f585.png" 
@@ -28,7 +28,7 @@ const BravoHairSection = () => {
                 fórmula personalizada para fortalecer o couro cabeludo, estimular o
                 crescimento e prevenir a queda.
               </p>
-              <div className="flex justify-center md:justify-start">
+              <div className="flex justify-start">
                 <Button className="bg-bravo-blue hover:bg-bravo-dark rounded-full">
                   Quero recuperar meu cabelo
                 </Button>

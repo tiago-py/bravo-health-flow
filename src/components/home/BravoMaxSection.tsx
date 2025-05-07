@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Check } from 'lucide-react';
 
 const BravoMaxSection = () => {
   return (
@@ -8,27 +9,57 @@ const BravoMaxSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-4xl md:text-5xl font-bold text-bravo-blue mb-2">Bravo Max</h2>
-          <p className="text-xl text-gray-700">Tratamento para disfunção erétil e performance</p>
+          <p className="text-xl text-gray-700">Para sua potência não falhar</p>
         </div>
         
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-          <div className="md:w-1/2 text-center md:text-left">
-            <h3 className="text-2xl font-bold mb-4">Recupere sua confiança e performance</h3>
-            <p className="text-gray-700 mb-6">
-              O Bravo Max foi desenvolvido por médicos especialistas para ajudar homens
-              a recuperarem sua confiança e performance sexual com discrição e eficácia.
-            </p>
-            <Button className="bg-bravo-blue hover:bg-bravo-dark rounded-full">
-              Quero saber mais
-            </Button>
-          </div>
-          
-          <div className="md:w-1/2">
-            <img 
-              src="/lovable-uploads/166de199-b9a4-49e5-a49e-1e1971e9f9b6.png" 
-              alt="Bravo Max" 
-              className="w-full rounded-lg" 
-            />
+        <div className="flex justify-end">
+          <div className="relative w-full max-w-3xl bg-bravo-beige rounded-xl overflow-hidden ml-auto mr-0">
+            {/* Imagem com os rótulos informativos */}
+            <div className="relative">
+              <img 
+                src="/lovable-uploads/0087efeb-bff4-47e0-98e8-86830938bb11.png" 
+                alt="Bravo Max - Homem confiante" 
+                className="w-full" 
+              />
+              
+              {/* Tags informativas posicionadas ao redor da imagem */}
+              <div className="absolute top-4 left-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
+                <Check size={16} className="mr-1" /> Consulta rápida
+              </div>
+              
+              <div className="absolute top-4 right-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
+                <Check size={16} className="mr-1" /> Envio em embalagem discreta
+              </div>
+              
+              <div className="absolute top-1/3 left-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
+                <Check size={16} className="mr-1" /> Solução contínua – não só pontual
+              </div>
+              
+              <div className="absolute top-1/3 right-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
+                <Check size={16} className="mr-1" /> Tratamento seguro, com acompanhamento médico
+              </div>
+              
+              <div className="absolute bottom-40 left-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
+                <Check size={16} className="mr-1" /> Fórmula manipulada sob medida
+              </div>
+              
+              <div className="absolute bottom-40 right-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
+                <Check size={16} className="mr-1" /> Resultados reais, com discrição e acolhimento
+              </div>
+            </div>
+            
+            <div className="p-6 md:p-10">
+              <h3 className="text-2xl font-bold mb-4">Recupere sua confiança e performance</h3>
+              <p className="text-gray-700 mb-6">
+                O Bravo Max foi desenvolvido por médicos especialistas para ajudar homens
+                a recuperarem sua confiança e performance sexual com discrição e eficácia.
+              </p>
+              <div className="flex justify-end">
+                <Button className="bg-bravo-blue hover:bg-bravo-dark rounded-full">
+                  Quero saber mais
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
