@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,21 +7,20 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { toast } from '@/components/ui/sonner';
 import { Phone, Mail, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
-
 const ClientSupport = () => {
   const [messageForm, setMessageForm] = useState({
     subject: '',
-    message: '',
+    message: ''
   });
-  
+
   // Handle form change
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setMessageForm({
       ...messageForm,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     });
   };
-  
+
   // Send message
   const sendMessage = () => {
     // Validate form
@@ -30,52 +28,43 @@ const ClientSupport = () => {
       toast.error('Por favor, preencha todos os campos.');
       return;
     }
-    
+
     // In a real app, this would send an API request
     toast.success('Mensagem enviada com sucesso! Responderemos em breve.');
-    
+
     // Clear form
     setMessageForm({
       subject: '',
-      message: '',
+      message: ''
     });
   };
-  
+
   // Open WhatsApp
   const openWhatsApp = () => {
     window.open('https://wa.me/5511999999999?text=Olá!%20Sou%20cliente%20da%20Bravo%20e%20preciso%20de%20ajuda.', '_blank');
   };
-  
-  // FAQ questions
-  const faqItems = [
-    {
-      question: 'Posso cancelar meu plano a qualquer momento?',
-      answer: 'Sim, você pode cancelar seu plano a qualquer momento sem taxas adicionais. Basta entrar em contato com nosso suporte via WhatsApp ou e-mail com pelo menos 7 dias de antecedência do próximo ciclo de faturamento.'
-    },
-    {
-      question: 'Como funciona a entrega dos medicamentos?',
-      answer: 'Os medicamentos são enviados mensalmente para o endereço cadastrado em sua conta, em embalagens discretas sem identificação do conteúdo. Normalmente, o envio acontece 5 dias antes do término da sua medicação atual.'
-    },
-    {
-      question: 'É possível alterar meu plano de tratamento?',
-      answer: 'Sim, você pode solicitar uma revisão do seu plano a qualquer momento. Basta fazer uma nova avaliação pelo app ou entrar em contato com nosso time médico para discutir ajustes no seu tratamento.'
-    },
-    {
-      question: 'Quanto tempo demora para ver resultados?',
-      answer: 'O tempo de resposta varia de acordo com cada organismo e tipo de tratamento. Para queda capilar, os primeiros resultados são geralmente observados após 3-4 meses de uso contínuo. Para disfunção erétil, os medicamentos têm efeito imediato, mas resultados mais consistentes podem ser observados após algumas semanas de tratamento.'
-    },
-    {
-      question: 'O que fazer se eu sentir efeitos colaterais?',
-      answer: 'Se você sentir qualquer efeito colateral, entre em contato imediatamente com nosso suporte médico via WhatsApp. Nossa equipe está disponível para orientar sobre como proceder e, se necessário, ajustar seu tratamento.'
-    },
-    {
-      question: 'Como posso atualizar meu endereço de entrega?',
-      answer: 'Você pode atualizar seu endereço de entrega a qualquer momento através da seção "Meu Perfil" > "Endereço de Entrega". As alterações realizadas até 3 dias antes da data de envio serão aplicadas na próxima entrega.'
-    },
-  ];
 
-  return (
-    <div>
+  // FAQ questions
+  const faqItems = [{
+    question: 'Posso cancelar meu plano a qualquer momento?',
+    answer: 'Sim, você pode cancelar seu plano a qualquer momento sem taxas adicionais. Basta entrar em contato com nosso suporte via WhatsApp ou e-mail com pelo menos 7 dias de antecedência do próximo ciclo de faturamento.'
+  }, {
+    question: 'Como funciona a entrega dos medicamentos?',
+    answer: 'Os medicamentos são enviados mensalmente para o endereço cadastrado em sua conta, em embalagens discretas sem identificação do conteúdo. Normalmente, o envio acontece 5 dias antes do término da sua medicação atual.'
+  }, {
+    question: 'É possível alterar meu plano de tratamento?',
+    answer: 'Sim, você pode solicitar uma revisão do seu plano a qualquer momento. Basta fazer uma nova avaliação pelo app ou entrar em contato com nosso time médico para discutir ajustes no seu tratamento.'
+  }, {
+    question: 'Quanto tempo demora para ver resultados?',
+    answer: 'O tempo de resposta varia de acordo com cada organismo e tipo de tratamento. Para queda capilar, os primeiros resultados são geralmente observados após 3-4 meses de uso contínuo. Para disfunção erétil, os medicamentos têm efeito imediato, mas resultados mais consistentes podem ser observados após algumas semanas de tratamento.'
+  }, {
+    question: 'O que fazer se eu sentir efeitos colaterais?',
+    answer: 'Se você sentir qualquer efeito colateral, entre em contato imediatamente com nosso suporte médico via WhatsApp. Nossa equipe está disponível para orientar sobre como proceder e, se necessário, ajustar seu tratamento.'
+  }, {
+    question: 'Como posso atualizar meu endereço de entrega?',
+    answer: 'Você pode atualizar seu endereço de entrega a qualquer momento através da seção "Meu Perfil" > "Endereço de Entrega". As alterações realizadas até 3 dias antes da data de envio serão aplicadas na próxima entrega.'
+  }];
+  return <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-bravo-blue mb-2">Suporte</h1>
         <p className="text-gray-600">
@@ -103,10 +92,7 @@ const ClientSupport = () => {
             </p>
           </CardContent>
           <CardFooter>
-            <Button 
-              className="w-full bg-green-500 hover:bg-green-600"
-              onClick={openWhatsApp}
-            >
+            <Button className="w-full bg-green-500 hover:bg-green-600" onClick={openWhatsApp}>
               Falar pelo WhatsApp
             </Button>
           </CardFooter>
@@ -169,36 +155,9 @@ const ClientSupport = () => {
                 Nossa equipe responderá em até 24 horas
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="subject">Assunto</Label>
-                <Input
-                  id="subject"
-                  name="subject"
-                  value={messageForm.subject}
-                  onChange={handleFormChange}
-                  placeholder="Ex: Dúvida sobre meu tratamento"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="message">Mensagem</Label>
-                <Textarea
-                  id="message"
-                  name="message"
-                  value={messageForm.message}
-                  onChange={handleFormChange}
-                  placeholder="Descreva sua dúvida ou problema..."
-                  rows={5}
-                />
-              </div>
-            </CardContent>
+            
             <CardFooter>
-              <Button 
-                className="w-full"
-                onClick={sendMessage}
-              >
-                Enviar mensagem
-              </Button>
+              
             </CardFooter>
           </Card>
         </div>
@@ -214,23 +173,19 @@ const ClientSupport = () => {
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
-                {faqItems.map((item, index) => (
-                  <AccordionItem key={index} value={`item-${index}`}>
+                {faqItems.map((item, index) => <AccordionItem key={index} value={`item-${index}`}>
                     <AccordionTrigger className="text-left">
                       {item.question}
                     </AccordionTrigger>
                     <AccordionContent>
                       <p className="text-gray-700">{item.answer}</p>
                     </AccordionContent>
-                  </AccordionItem>
-                ))}
+                  </AccordionItem>)}
               </Accordion>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ClientSupport;
