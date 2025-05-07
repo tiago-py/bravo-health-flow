@@ -5,42 +5,13 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Check } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { useEffect } from 'react';
+
+// Importing section components
+import HeroSection from '@/components/home/HeroSection';
+import ModernManSection from '@/components/home/ModernManSection';
+import HowItWorksSection from '@/components/home/HowItWorksSection';
 
 const HomePage = () => {
-  const howItWorks = [
-    {
-      id: 1,
-      title: 'Você escolhe o tratamento',
-      description: 'Selecione o que faz sentido pra você: Bravo Hair ou Bravo Max - ou os dois.',
-      icon: '/lovable-uploads/3528f251-d850-467f-a781-6fbdec58b39b.png',
-    },
-    {
-      id: 2,
-      title: 'Consulta com nosso time médico',
-      description: 'Avaliação online, com um especialista em saúde masculina.',
-      icon: '/lovable-uploads/d044e437-47ad-4611-971a-8c24c1e6ee7d.png',
-    },
-    {
-      id: 3,
-      title: 'Tratamentos aprovados',
-      description: 'Fórmulas manipuladas por farmácias autorizadas pela ANVISA, para você ter o máximo de qualidade nos seus tratamentos.',
-      icon: '/lovable-uploads/6069f167-a444-4c09-97ea-b0bba858b310.png',
-    },
-    {
-      id: 4,
-      title: 'Receba em casa, com descrição total',
-      description: 'Seu tratamento chega de forma prática, segura e discreta.',
-      icon: '/lovable-uploads/2dd2d8f5-ed22-4f22-8852-4bb2171a6470.png',
-    },
-    {
-      id: 5,
-      title: 'Acompanhamento Bravo',
-      description: 'Estamos com você em cada etapa. Tira dúvidas, suporte e evolução monitorada.',
-      icon: '/lovable-uploads/f5fb3b69-6193-48fd-a44e-976b67f2a722.png',
-    },
-  ];
-
   const treatments = [
     {
       id: 1,
@@ -113,127 +84,13 @@ const HomePage = () => {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="bg-bravo-beige py-0">
-        <div className="container mx-auto flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 p-8 md:p-16">
-            <h1 className="text-3xl md:text-5xl font-bold mb-6">
-              Cuidar de você é <br /> 
-              <span className="text-bravo-blue">coisa de homem.</span>
-            </h1>
-            <p className="text-gray-700 mb-6">
-              Na Bravo, a saúde íntima e estética masculina são tratadas com seriedade, 
-              respeito e soluções seguras. Aqui, você encontra os cuidados que o homem
-              moderno precisa – sem tabu, sem burocracia e no seu ritmo.
-            </p>
-            <div className="space-y-2 mb-8">
-              <p className="font-medium">Clínica integrativa masculina.</p>
-              <p className="font-medium">Produtos recomendados por médicos.</p>
-              <p className="font-medium">Atendimento que entende você.</p>
-            </div>
-            <Link to="/anamnese/queda-capilar">
-              <Button className="rounded-full bg-bravo-blue hover:bg-bravo-dark">
-                Começar meu tratamento agora+
-              </Button>
-            </Link>
-          </div>
-          <div className="md:w-1/2 relative">
-            <div className="absolute inset-0 bg-right bg-no-repeat opacity-50" style={{ 
-              backgroundImage: "url('/lovable-uploads/4ce4a204-aeff-445e-a1f8-ee3536e3d5fc.png')",
-              backgroundSize: "cover",
-              zIndex: -1
-            }}></div>
-            <img 
-              src="/lovable-uploads/4ce4a204-aeff-445e-a1f8-ee3536e3d5fc.png" 
-              alt="Homem confiante" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Feito para o homem moderno */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-8 md:mb-0">
-              <div className="bg-bravo-blue rounded-lg overflow-hidden">
-                <img 
-                  src="/lovable-uploads/1ecc2b26-bde6-4ce4-9c87-b1a5267bad6d.png" 
-                  alt="Homem moderno" 
-                  className="w-full object-cover" 
-                />
-              </div>
-            </div>
-            <div className="md:w-1/2 md:pl-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Feito para o <br />
-                <span className="text-bravo-blue">homem moderno</span>
-              </h2>
-              <p className="text-gray-700 mb-4">
-                Você cuida da sua carreira, da sua família, dos seus objetivos.
-                Mas... e de você?
-              </p>
-              <p className="text-gray-700 mb-4">
-                A Bravo nasceu pra isso: um espaço onde a prioridade é se cuidar.
-              </p>
-              <p className="text-gray-700">
-                Com atendimento especializado e produtos exclusivos para resolver problemas
-                reais, de forma prática e confidencial.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ModernManSection />
 
       {/* Como funciona - com efeito escadinha */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-bravo-blue">Como funciona</h2>
-          </div>
-          
-          <div className="flex justify-center items-stretch mb-12">
-            <Link to="/anamnese/queda-capilar">
-              <Button className="rounded-full bg-bravo-blue hover:bg-bravo-dark">
-                Começar meu tratamento agora+
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="relative flex flex-col md:flex-row items-start justify-center">
-            {howItWorks.map((step, index) => (
-              <div 
-                key={step.id}
-                className={`bg-bravo-beige p-6 rounded-lg shadow-sm flex-1 w-full md:w-1/5 md:mx-2 mb-4 md:mb-0 md:transform transition-all duration-300 ease-in-out`}
-                style={{
-                  marginTop: `${index * 20}px`,
-                  zIndex: 5 - index
-                }}
-              >
-                <div className="flex flex-col h-full relative">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-bravo-blue text-white font-bold mb-4">
-                    {step.id}
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-700 text-sm mb-6 flex-grow">
-                    {step.description}
-                  </p>
-                  <div className="mt-auto flex justify-center">
-                    <img src={step.icon} alt={step.title} className="h-16 w-auto" />
-                  </div>
-                  
-                  {/* Connecting line (visible on desktop) */}
-                  {index < howItWorks.length - 1 && (
-                    <div className="hidden md:block absolute -right-4 top-1/2 transform -translate-y-1/2 w-8 h-0.5 bg-gray-300 z-0" />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorksSection />
 
       {/* Bravo Hair */}
       <section className="py-16 bg-bravo-beige">
