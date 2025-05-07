@@ -19,7 +19,6 @@ export const Draggable: React.FC<DraggableProps> = ({
 }) => {
   const [position, setPosition] = useState(initialPosition);
   const [isDragging, setIsDragging] = useState(false);
-  const constraintsRef = useRef(null);
   
   useEffect(() => {
     setPosition(initialPosition);
@@ -58,7 +57,8 @@ export const Draggable: React.FC<DraggableProps> = ({
         ...style,
         position: 'absolute',
         left: position.x,
-        top: position.y
+        top: position.y,
+        touchAction: 'none',
       }}
     >
       {children}

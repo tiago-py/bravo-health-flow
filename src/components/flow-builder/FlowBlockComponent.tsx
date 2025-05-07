@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,9 @@ import {
   Pencil,
   Trash2,
   Link,
-  ChevronDown
+  ChevronDown,
+  ChevronRight,
+  ChevronUp
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Draggable } from '@/components/flow-builder/Draggable';
@@ -34,6 +35,7 @@ interface FlowBlockComponentProps {
   onConnect: (sourceId: string, targetId: string) => void;
   availableBlocks: FlowBlock[];
   tags: string[];
+  isInlineDisplay?: boolean;
 }
 
 const FlowBlockComponent = ({ 
@@ -42,10 +44,11 @@ const FlowBlockComponent = ({
   onDelete,
   onConnect,
   availableBlocks,
-  tags
+  tags,
+  isInlineDisplay = false
 }: FlowBlockComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [isLinking, setIsLinking] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   
   const blockTypeIcons = {
     question: <HelpCircle className="h-4 w-4" />,
@@ -75,6 +78,181 @@ const FlowBlockComponent = ({
     });
   };
 
+  // When used in a linear, step-by-step display
+  if (isInlineDisplay) {
+    return (
+      <>
+        <div className="w-full">
+          <div className={`${blockTypeColors[block.type]}`}>
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center">
+                {blockTypeIcons[block.type]}
+                <span className="ml-2 font-medium">{blockTypeTitles[block.type]}: {block.title}</span>
+              </div>
+              <div className="flex space-x-1">
+                <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)}>
+                  {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(block.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            
+            {isExpanded && (
+              <div className="p-4">
+                {block.type === 'question' && (
+                  <div className="space-y-3">
+                    <div>
+                      <div className="font-medium text-sm">Pergunta:</div>
+                      <p className="text-gray-700">{block.data.question || 'Sem pergunta definida'}</p>
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Tipo:</div>
+                      <p className="text-gray-700 capitalize">
+                        {block.data.questionType || 'texto'}
+                      </p>
+                    </div>
+                    {block.data.options && block.data.options.length > 0 && (
+                      <div>
+                        <div className="font-medium text-sm">Opções:</div>
+                        <ul className="list-disc pl-5">
+                          {block.data.options.map((option: string, idx: number) => (
+                            <li key={idx} className="text-gray-700">{option}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {block.data.required !== undefined && (
+                      <div className="text-sm">
+                        <span className={`font-medium ${block.data.required ? 'text-red-500' : 'text-gray-500'}`}>
+                          {block.data.required ? 'Resposta obrigatória' : 'Resposta opcional'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {block.type === 'diagnosis' && (
+                  <div className="space-y-3">
+                    <div>
+                      <div className="font-medium text-sm">Título:</div>
+                      <p className="text-gray-700">{block.data.title || 'Sem título definido'}</p>
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Descrição:</div>
+                      <p className="text-gray-700">{block.data.description || 'Sem descrição definida'}</p>
+                    </div>
+                    <div className="flex gap-4">
+                      <div>
+                        <div className="font-medium text-sm">Fase:</div>
+                        <p className="text-gray-700">{block.data.phase || 'Não definida'}</p>
+                      </div>
+                      <div>
+                        <div className="font-medium text-sm">Duração:</div>
+                        <p className="text-gray-700">{block.data.duration || 'Não definida'}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {block.type === 'plan' && (
+                  <div className="space-y-3">
+                    <div>
+                      <div className="font-medium text-sm">Título:</div>
+                      <p className="text-gray-700">{block.data.title || 'Sem título definido'}</p>
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Descrição:</div>
+                      <p className="text-gray-700">{block.data.description || 'Sem descrição definida'}</p>
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Preço:</div>
+                      <p className="text-gray-700">
+                        {block.data.price ? `R$ ${block.data.price.toFixed(2)}` : 'Não definido'}
+                      </p>
+                    </div>
+                    {block.data.features && block.data.features.length > 0 && (
+                      <div>
+                        <div className="font-medium text-sm">Características:</div>
+                        <ul className="list-disc pl-5">
+                          {block.data.features.map((feature: string, idx: number) => (
+                            <li key={idx} className="text-gray-700">{feature}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {block.type === 'checkout' && (
+                  <div className="space-y-3">
+                    <div>
+                      <div className="font-medium text-sm">Título:</div>
+                      <p className="text-gray-700">{block.data.title || 'Sem título definido'}</p>
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Descrição:</div>
+                      <p className="text-gray-700">{block.data.description || 'Sem descrição definida'}</p>
+                    </div>
+                    <div className="space-y-1">
+                      {block.data.termsRequired && (
+                        <div className="flex items-center text-sm">
+                          <div className="w-4 h-4 border border-gray-300 rounded mr-2 flex items-center justify-center bg-blue-500 text-white">
+                            ✓
+                          </div>
+                          <span>Aceite dos termos obrigatório</span>
+                        </div>
+                      )}
+                      {block.data.collectShipping && (
+                        <div className="flex items-center text-sm">
+                          <div className="w-4 h-4 border border-gray-300 rounded mr-2 flex items-center justify-center bg-blue-500 text-white">
+                            ✓
+                          </div>
+                          <span>Coletar endereço de entrega</span>
+                        </div>
+                      )}
+                    </div>
+                    {block.data.successRedirect && (
+                      <div className="text-sm">
+                        <span className="font-medium">Redirecionamento: </span>
+                        <span className="text-gray-700">{block.data.successRedirect}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      
+        <Dialog open={isEditing} onOpenChange={setIsEditing}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{`Editar ${blockTypeTitles[block.type]}`}</DialogTitle>
+              <DialogDescription>
+                Configure os detalhes e a lógica desta etapa.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <BlockEditor 
+              block={block}
+              onUpdate={(updatedBlock) => {
+                onUpdate(updatedBlock);
+              }}
+              tags={tags}
+              onClose={() => setIsEditing(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      </>
+    );
+  }
+
+  // Original draggable version for canvas view (keeping for compatibility)
   return (
     <>
       <Draggable
@@ -84,7 +262,7 @@ const FlowBlockComponent = ({
         style={{
           left: `${block.position.x}px`,
           top: `${block.position.y}px`,
-          width: '240px'
+          width: '280px' // Increased width for better visibility
         }}
       >
         <motion.div
