@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import PublicLayout from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
@@ -30,7 +31,7 @@ const TratamentoCapilarPage = () => {
               </div>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/d33e3010-a4d3-4b53-a946-47d98363f585.png" alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" />
+              <img src="/lovable-uploads/2ad5113d-c331-4d17-afd9-0811ba6ca70e.png" alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
@@ -142,7 +143,7 @@ const TratamentoCapilarPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              
+              <img src="/lovable-uploads/43c5372f-8de7-44dc-9c30-386b39e1a0c9.png" alt="Homem com cabelo crespo" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
 
@@ -174,7 +175,7 @@ const TratamentoCapilarPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/f5fb3b69-6193-48fd-a44e-976b67f2a722.png" alt="Médico Bravo Hair" className="w-full rounded-lg shadow-lg" />
+              <img src="/lovable-uploads/b25e2366-4221-42c8-9fc1-459138f111b2.png" alt="Médico Bravo Hair" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
@@ -182,7 +183,92 @@ const TratamentoCapilarPage = () => {
 
       {/* Resultados section */}
       <section className="py-16 bg-white">
-        
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Resultados <span className="text-bravo-blue">comprovados</span>
+            </h2>
+            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+              Transformações reais de nossos clientes que recuperaram cabelo e autoestima
+            </p>
+          </div>
+          
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+            <div className="md:w-1/3">
+              <img src="/lovable-uploads/1128907b-0a1c-4b2e-a9da-3f1731191e94.png" alt="Cliente antes e depois" className="w-full rounded-lg shadow-lg" />
+              <div className="mt-4 text-center">
+                <h4 className="text-lg font-semibold">Carlos, 35 anos</h4>
+                <p className="text-gray-600">6 meses de tratamento</p>
+              </div>
+            </div>
+            <div className="md:w-1/3">
+              <img src="/lovable-uploads/7b73c704-a52f-48a2-985e-2036bddefe6d.png" alt="Clientes satisfeitos" className="w-full rounded-lg shadow-lg" />
+              <div className="mt-4 text-center">
+                <h4 className="text-lg font-semibold">Satisfação garantida</h4>
+                <p className="text-gray-600">98% de aprovação entre nossos clientes</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-12 text-center">
+            <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
+              Junte-se aos milhares de homens que já recuperaram sua confiança com nosso tratamento personalizado.
+            </p>
+            <Link to="/anamnese/queda-capilar">
+              <Button className="bg-bravo-blue hover:bg-bravo-dark rounded-full px-8 py-6 text-lg">
+                Quero esses resultados <ArrowRight className="ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefícios section */}
+      <section className="py-16 bg-bravo-beige">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2 mb-8 md:mb-0">
+              <img src="/lovable-uploads/7673c704-a52f-48a2-985e-2036bddefe6d.png" alt="Homem confiante" className="w-full rounded-lg shadow-lg" />
+            </div>
+            <div className="md:w-1/2 md:pl-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Por que escolher a <span className="text-bravo-blue">Bravo Hair</span>
+              </h2>
+              <ul className="space-y-4">
+                <li className="flex items-center">
+                  <div className="bg-bravo-blue rounded-full p-2 mr-4">
+                    <Check className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-gray-800 text-lg">Consulta rápida, 100% online</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="bg-bravo-blue rounded-full p-2 mr-4">
+                    <Check className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-gray-800 text-lg">Fórmula manipulada sob medida</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="bg-bravo-blue rounded-full p-2 mr-4">
+                    <Check className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-gray-800 text-lg">Entrega discreta na sua casa</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="bg-bravo-blue rounded-full p-2 mr-4">
+                    <Check className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-gray-800 text-lg">Resultados visíveis em semanas</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="bg-bravo-blue rounded-full p-2 mr-4">
+                    <Check className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-gray-800 text-lg">Ingredientes com eficácia comprovada</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* CTA section */}
