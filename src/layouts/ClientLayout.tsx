@@ -129,9 +129,9 @@ const ClientLayout = () => {
         </div>
       )}
       
-      {/* Main Content - Espaço reduzido para 0 no desktop */}
-      <div className="flex-1 md:ml-64 mt-16 md:mt-0">
-        <div className="pl-0 py-4 pr-2 md:pr-4 md:pl-2">
+      {/* Main Content - Espaço COMPLETAMENTE removido */}
+      <div className="flex-1 md:ml-0 mt-16 md:mt-0">
+        <div className="md:ml-0 pl-0 pr-0 py-0">
           <Outlet />
         </div>
       </div>
