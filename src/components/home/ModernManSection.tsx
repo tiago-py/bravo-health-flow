@@ -9,7 +9,7 @@ const ModernManSection = () => {
           <div className="md:w-1/2 mb-8 md:mb-0">
             <div className="bg-[#6798B6] rounded-lg overflow-hidden">
               <img 
-                src="/lovable-uploads/f62c904d-2284-4b4a-89c8-8bd5a981b37f.png" 
+                src="/lovable-uploads/784fb592-2281-4b77-a28e-c425837a2897.png" 
                 alt="Homem moderno" 
                 className="w-full object-cover" 
               />
