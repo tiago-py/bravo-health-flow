@@ -223,14 +223,14 @@ const TratamentoCapilarPage = () => {
                 <div className="flex gap-1 rounded overflow-hidden">
                   <div className="w-1/2">
                     <img 
-                      src="/lovable-uploads/2e8f2383-f7cc-42ae-80ea-e81c20998782.png" 
+                      src="/lovable-uploads/47eb143c-647b-4ea2-ac9e-647d921c48a4.png" 
                       alt="Antes" 
                       className="w-full h-auto object-cover" 
                     />
                   </div>
                   <div className="w-1/2">
                     <img 
-                      src="/lovable-uploads/83583421-0282-492b-a113-76a6b14fa928.png" 
+                      src="/lovable-uploads/185c713d-af26-4728-8fb5-8fdf1bf94b0a.png" 
                       alt="Depois" 
                       className="w-full h-auto object-cover" 
                     />
@@ -254,14 +254,14 @@ const TratamentoCapilarPage = () => {
                 <div className="flex gap-1 rounded overflow-hidden">
                   <div className="w-1/2">
                     <img 
-                      src="/lovable-uploads/1a2ab4b4-c1b2-416c-a52a-423410af5e7a.png" 
+                      src="/lovable-uploads/41b68a51-63b0-4551-bcfb-685740ef870d.png" 
                       alt="Antes" 
                       className="w-full h-auto object-cover" 
                     />
                   </div>
                   <div className="w-1/2">
                     <img 
-                      src="/lovable-uploads/9fb139c0-61a9-4dbe-8894-886c5feccfa0.png" 
+                      src="/lovable-uploads/64b4be0c-85da-4089-8c5d-a9da4a8e3548.png" 
                       alt="Depois" 
                       className="w-full h-auto object-cover" 
                     />
@@ -285,14 +285,14 @@ const TratamentoCapilarPage = () => {
                 <div className="flex gap-1 rounded overflow-hidden">
                   <div className="w-1/2">
                     <img 
-                      src="/lovable-uploads/c327e76a-eaa1-4b90-8674-7c8f09cedd9d.png" 
+                      src="/lovable-uploads/6157c83c-8e39-4868-a2c7-9bae96c63ec0.png" 
                       alt="Antes" 
                       className="w-full h-auto object-cover" 
                     />
                   </div>
                   <div className="w-1/2">
                     <img 
-                      src="/lovable-uploads/ca55df51-7d2a-4dec-88b4-8a23de5854cc.png" 
+                      src="/lovable-uploads/8aa55960-a17a-42e7-8352-d332a64b7f67.png" 
                       alt="Depois" 
                       className="w-full h-auto object-cover" 
                     />
