@@ -3,7 +3,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 const PublicHeader = () => {
   const { user } = useAuth();
@@ -35,9 +42,31 @@ const PublicHeader = () => {
         <div className="flex items-center justify-between">
           {/* Left Navigation */}
           <nav className="hidden md:flex items-center space-x-10">
-            <Link to="/tratamentos" className="text-gray-700 hover:text-bravo-blue transition-colors text-sm uppercase font-medium">
-              Tratamentos
-            </Link>
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="px-0 bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent text-sm uppercase font-medium text-gray-700 hover:text-bravo-blue">
+                    Tratamentos
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="bg-white min-w-[200px]">
+                    <div className="p-2">
+                      <Link 
+                        to="/tratamento/queda-capilar" 
+                        className="block py-2 px-4 text-sm hover:bg-gray-50 rounded-md text-gray-700 hover:text-bravo-blue"
+                      >
+                        Queda Capilar
+                      </Link>
+                      <Link 
+                        to="/tratamento/disfuncao-eretil" 
+                        className="block py-2 px-4 text-sm hover:bg-gray-50 rounded-md text-gray-700 hover:text-bravo-blue"
+                      >
+                        Disfunção Erétil
+                      </Link>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
             <Link to="/blog" className="text-gray-700 hover:text-bravo-blue transition-colors text-sm uppercase font-medium">
               Blog
             </Link>
@@ -83,13 +112,23 @@ const PublicHeader = () => {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t">
           <div className="container mx-auto px-4 py-3 flex flex-col space-y-3">
-            <Link 
-              to="/tratamentos" 
-              className="text-gray-700 hover:text-bravo-blue py-2 transition-colors uppercase text-sm font-medium"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Tratamentos
-            </Link>
+            <div className="py-2">
+              <div className="text-gray-700 uppercase text-sm font-medium mb-2">Tratamentos</div>
+              <Link 
+                to="/tratamento/queda-capilar" 
+                className="text-gray-700 hover:text-bravo-blue py-2 pl-4 transition-colors text-sm block"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Queda Capilar
+              </Link>
+              <Link 
+                to="/tratamento/disfuncao-eretil" 
+                className="text-gray-700 hover:text-bravo-blue py-2 pl-4 transition-colors text-sm block"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Disfunção Erétil
+              </Link>
+            </div>
             <Link 
               to="/blog" 
               className="text-gray-700 hover:text-bravo-blue py-2 transition-colors uppercase text-sm font-medium"

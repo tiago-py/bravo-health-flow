@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // Public Pages
 import HomePage from "./pages/public/HomePage";
 import TreatmentPage from "./pages/public/TreatmentPage";
+import TratamentoCapilarPage from "./pages/public/TratamentoCapilarPage";
+import TratamentoEretilPage from "./pages/public/TratamentoEretilPage";
 import BlogPage from "./pages/public/BlogPage";
 import BlogPostPage from "./pages/public/BlogPostPage";
 import PrivacyPolicyPage from "./pages/public/PrivacyPolicyPage";
@@ -61,6 +63,8 @@ const App = () => (
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/tratamento/:type" element={<TreatmentPage />} />
+          <Route path="/tratamento/queda-capilar" element={<TratamentoCapilarPage />} />
+          <Route path="/tratamento/disfuncao-eretil" element={<TratamentoEretilPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
           <Route path="/politica-de-privacidade" element={<PrivacyPolicyPage />} />
