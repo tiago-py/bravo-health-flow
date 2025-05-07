@@ -1,13 +1,10 @@
-
 import { Link } from 'react-router-dom';
 import PublicLayout from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-
 const TratamentoEretilPage = () => {
-  return (
-    <PublicLayout>
+  return <PublicLayout>
       {/* Hero Section */}
       <section className="py-20 bg-bravo-beige">
         <div className="container mx-auto px-4">
@@ -33,11 +30,7 @@ const TratamentoEretilPage = () => {
               </div>
             </div>
             <div className="md:w-1/2">
-              <img 
-                src="/lovable-uploads/c3b0d7bb-6e5f-4883-90bc-09a23028a1b2.png" 
-                alt="Homem confiante" 
-                className="w-full rounded-lg shadow-lg" 
-              />
+              <img src="/lovable-uploads/c3b0d7bb-6e5f-4883-90bc-09a23028a1b2.png" alt="Homem confiante" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
@@ -60,8 +53,8 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12 6V12L16 14" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 6V12L16 14" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Idade</h3>
@@ -75,7 +68,7 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20.84 4.60999C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.60999L12 5.66999L10.94 4.60999C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.60999C2.1283 5.64169 1.54871 7.04096 1.54871 8.49999C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.49999C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.60999Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M20.84 4.60999C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.60999L12 5.66999L10.94 4.60999C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.60999C2.1283 5.64169 1.54871 7.04096 1.54871 8.49999C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.49999C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.60999Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Doenças crônicas</h3>
@@ -89,8 +82,8 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M13.73 21C13.5542 21.3031 13.3018 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M13.73 21C13.5542 21.3031 13.3018 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Estresse e ansiedade</h3>
@@ -143,11 +136,7 @@ const TratamentoEretilPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img 
-                src="/lovable-uploads/0087efeb-bff4-47e0-98e8-86830938bb11.png" 
-                alt="Produto Bravo Max" 
-                className="w-full rounded-lg shadow-lg" 
-              />
+              <img src="/lovable-uploads/0087efeb-bff4-47e0-98e8-86830938bb11.png" alt="Produto Bravo Max" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
 
@@ -179,11 +168,7 @@ const TratamentoEretilPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img 
-                src="/lovable-uploads/784fb592-2281-4b77-a28e-c425837a2897.png" 
-                alt="Médico Bravo Max" 
-                className="w-full rounded-lg shadow-lg" 
-              />
+              
             </div>
           </div>
         </div>
@@ -206,10 +191,10 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M9 9H9.01" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M15 9H15.01" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M9 9H9.01" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M15 9H15.01" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Confiança renovada</h3>
@@ -223,7 +208,7 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20.84 4.60999C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.60999L12 5.66999L10.94 4.60999C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.60999C2.1283 5.64169 1.54871 7.04096 1.54871 8.49999C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.49999C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.60999Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M20.84 4.60999C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.60999L12 5.66999L10.94 4.60999C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.60999C2.1283 5.64169 1.54871 7.04096 1.54871 8.49999C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.49999C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.60999Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Relacionamentos melhores</h3>
@@ -237,7 +222,7 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22 12H18L15 21L9 3L6 12H2" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M22 12H18L15 21L9 3L6 12H2" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Melhor desempenho</h3>
@@ -251,9 +236,9 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M8 12L12 16L16 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12 8V16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M8 12L12 16L16 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 8V16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Saúde geral</h3>
@@ -283,11 +268,9 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="flex justify-center mb-4">
                   <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {[...Array(5)].map((_, i) => <svg key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    ))}
+                      </svg>)}
                   </div>
                 </div>
                 <p className="text-gray-700 italic mb-4">
@@ -301,11 +284,9 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="flex justify-center mb-4">
                   <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {[...Array(5)].map((_, i) => <svg key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    ))}
+                      </svg>)}
                   </div>
                 </div>
                 <p className="text-gray-700 italic mb-4">
@@ -319,11 +300,9 @@ const TratamentoEretilPage = () => {
               <CardContent className="p-6">
                 <div className="flex justify-center mb-4">
                   <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {[...Array(5)].map((_, i) => <svg key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    ))}
+                      </svg>)}
                   </div>
                 </div>
                 <p className="text-gray-700 italic mb-4">
@@ -403,8 +382,6 @@ const TratamentoEretilPage = () => {
         </div>
       </section>
 
-    </PublicLayout>
-  );
+    </PublicLayout>;
 };
-
 export default TratamentoEretilPage;
