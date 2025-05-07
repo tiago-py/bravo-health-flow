@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import PublicLayout from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
@@ -26,7 +25,7 @@ const HomePage = () => {
       title: 'Bravo Hair',
       description: 'Tratamento para queda, entradas e calvície.',
       price: 'R$ XX/mês',
-      image: '/lovable-uploads/5eeca943-d84b-4583-9f6c-3a95476fe153.png',
+      image: '/lovable-uploads/7673d9b3-9048-488f-8c54-e00ee99cc10c.png',
       path: '/tratamento/queda-capilar',
     },
     {
@@ -34,7 +33,7 @@ const HomePage = () => {
       title: 'Bravo Max',
       description: 'Tratamento para disfunção erétil e performance.',
       price: 'R$ XX/mês',
-      image: '/lovable-uploads/166de199-b9a4-49e5-a49e-1e1971e9f9b6.png',
+      image: '/lovable-uploads/c3b0d7bb-6e5f-4883-90bc-09a23028a1b2.png',
       path: '/tratamento/disfuncao-eretil',
     },
     {
@@ -42,7 +41,7 @@ const HomePage = () => {
       title: 'Combinação Bravo(Hair + Max)',
       description: 'Tratamento completo ideal para solucionar tudo de uma vez.',
       price: 'R$ XX/mês',
-      image: '/lovable-uploads/22d996f6-2053-4905-b9d5-8c64a604e6c7.png',
+      image: '/lovable-uploads/3cb9c079-bd08-492d-a8aa-dbeed3acd3ae.png',
       path: '/tratamento/combinacao',
     },
   ];
