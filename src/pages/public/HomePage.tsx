@@ -1,10 +1,10 @@
-
 import { Link } from 'react-router-dom';
 import PublicLayout from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { useEffect } from 'react';
 
 const HomePage = () => {
   const howItWorks = [
@@ -184,13 +184,14 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Como funciona */}
+      {/* Como funciona - com efeito escadinha */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-              <span className="text-bravo-blue">Como funciona</span>
-            </h2>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-bravo-blue">Como funciona</h2>
+          </div>
+          
+          <div className="flex justify-center items-stretch mb-12">
             <Link to="/anamnese/queda-capilar">
               <Button className="rounded-full bg-bravo-blue hover:bg-bravo-dark">
                 Começar meu tratamento agora+
@@ -198,10 +199,20 @@ const HomePage = () => {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {howItWorks.map((step) => (
-              <div key={step.id} className="bg-bravo-beige p-6 rounded-lg">
-                <div className="flex flex-col h-full">
+          <div className="relative flex flex-col md:flex-row items-start justify-center">
+            {howItWorks.map((step, index) => (
+              <div 
+                key={step.id}
+                className={`bg-bravo-beige p-6 rounded-lg shadow-sm flex-1 w-full md:w-1/5 md:mx-2 mb-4 md:mb-0 md:transform transition-all duration-300 ease-in-out`}
+                style={{
+                  marginTop: `${index * 20}px`,
+                  zIndex: 5 - index
+                }}
+              >
+                <div className="flex flex-col h-full relative">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-bravo-blue text-white font-bold mb-4">
+                    {step.id}
+                  </div>
                   <h3 className="text-xl font-bold mb-3">
                     {step.title}
                   </h3>
@@ -211,6 +222,11 @@ const HomePage = () => {
                   <div className="mt-auto flex justify-center">
                     <img src={step.icon} alt={step.title} className="h-16 w-auto" />
                   </div>
+                  
+                  {/* Connecting line (visible on desktop) */}
+                  {index < howItWorks.length - 1 && (
+                    <div className="hidden md:block absolute -right-4 top-1/2 transform -translate-y-1/2 w-8 h-0.5 bg-gray-300 z-0" />
+                  )}
                 </div>
               </div>
             ))}

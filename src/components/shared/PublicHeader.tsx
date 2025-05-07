@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const PublicHeader = () => {
   const { user } = useAuth();
@@ -30,8 +30,8 @@ const PublicHeader = () => {
   };
 
   return (
-    <header className="bg-white sticky top-0 z-50">
-      <div className="container mx-auto px-8 py-4 flex justify-between items-center">
+    <header className="bg-white sticky top-0 z-50 shadow-sm">
+      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center">
           <span className="text-2xl font-montserrat font-bold">BRAVO <span className="text-xs align-bottom">HOMEM</span></span>
