@@ -7,19 +7,22 @@ const TestimonialsSection = () => {
     {
       id: 1,
       text: 'Equipe maravilhosa e com bom atendimento, trabalho 100% garantido.',
-      beforeAfter: '/lovable-uploads/47eb143c-647b-4ea2-ac9e-647d921c48a4.png',
+      beforeImage: '/lovable-uploads/2e8f2383-f7cc-42ae-80ea-e81c20998782.png',
+      afterImage: '/lovable-uploads/83583421-0282-492b-a113-76a6b14fa928.png',
       rating: 5,
     },
     {
       id: 2,
       text: 'Ótimo atendimento, Ótima equipe!!! Adorei o resultado do meu procedimento!!!',
-      beforeAfter: '/lovable-uploads/6157c83c-8e39-4868-a2c7-9bae96c63ec0.png',
+      beforeImage: '/lovable-uploads/1a2ab4b4-c1b2-416c-a52a-423410af5e7a.png',
+      afterImage: '/lovable-uploads/9fb139c0-61a9-4dbe-8894-886c5feccfa0.png',
       rating: 5,
     },
     {
       id: 3,
       text: 'Equipe muito atenciosa e com excelência no atendimento, procedimento maravilhoso!!!',
-      beforeAfter: '/lovable-uploads/d4184579-b9bc-4266-a7ee-7c9776d602eb.png',
+      beforeImage: '/lovable-uploads/c327e76a-eaa1-4b90-8674-7c8f09cedd9d.png',
+      afterImage: '/lovable-uploads/ca55df51-7d2a-4dec-88b4-8a23de5854cc.png',
       rating: 5,
     },
   ];
@@ -38,22 +41,31 @@ const TestimonialsSection = () => {
         
         <div className="flex flex-wrap justify-center gap-6 md:gap-8">
           {testimonials.map((testimonial) => (
-            <Card key={testimonial.id} className="overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow max-w-xs">
-              <CardContent className="p-4">
+            <Card key={testimonial.id} className="overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow max-w-[220px]">
+              <CardContent className="p-3">
                 <div className="flex justify-center mb-2">
                   <div className="flex">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
                 </div>
-                <p className="text-gray-700 mb-4 text-center text-sm italic">&ldquo;{testimonial.text}&rdquo;</p>
-                <div className="rounded overflow-hidden">
-                  <img 
-                    src={testimonial.beforeAfter} 
-                    alt="Antes e depois" 
-                    className="w-full h-auto" 
-                  />
+                <p className="text-gray-700 mb-3 text-center text-xs italic">&ldquo;{testimonial.text}&rdquo;</p>
+                <div className="flex gap-1 rounded overflow-hidden">
+                  <div className="w-1/2">
+                    <img 
+                      src={testimonial.beforeImage} 
+                      alt="Antes" 
+                      className="w-full h-auto object-cover" 
+                    />
+                  </div>
+                  <div className="w-1/2">
+                    <img 
+                      src={testimonial.afterImage} 
+                      alt="Depois" 
+                      className="w-full h-auto object-cover" 
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
