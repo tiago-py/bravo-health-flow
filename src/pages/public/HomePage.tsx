@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import PublicLayout from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
@@ -137,12 +138,12 @@ const HomePage = () => {
           </div>
           <div className="md:w-1/2 relative">
             <div className="absolute inset-0 bg-right bg-no-repeat opacity-50" style={{ 
-              backgroundImage: "url('/lovable-uploads/98379736-4569-4dbd-8663-6d694ceadb41.png')",
+              backgroundImage: "url('/lovable-uploads/4ce4a204-aeff-445e-a1f8-ee3536e3d5fc.png')",
               backgroundSize: "cover",
               zIndex: -1
             }}></div>
             <img 
-              src="/lovable-uploads/98379736-4569-4dbd-8663-6d694ceadb41.png" 
+              src="/lovable-uploads/4ce4a204-aeff-445e-a1f8-ee3536e3d5fc.png" 
               alt="Homem confiante" 
               className="w-full h-full object-cover"
             />
