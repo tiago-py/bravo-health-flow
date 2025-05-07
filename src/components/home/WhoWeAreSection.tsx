@@ -15,9 +15,9 @@ const WhoWeAreSection = () => {
           </p>
         </div>
 
-        <div className="relative mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Card 1 - Quem cuida dos seus tratamentos */}
-          <Card className="bg-white rounded-xl shadow-sm overflow-hidden mb-8 md:mb-0 md:w-[85%] relative z-3">
+          <Card className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="p-6">
               <div className="flex items-center mb-4">
                 <BadgeCheck className="text-bravo-blue mr-3 h-6 w-6" />
@@ -36,7 +36,7 @@ const WhoWeAreSection = () => {
           </Card>
 
           {/* Card 2 - Quem organiza as suas informações */}
-          <Card className="bg-white rounded-xl shadow-sm overflow-hidden mb-8 md:mb-0 md:w-[85%] relative z-2 md:ml-auto md:-mt-4">
+          <Card className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="p-6">
               <div className="flex items-center mb-4">
                 <User className="text-bravo-blue mr-3 h-6 w-6" />
@@ -55,7 +55,7 @@ const WhoWeAreSection = () => {
           </Card>
 
           {/* Card 3 - Quem planeja o seu futuro */}
-          <Card className="bg-white rounded-xl shadow-sm overflow-hidden md:w-[85%] relative z-1 md:-mt-4">
+          <Card className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="p-6">
               <div className="flex items-center mb-4">
                 <Star className="text-bravo-blue mr-3 h-6 w-6" />
