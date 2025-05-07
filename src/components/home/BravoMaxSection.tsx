@@ -1,11 +1,8 @@
-
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
-
 const BravoMaxSection = () => {
-  return (
-    <section className="py-16 bg-bravo-light">
+  return <section className="py-16 bg-bravo-light">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-4xl md:text-5xl font-bold text-bravo-blue mb-2">Bravo Max</h2>
@@ -18,36 +15,20 @@ const BravoMaxSection = () => {
             <div className="relative w-full max-w-2xl bg-bravo-beige rounded-xl overflow-hidden ml-auto mr-0">
               {/* Imagem com os rótulos informativos */}
               <div className="relative">
-                <img 
-                  src="/lovable-uploads/0087efeb-bff4-47e0-98e8-86830938bb11.png" 
-                  alt="Bravo Max - Homem confiante" 
-                  className="w-full" 
-                />
+                <img src="/lovable-uploads/0087efeb-bff4-47e0-98e8-86830938bb11.png" alt="Bravo Max - Homem confiante" className="w-full" />
                 
                 {/* Tags informativas posicionadas ao redor da imagem */}
-                <div className="absolute top-4 left-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
-                  <Check size={16} className="mr-1" /> Consulta rápida
-                </div>
                 
-                <div className="absolute top-4 right-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
-                  <Check size={16} className="mr-1" /> Envio em embalagem discreta
-                </div>
                 
-                <div className="absolute top-1/3 left-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
-                  <Check size={16} className="mr-1" /> Solução contínua – não só pontual
-                </div>
                 
-                <div className="absolute top-1/3 right-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
-                  <Check size={16} className="mr-1" /> Tratamento seguro, com acompanhamento médico
-                </div>
                 
-                <div className="absolute bottom-40 left-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
-                  <Check size={16} className="mr-1" /> Fórmula manipulada sob medida
-                </div>
                 
-                <div className="absolute bottom-40 right-4 bg-amber-600 text-white px-4 py-1 rounded-full flex items-center">
-                  <Check size={16} className="mr-1" /> Resultados reais, com discrição e acolhimento
-                </div>
+                
+                
+                
+                
+                
+                
               </div>
               
               <div className="p-6 md:p-10">
@@ -67,8 +48,6 @@ const BravoMaxSection = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default BravoMaxSection;
