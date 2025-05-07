@@ -1,8 +1,10 @@
+
 import { Link } from 'react-router-dom';
 import PublicLayout from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+
 const TratamentoCapilarPage = () => {
   return <PublicLayout>
       {/* Hero Section */}
@@ -30,7 +32,7 @@ const TratamentoCapilarPage = () => {
               </div>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/d33e3010-a4d3-4b53-a946-47d98363f585.png" alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" />
+              <img src="/placeholder.svg" alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
@@ -142,7 +144,7 @@ const TratamentoCapilarPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              
+              <img src="/placeholder.svg" alt="Formulação personalizada" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
 
@@ -174,15 +176,39 @@ const TratamentoCapilarPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/f5fb3b69-6193-48fd-a44e-976b67f2a722.png" alt="Médico Bravo Hair" className="w-full rounded-lg shadow-lg" />
+              <img src="/placeholder.svg" alt="Médico Bravo Hair" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Resultados section */}
+      {/* Resultados section - Nova seção para substituir o espaço vazio */}
       <section className="py-16 bg-white">
-        
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Resultados <span className="text-bravo-blue">comprovados</span>
+            </h2>
+            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+              Nossos pacientes experimentam resultados visíveis depois de seguir o tratamento completo.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="text-bravo-blue text-5xl font-bold mb-2">93%</div>
+              <p className="text-gray-700">dos pacientes notam redução significativa na queda de cabelo em 3 meses</p>
+            </div>
+            <div className="text-center">
+              <div className="text-bravo-blue text-5xl font-bold mb-2">87%</div>
+              <p className="text-gray-700">observam crescimento de novos fios após 6 meses de tratamento</p>
+            </div>
+            <div className="text-center">
+              <div className="text-bravo-blue text-5xl font-bold mb-2">96%</div>
+              <p className="text-gray-700">se mostram satisfeitos com os resultados e a experiência de tratamento</p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* CTA section */}
@@ -251,7 +277,6 @@ const TratamentoCapilarPage = () => {
           </div>
         </div>
       </section>
-
     </PublicLayout>;
 };
 export default TratamentoCapilarPage;

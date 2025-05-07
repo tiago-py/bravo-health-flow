@@ -1,8 +1,10 @@
+
 import { Link } from 'react-router-dom';
 import PublicLayout from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+
 const TratamentoEretilPage = () => {
   return <PublicLayout>
       {/* Hero Section */}
@@ -30,7 +32,7 @@ const TratamentoEretilPage = () => {
               </div>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/c3b0d7bb-6e5f-4883-90bc-09a23028a1b2.png" alt="Homem confiante" className="w-full rounded-lg shadow-lg" />
+              <img src="/placeholder.svg" alt="Homem confiante" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
@@ -136,7 +138,7 @@ const TratamentoEretilPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/0087efeb-bff4-47e0-98e8-86830938bb11.png" alt="Produto Bravo Max" className="w-full rounded-lg shadow-lg" />
+              <img src="/placeholder.svg" alt="Produto Bravo Max" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
 
@@ -168,7 +170,7 @@ const TratamentoEretilPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              
+              <img src="/placeholder.svg" alt="Abordagem holística" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
@@ -251,70 +253,6 @@ const TratamentoEretilPage = () => {
         </div>
       </section>
 
-      {/* Depoimentos section */}
-      <section className="py-16 bg-bravo-beige">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold">
-              O que <span className="text-bravo-blue">nossos</span> clientes <span className="text-bravo-blue">dizem</span>
-            </h2>
-            <p className="text-xl text-gray-700 mt-2">
-              Homens reais, resultados reais
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex justify-center mb-4">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => <svg key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>)}
-                  </div>
-                </div>
-                <p className="text-gray-700 italic mb-4">
-                  "Depois de anos evitando relacionamentos íntimos por medo de falhar, finalmente encontrei uma solução que funciona. O tratamento Bravo Max mudou minha vida."
-                </p>
-                <p className="text-gray-500 text-sm">Carlos, 52 anos</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex justify-center mb-4">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => <svg key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>)}
-                  </div>
-                </div>
-                <p className="text-gray-700 italic mb-4">
-                  "Pensei que fosse apenas parte do envelhecimento, mas o Bravo Max provou que eu estava errado. Minha esposa e eu estamos mais felizes do que nunca."
-                </p>
-                <p className="text-gray-500 text-sm">Ricardo, 48 anos</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex justify-center mb-4">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => <svg key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>)}
-                  </div>
-                </div>
-                <p className="text-gray-700 italic mb-4">
-                  "O atendimento discreto e personalizado fez toda a diferença. Em duas semanas já notei resultados significativos. Recomendo a todos."
-                </p>
-                <p className="text-gray-500 text-sm">André, 39 anos</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* CTA section */}
       <section className="py-16 bg-bravo-blue text-white">
         <div className="container mx-auto px-4">
@@ -381,7 +319,6 @@ const TratamentoEretilPage = () => {
           </div>
         </div>
       </section>
-
     </PublicLayout>;
 };
 export default TratamentoEretilPage;
