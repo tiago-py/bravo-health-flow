@@ -129,9 +129,9 @@ const ClientLayout = () => {
         </div>
       )}
       
-      {/* Main Content */}
+      {/* Main Content - AJUSTADO COM PADDING REDUZIDO */}
       <div className="flex-1 md:ml-64 mt-16 md:mt-0">
-        <div className="container mx-auto px-4 py-6">
+        <div className="mx-auto py-4 px-3 md:px-4">
           <Outlet />
         </div>
       </div>
