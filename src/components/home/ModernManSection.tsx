@@ -7,13 +7,11 @@ const ModernManSection = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-8 md:mb-0">
-            <div className="bg-[#6798B6] rounded-lg overflow-hidden">
-              <img 
-                src="/lovable-uploads/784fb592-2281-4b77-a28e-c425837a2897.png" 
-                alt="Homem moderno" 
-                className="w-full object-cover" 
-              />
-            </div>
+            <img 
+              src="/lovable-uploads/185c713d-af26-4728-8fb5-8fdf1bf94b0a.png" 
+              alt="Homem moderno" 
+              className="w-full object-cover" 
+            />
           </div>
           <div className="md:w-1/2 md:pl-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
