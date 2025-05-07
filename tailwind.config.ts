@@ -59,7 +59,7 @@ export default {
           blue: "#5D7C8A",
           black: "#333333",
           white: "#FFFFFF",
-          light: "#F9F4F1",
+          light: "#FAF7F5",  // Lighter beige for backgrounds
           dark: "#4A656F",
         },
         sidebar: {
