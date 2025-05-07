@@ -31,39 +31,51 @@ const PublicHeader = () => {
 
   return (
     <header className="bg-white sticky top-0 z-50 shadow-sm">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo */}
-        <Link to="/" className="flex items-center">
-          <span className="text-2xl font-montserrat font-bold">BRAVO <span className="text-xs align-bottom">HOMEM</span></span>
-        </Link>
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          {/* Left Navigation */}
+          <nav className="hidden md:flex items-center space-x-10">
+            <Link to="/tratamentos" className="text-gray-700 hover:text-bravo-blue transition-colors text-sm uppercase font-medium">
+              Tratamentos
+            </Link>
+            <Link to="/blog" className="text-gray-700 hover:text-bravo-blue transition-colors text-sm uppercase font-medium">
+              Blog
+            </Link>
+          </nav>
 
-        {/* Desktop Menu */}
-        <nav className="hidden md:flex items-center space-x-12">
-          <Link to="/tratamentos" className="text-gray-700 hover:text-bravo-blue transition-colors uppercase text-sm font-medium">
-            Tratamentos
-          </Link>
-          <Link to="/blog" className="text-gray-700 hover:text-bravo-blue transition-colors uppercase text-sm font-medium">
-            Blog
-          </Link>
-          <Link to="/quem-somos" className="text-gray-700 hover:text-bravo-blue transition-colors uppercase text-sm font-medium">
-            Quem Somos
-          </Link>
-        </nav>
+          {/* Mobile Menu Button (left side) */}
+          <div className="md:hidden">
+            <button onClick={toggleMobileMenu} className="text-gray-700">
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button onClick={toggleMobileMenu} className="text-gray-700">
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+          {/* Logo (Center) */}
+          <div className="flex justify-center">
+            <Link to="/" className="flex items-center">
+              <div className="font-montserrat font-bold text-2xl tracking-wider">
+                BR<span className="relative" style={{ letterSpacing: '-0.1em' }}>A</span>VO
+                <span className="text-xs block text-center font-medium tracking-wide mt-[-5px]">HOMEM</span>
+              </div>
+            </Link>
+          </div>
 
-        {/* Account/Login Button */}
-        <div className="hidden md:block">
-          <Link to={getDashboardLink()}>
-            <Button variant="outline" size="sm" className="uppercase text-sm font-medium">
-              Entrar
-            </Button>
-          </Link>
+          {/* Right Navigation */}
+          <nav className="hidden md:flex items-center space-x-10">
+            <Link to="/quem-somos" className="text-gray-700 hover:text-bravo-blue transition-colors text-sm uppercase font-medium">
+              Quem Somos
+            </Link>
+            <Link to={getDashboardLink()}>
+              <span className="text-gray-700 hover:text-bravo-blue transition-colors text-sm uppercase font-medium">
+                Entrar
+              </span>
+            </Link>
+          </nav>
+
+          {/* Empty div to balance mobile layout */}
+          <div className="md:hidden w-6">
+            {/* Empty space to balance the menu button on the left */}
+          </div>
         </div>
       </div>
 
