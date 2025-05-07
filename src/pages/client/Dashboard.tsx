@@ -22,7 +22,7 @@ const ClientDashboard = () => {
   
   return (
     <div>
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold text-bravo-blue">
             Bem-vindo, {user?.name?.split(' ')[0]}
@@ -49,7 +49,7 @@ const ClientDashboard = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 gap-5">
+      <div className="grid grid-cols-1 gap-4">
         {/* Treatment Status Card */}
         <Card>
           <CardHeader>
@@ -97,7 +97,7 @@ const ClientDashboard = () => {
             </div>
             
             {treatmentStatus.status === 'active' && (
-              <div className="mt-5">
+              <div className="mt-4">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="font-medium">Progresso do Tratamento</span>
                   <span>{treatmentStatus.progressPercentage}%</span>
