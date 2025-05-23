@@ -122,7 +122,7 @@ const ClientDashboard = () => {
                 Veja mais detalhes sobre seu tratamento e histórico
               </p>
               <Button variant="outline" asChild>
-                <Link to="/cliente/prescricoes">
+                <Link to="/cliente/tratamentos">
                   Ver prescrições
                   <ArrowRight size={16} className="ml-2" />
                 </Link>
