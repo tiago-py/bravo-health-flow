@@ -67,23 +67,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Login function
   const login = async (email: string, password: string) => {
     try {
-      // In a real app, this would make an API call to authenticate
-      // For demo purposes, we'll use mock data
-      
       setLoading(true);
       
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock users for different roles
+      // Mock users with specific credentials
       let mockUser: User;
       
-      if (email === 'admin@example.com') {
-        mockUser = { id: '1', name: 'Admin User', email, role: 'admin' };
-      } else if (email === 'doctor@example.com') {
-        mockUser = { id: '2', name: 'Doctor User', email, role: 'doctor' };
+      if (email === 'admin@bravohomem.com.br' && password === 'admin123') {
+        mockUser = { id: '1', name: 'Admin Sistema', email, role: 'admin' };
+      } else if (email === 'dr.silva@bravohomem.com.br' && password === 'medico123') {
+        mockUser = { id: '2', name: 'Dr. João Silva', email, role: 'doctor' };
+      } else if (email === 'joao.cliente@gmail.com' && password === 'cliente123') {
+        mockUser = { id: '3', name: 'João Cliente', email, role: 'client' };
       } else {
-        mockUser = { id: '3', name: 'Client User', email, role: 'client' };
+        // For any other email, create a client user (backward compatibility)
+        mockUser = { id: Math.random().toString(36).substring(2, 15), name: 'Usuário Teste', email, role: 'client' };
       }
       
       // Save user to local storage

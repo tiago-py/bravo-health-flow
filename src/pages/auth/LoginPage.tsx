@@ -8,6 +8,22 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
 
+/*
+CREDENCIAIS PARA TESTE:
+
+Admin:
+Email: admin@bravohomem.com.br
+Senha: admin123
+
+Médico:
+Email: dr.silva@bravohomem.com.br
+Senha: medico123
+
+Cliente:
+Email: joao.cliente@gmail.com
+Senha: cliente123
+*/
+
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -67,6 +83,16 @@ const LoginPage = () => {
                   {error}
                 </div>
               )}
+              
+              {/* Test Credentials Helper */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs">
+                <p className="font-medium text-blue-800 mb-2">Credenciais para teste:</p>
+                <div className="space-y-1 text-blue-700">
+                  <p><strong>Admin:</strong> admin@bravohomem.com.br / admin123</p>
+                  <p><strong>Médico:</strong> dr.silva@bravohomem.com.br / medico123</p>
+                  <p><strong>Cliente:</strong> joao.cliente@gmail.com / cliente123</p>
+                </div>
+              </div>
               
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
