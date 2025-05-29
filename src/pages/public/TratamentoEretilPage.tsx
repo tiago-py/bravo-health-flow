@@ -179,7 +179,7 @@ const TratamentoEretilPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Benefícios do <span className="text-bravo-blue">tratamento</span>
+              Benefícios do <span className="text-yellow-600">tratamento</span>
             </h2>
             <p className="text-lg text-gray-700 max-w-3xl mx-auto">
               Muito além de melhorar as ereções, o Bravo Max transforma sua qualidade de vida.
