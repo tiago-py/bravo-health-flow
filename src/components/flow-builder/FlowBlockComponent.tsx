@@ -70,9 +70,9 @@ const FlowBlockComponent = ({
   if (isInlineDisplay) {
     return (
       <>
-        <div className="w-full">
-          <div className={`${blockTypeColors[block.type]} rounded-lg overflow-hidden`}>
-            <div className="flex items-center justify-between p-4 border-b border-current border-opacity-20">
+        <div className="w-full h-full">
+          <div className={`${blockTypeColors[block.type]} rounded-lg overflow-hidden h-full flex flex-col`}>
+            <div className="flex items-center justify-between p-4 border-b border-current border-opacity-20 shrink-0">
               <div className="flex items-center flex-1 min-w-0">
                 {blockTypeIcons[block.type]}
                 <span className="ml-2 font-medium truncate">{blockTypeTitles[block.type]}: {block.title}</span>
@@ -91,12 +91,14 @@ const FlowBlockComponent = ({
             </div>
             
             {isExpanded && (
-              <div className="p-4">
+              <div className="p-4 flex-1 overflow-y-auto">
                 {block.type === 'question' && (
-                  <div className="space-y-3">
-                    <div>
+                  <div className="space-y-3 h-full">
+                    <div className="min-h-0">
                       <div className="font-medium text-sm mb-1">Pergunta:</div>
-                      <p className="text-gray-700 text-sm">{block.data.question || 'Sem pergunta definida'}</p>
+                      <div className="text-gray-700 text-sm bg-white p-3 rounded border max-h-32 overflow-y-auto">
+                        {block.data.question || 'Sem pergunta definida'}
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-4">
                       <div>
@@ -131,14 +133,16 @@ const FlowBlockComponent = ({
                 )}
                 
                 {block.type === 'diagnosis' && (
-                  <div className="space-y-3">
+                  <div className="space-y-3 h-full">
                     <div>
                       <div className="font-medium text-sm mb-1">Título:</div>
                       <p className="text-gray-700 text-sm">{block.data.title || 'Sem título definido'}</p>
                     </div>
                     <div>
                       <div className="font-medium text-sm mb-1">Descrição:</div>
-                      <p className="text-gray-700 text-sm line-clamp-2">{block.data.description || 'Sem descrição definida'}</p>
+                      <div className="text-gray-700 text-sm bg-white p-3 rounded border max-h-24 overflow-y-auto">
+                        {block.data.description || 'Sem descrição definida'}
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-4">
                       <div>
@@ -154,14 +158,16 @@ const FlowBlockComponent = ({
                 )}
                 
                 {block.type === 'plan' && (
-                  <div className="space-y-3">
+                  <div className="space-y-3 h-full">
                     <div>
                       <div className="font-medium text-sm mb-1">Título:</div>
                       <p className="text-gray-700 text-sm">{block.data.title || 'Sem título definido'}</p>
                     </div>
                     <div>
                       <div className="font-medium text-sm mb-1">Descrição:</div>
-                      <p className="text-gray-700 text-sm line-clamp-2">{block.data.description || 'Sem descrição definida'}</p>
+                      <div className="text-gray-700 text-sm bg-white p-3 rounded border max-h-24 overflow-y-auto">
+                        {block.data.description || 'Sem descrição definida'}
+                      </div>
                     </div>
                     <div>
                       <div className="font-medium text-sm mb-1">Preço:</div>
@@ -186,14 +192,16 @@ const FlowBlockComponent = ({
                 )}
                 
                 {block.type === 'checkout' && (
-                  <div className="space-y-3">
+                  <div className="space-y-3 h-full">
                     <div>
                       <div className="font-medium text-sm mb-1">Título:</div>
                       <p className="text-gray-700 text-sm">{block.data.title || 'Sem título definido'}</p>
                     </div>
                     <div>
                       <div className="font-medium text-sm mb-1">Descrição:</div>
-                      <p className="text-gray-700 text-sm line-clamp-2">{block.data.description || 'Sem descrição definida'}</p>
+                      <div className="text-gray-700 text-sm bg-white p-3 rounded border max-h-24 overflow-y-auto">
+                        {block.data.description || 'Sem descrição definida'}
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {block.data.termsRequired && (

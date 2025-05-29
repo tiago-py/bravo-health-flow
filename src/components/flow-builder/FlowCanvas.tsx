@@ -252,8 +252,8 @@ const FlowCanvas = ({ flow, setFlow }: FlowCanvasProps) => {
                       transition={{ duration: 0.3 }}
                       className="w-full"
                     >
-                      <Card className="w-full shadow-sm">
-                        <CardContent className="p-0">
+                      <Card className="w-full shadow-sm min-h-[300px]">
+                        <CardContent className="p-0 h-full">
                           <FlowBlockComponent
                             block={block}
                             onUpdate={handleUpdateBlock}

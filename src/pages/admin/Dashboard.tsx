@@ -8,8 +8,9 @@ import {
   CreditCard,
   CalendarClock,
   TrendingUp,
-  User,
-  ChevronRight
+  UserCheck,
+  ChevronRight,
+  Stethoscope
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -20,26 +21,12 @@ const AdminDashboard = () => {
     totalTreatments: 982,
     activeSubscriptions: 743,
     monthlyRevenue: 98670.50,
-    averageSessionTime: 18.5
+    averageSessionTime: 18.5,
+    totalDoctors: 23,
+    activeDoctors: 18,
+    quedaCapilarPatients: 687,
+    disfuncaoEretilPatients: 567
   };
-  
-  // Mock recent users data
-  const recentUsers = [
-    { id: '1', name: 'Carlos Oliveira', email: 'carlos@example.com', dateJoined: '2023-03-20', status: 'active' },
-    { id: '2', name: 'Márcia Silva', email: 'marcia@example.com', dateJoined: '2023-03-19', status: 'active' },
-    { id: '3', name: 'Roberto Almeida', email: 'roberto@example.com', dateJoined: '2023-03-18', status: 'pending' },
-    { id: '4', name: 'Amanda Costa', email: 'amanda@example.com', dateJoined: '2023-03-17', status: 'active' },
-    { id: '5', name: 'Lucas Martins', email: 'lucas@example.com', dateJoined: '2023-03-16', status: 'active' }
-  ];
-  
-  // Mock recent transactions data
-  const recentTransactions = [
-    { id: '1', user: 'Carlos Oliveira', amount: 139.90, date: '2023-03-20', plan: 'Mensal' },
-    { id: '2', name: 'Márcia Silva', amount: 399.90, date: '2023-03-19', plan: 'Trimestral' },
-    { id: '3', name: 'Roberto Almeida', amount: 139.90, date: '2023-03-18', plan: 'Mensal' },
-    { id: '4', name: 'Amanda Costa', amount: 699.90, date: '2023-03-17', plan: 'Semestral' },
-    { id: '5', name: 'Lucas Martins', amount: 139.90, date: '2023-03-16', plan: 'Mensal' }
-  ];
 
   return (
     <div>
@@ -119,81 +106,64 @@ const AdminDashboard = () => {
         </Card>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Usuários Recentes</CardTitle>
-              <CardDescription>
-                Novos cadastros na plataforma
-              </CardDescription>
-            </div>
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/admin/usuarios">
-                Ver todos <ChevronRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total de Médicos
+            </CardTitle>
+            <Stethoscope size={18} className="text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentUsers.map((user) => (
-                <div key={user.id} className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                      <User size={14} />
-                    </div>
-                    <div>
-                      <div className="font-medium text-sm">{user.name}</div>
-                      <div className="text-xs text-gray-500">{user.email}</div>
-                    </div>
-                  </div>
-                  <div className="text-xs">
-                    {new Date(user.dateJoined).toLocaleDateString('pt-BR')}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div className="text-2xl font-bold">{stats.totalDoctors}</div>
+            <p className="text-xs text-gray-500 mt-1">
+              <span className="text-blue-500 font-medium">{stats.activeDoctors}</span> ativos atualmente
+            </p>
           </CardContent>
         </Card>
         
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Transações Recentes</CardTitle>
-              <CardDescription>
-                Últimos pagamentos realizados
-              </CardDescription>
-            </div>
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/admin/financeiro">
-                Ver todas <ChevronRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">
+              Médicos Ativos
+            </CardTitle>
+            <UserCheck size={18} className="text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                      <CreditCard size={14} />
-                    </div>
-                    <div>
-                      <div className="font-medium text-sm">{transaction.plan}</div>
-                      <div className="text-xs text-gray-500">
-                        {new Date(transaction.date).toLocaleDateString('pt-BR')}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="font-medium">
-                    {transaction.amount.toLocaleString('pt-BR', { 
-                      style: 'currency', 
-                      currency: 'BRL' 
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div className="text-2xl font-bold">{stats.activeDoctors}</div>
+            <p className="text-xs text-gray-500 mt-1">
+              <span className="text-green-500 font-medium">78%</span> do total de médicos
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">
+              Pacientes Queda Capilar
+            </CardTitle>
+            <Users size={18} className="text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.quedaCapilarPatients}</div>
+            <p className="text-xs text-gray-500 mt-1">
+              <span className="text-green-500 font-medium">55%</span> do total de pacientes
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">
+              Pacientes Disfunção Erétil
+            </CardTitle>
+            <Users size={18} className="text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.disfuncaoEretilPatients}</div>
+            <p className="text-xs text-gray-500 mt-1">
+              <span className="text-green-500 font-medium">45%</span> do total de pacientes
+            </p>
           </CardContent>
         </Card>
       </div>
