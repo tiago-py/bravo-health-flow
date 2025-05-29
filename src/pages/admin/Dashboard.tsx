@@ -12,6 +12,14 @@ import {
   ChevronRight,
   Stethoscope
 } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 const AdminDashboard = () => {
   // Mock stats data
@@ -27,6 +35,24 @@ const AdminDashboard = () => {
     quedaCapilarPatients: 687,
     disfuncaoEretilPatients: 567
   };
+
+  // Mock recent users data
+  const recentUsers = [
+    { id: 1, name: 'João Silva', email: 'joao@email.com', plan: 'Premium', status: 'Ativo' },
+    { id: 2, name: 'Maria Santos', email: 'maria@email.com', plan: 'Basic', status: 'Ativo' },
+    { id: 3, name: 'Pedro Costa', email: 'pedro@email.com', plan: 'Premium', status: 'Pendente' },
+    { id: 4, name: 'Ana Oliveira', email: 'ana@email.com', plan: 'Basic', status: 'Ativo' },
+    { id: 5, name: 'Carlos Lima', email: 'carlos@email.com', plan: 'Premium', status: 'Ativo' }
+  ];
+
+  // Mock recent transactions data
+  const recentTransactions = [
+    { id: 1, user: 'João Silva', amount: 299.90, plan: 'Premium', date: '2024-01-15', status: 'Aprovado' },
+    { id: 2, user: 'Maria Santos', amount: 149.90, plan: 'Basic', date: '2024-01-15', status: 'Aprovado' },
+    { id: 3, user: 'Pedro Costa', amount: 299.90, plan: 'Premium', date: '2024-01-14', status: 'Pendente' },
+    { id: 4, user: 'Ana Oliveira', amount: 149.90, plan: 'Basic', date: '2024-01-14', status: 'Aprovado' },
+    { id: 5, user: 'Carlos Lima', amount: 299.90, plan: 'Premium', date: '2024-01-13', status: 'Aprovado' }
+  ];
 
   return (
     <div>
@@ -164,6 +190,113 @@ const AdminDashboard = () => {
             <p className="text-xs text-gray-500 mt-1">
               <span className="text-green-500 font-medium">45%</span> do total de pacientes
             </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Usuários Recentes</CardTitle>
+            <CardDescription>
+              Últimos usuários cadastrados na plataforma
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Plano</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{user.name}</div>
+                        <div className="text-sm text-gray-500">{user.email}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>{user.plan}</TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        user.status === 'Ativo' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {user.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="mt-4">
+              <Button variant="ghost" className="w-full" asChild>
+                <Link to="/admin/users">
+                  Ver todos os usuários
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Transações Recentes</CardTitle>
+            <CardDescription>
+              Últimas transações processadas
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Usuário</TableHead>
+                  <TableHead>Valor</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentTransactions.map((transaction) => (
+                  <TableRow key={transaction.id}>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{transaction.user}</div>
+                        <div className="text-sm text-gray-500">{transaction.plan}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {transaction.amount.toLocaleString('pt-BR', { 
+                        style: 'currency', 
+                        currency: 'BRL' 
+                      })}
+                    </TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        transaction.status === 'Aprovado' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {transaction.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="mt-4">
+              <Button variant="ghost" className="w-full" asChild>
+                <Link to="/admin/financial">
+                  Ver todas as transações
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
