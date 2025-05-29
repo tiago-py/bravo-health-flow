@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,10 +6,8 @@ import {
   Dialog, 
   DialogContent, 
   DialogDescription, 
-  DialogFooter, 
   DialogHeader, 
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from '@/components/ui/dialog';
 import { FlowBlock } from '@/pages/admin/FlowBuilder';
 import { 
@@ -18,15 +17,12 @@ import {
   CreditCard,
   Pencil,
   Trash2,
-  Link,
   ChevronDown,
-  ChevronRight,
   ChevronUp
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Draggable } from '@/components/flow-builder/Draggable';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import BlockEditor from './BlockEditor';
+import { Badge } from '@/components/ui/badge';
 
 interface FlowBlockComponentProps {
   block: FlowBlock;
@@ -70,33 +66,25 @@ const FlowBlockComponent = ({
     plan: 'Plano',
     checkout: 'Checkout'
   };
-  
-  const handlePositionChange = (newPosition: { x: number, y: number }) => {
-    onUpdate({
-      ...block,
-      position: newPosition
-    });
-  };
 
-  // When used in a linear, step-by-step display
   if (isInlineDisplay) {
     return (
       <>
         <div className="w-full">
-          <div className={`${blockTypeColors[block.type]}`}>
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="flex items-center">
+          <div className={`${blockTypeColors[block.type]} rounded-lg overflow-hidden`}>
+            <div className="flex items-center justify-between p-4 border-b border-current border-opacity-20">
+              <div className="flex items-center flex-1 min-w-0">
                 {blockTypeIcons[block.type]}
-                <span className="ml-2 font-medium">{blockTypeTitles[block.type]}: {block.title}</span>
+                <span className="ml-2 font-medium truncate">{blockTypeTitles[block.type]}: {block.title}</span>
               </div>
-              <div className="flex space-x-1">
+              <div className="flex space-x-1 ml-2 shrink-0">
                 <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)}>
                   {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" className="text-red-500" onClick={() => onDelete(block.id)}>
+                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700" onClick={() => onDelete(block.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -107,30 +95,36 @@ const FlowBlockComponent = ({
                 {block.type === 'question' && (
                   <div className="space-y-3">
                     <div>
-                      <div className="font-medium text-sm">Pergunta:</div>
-                      <p className="text-gray-700">{block.data.question || 'Sem pergunta definida'}</p>
+                      <div className="font-medium text-sm mb-1">Pergunta:</div>
+                      <p className="text-gray-700 text-sm">{block.data.question || 'Sem pergunta definida'}</p>
                     </div>
-                    <div>
-                      <div className="font-medium text-sm">Tipo:</div>
-                      <p className="text-gray-700 capitalize">
-                        {block.data.questionType || 'texto'}
-                      </p>
+                    <div className="flex flex-wrap gap-4">
+                      <div>
+                        <div className="font-medium text-sm mb-1">Tipo:</div>
+                        <Badge variant="outline" className="text-xs">
+                          {block.data.questionType || 'texto'}
+                        </Badge>
+                      </div>
+                      {block.data.required !== undefined && (
+                        <div>
+                          <div className="font-medium text-sm mb-1">Obrigatória:</div>
+                          <Badge variant={block.data.required ? "destructive" : "secondary"} className="text-xs">
+                            {block.data.required ? 'Sim' : 'Não'}
+                          </Badge>
+                        </div>
+                      )}
                     </div>
                     {block.data.options && block.data.options.length > 0 && (
                       <div>
-                        <div className="font-medium text-sm">Opções:</div>
-                        <ul className="list-disc pl-5">
-                          {block.data.options.map((option: string, idx: number) => (
-                            <li key={idx} className="text-gray-700">{option}</li>
+                        <div className="font-medium text-sm mb-2">Opções:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {block.data.options.slice(0, 3).map((option: string, idx: number) => (
+                            <Badge key={idx} variant="outline" className="text-xs">{option}</Badge>
                           ))}
-                        </ul>
-                      </div>
-                    )}
-                    {block.data.required !== undefined && (
-                      <div className="text-sm">
-                        <span className={`font-medium ${block.data.required ? 'text-red-500' : 'text-gray-500'}`}>
-                          {block.data.required ? 'Resposta obrigatória' : 'Resposta opcional'}
-                        </span>
+                          {block.data.options.length > 3 && (
+                            <Badge variant="outline" className="text-xs">+{block.data.options.length - 3}</Badge>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -139,21 +133,21 @@ const FlowBlockComponent = ({
                 {block.type === 'diagnosis' && (
                   <div className="space-y-3">
                     <div>
-                      <div className="font-medium text-sm">Título:</div>
-                      <p className="text-gray-700">{block.data.title || 'Sem título definido'}</p>
+                      <div className="font-medium text-sm mb-1">Título:</div>
+                      <p className="text-gray-700 text-sm">{block.data.title || 'Sem título definido'}</p>
                     </div>
                     <div>
-                      <div className="font-medium text-sm">Descrição:</div>
-                      <p className="text-gray-700">{block.data.description || 'Sem descrição definida'}</p>
+                      <div className="font-medium text-sm mb-1">Descrição:</div>
+                      <p className="text-gray-700 text-sm line-clamp-2">{block.data.description || 'Sem descrição definida'}</p>
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-4">
                       <div>
-                        <div className="font-medium text-sm">Fase:</div>
-                        <p className="text-gray-700">{block.data.phase || 'Não definida'}</p>
+                        <div className="font-medium text-sm mb-1">Fase:</div>
+                        <Badge variant="outline" className="text-xs">{block.data.phase || 'Não definida'}</Badge>
                       </div>
                       <div>
-                        <div className="font-medium text-sm">Duração:</div>
-                        <p className="text-gray-700">{block.data.duration || 'Não definida'}</p>
+                        <div className="font-medium text-sm mb-1">Duração:</div>
+                        <Badge variant="outline" className="text-xs">{block.data.duration || 'Não definida'}</Badge>
                       </div>
                     </div>
                   </div>
@@ -162,27 +156,30 @@ const FlowBlockComponent = ({
                 {block.type === 'plan' && (
                   <div className="space-y-3">
                     <div>
-                      <div className="font-medium text-sm">Título:</div>
-                      <p className="text-gray-700">{block.data.title || 'Sem título definido'}</p>
+                      <div className="font-medium text-sm mb-1">Título:</div>
+                      <p className="text-gray-700 text-sm">{block.data.title || 'Sem título definido'}</p>
                     </div>
                     <div>
-                      <div className="font-medium text-sm">Descrição:</div>
-                      <p className="text-gray-700">{block.data.description || 'Sem descrição definida'}</p>
+                      <div className="font-medium text-sm mb-1">Descrição:</div>
+                      <p className="text-gray-700 text-sm line-clamp-2">{block.data.description || 'Sem descrição definida'}</p>
                     </div>
                     <div>
-                      <div className="font-medium text-sm">Preço:</div>
-                      <p className="text-gray-700">
+                      <div className="font-medium text-sm mb-1">Preço:</div>
+                      <Badge variant="default" className="text-xs">
                         {block.data.price ? `R$ ${block.data.price.toFixed(2)}` : 'Não definido'}
-                      </p>
+                      </Badge>
                     </div>
                     {block.data.features && block.data.features.length > 0 && (
                       <div>
-                        <div className="font-medium text-sm">Características:</div>
-                        <ul className="list-disc pl-5">
-                          {block.data.features.map((feature: string, idx: number) => (
-                            <li key={idx} className="text-gray-700">{feature}</li>
+                        <div className="font-medium text-sm mb-2">Características:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {block.data.features.slice(0, 2).map((feature: string, idx: number) => (
+                            <Badge key={idx} variant="outline" className="text-xs">{feature}</Badge>
                           ))}
-                        </ul>
+                          {block.data.features.length > 2 && (
+                            <Badge variant="outline" className="text-xs">+{block.data.features.length - 2}</Badge>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -191,35 +188,25 @@ const FlowBlockComponent = ({
                 {block.type === 'checkout' && (
                   <div className="space-y-3">
                     <div>
-                      <div className="font-medium text-sm">Título:</div>
-                      <p className="text-gray-700">{block.data.title || 'Sem título definido'}</p>
+                      <div className="font-medium text-sm mb-1">Título:</div>
+                      <p className="text-gray-700 text-sm">{block.data.title || 'Sem título definido'}</p>
                     </div>
                     <div>
-                      <div className="font-medium text-sm">Descrição:</div>
-                      <p className="text-gray-700">{block.data.description || 'Sem descrição definida'}</p>
+                      <div className="font-medium text-sm mb-1">Descrição:</div>
+                      <p className="text-gray-700 text-sm line-clamp-2">{block.data.description || 'Sem descrição definida'}</p>
                     </div>
-                    <div className="space-y-1">
+                    <div className="flex flex-wrap gap-2">
                       {block.data.termsRequired && (
-                        <div className="flex items-center text-sm">
-                          <div className="w-4 h-4 border border-gray-300 rounded mr-2 flex items-center justify-center bg-blue-500 text-white">
-                            ✓
-                          </div>
-                          <span>Aceite dos termos obrigatório</span>
-                        </div>
+                        <Badge variant="outline" className="text-xs">Aceite de termos obrigatório</Badge>
                       )}
                       {block.data.collectShipping && (
-                        <div className="flex items-center text-sm">
-                          <div className="w-4 h-4 border border-gray-300 rounded mr-2 flex items-center justify-center bg-blue-500 text-white">
-                            ✓
-                          </div>
-                          <span>Coletar endereço de entrega</span>
-                        </div>
+                        <Badge variant="outline" className="text-xs">Coletar endereço</Badge>
                       )}
                     </div>
                     {block.data.successRedirect && (
-                      <div className="text-sm">
-                        <span className="font-medium">Redirecionamento: </span>
-                        <span className="text-gray-700">{block.data.successRedirect}</span>
+                      <div>
+                        <div className="font-medium text-sm mb-1">Redirecionamento:</div>
+                        <Badge variant="outline" className="text-xs">{block.data.successRedirect}</Badge>
                       </div>
                     )}
                   </div>
@@ -230,7 +217,7 @@ const FlowBlockComponent = ({
         </div>
       
         <Dialog open={isEditing} onOpenChange={setIsEditing}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{`Editar ${blockTypeTitles[block.type]}`}</DialogTitle>
               <DialogDescription>
@@ -252,112 +239,7 @@ const FlowBlockComponent = ({
     );
   }
 
-  // Original draggable version for canvas view (keeping for compatibility)
-  return (
-    <>
-      <Draggable
-        initialPosition={block.position}
-        onPositionChange={handlePositionChange}
-        className="absolute"
-        style={{
-          left: `${block.position.x}px`,
-          top: `${block.position.y}px`,
-          width: '280px' // Increased width for better visibility
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Card className={`shadow-md cursor-move ${blockTypeColors[block.type]}`}>
-            <CardHeader className="p-3 border-b">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm flex items-center">
-                  {blockTypeIcons[block.type]}
-                  <span className="ml-1">{blockTypeTitles[block.type]}</span>
-                </CardTitle>
-                <div className="flex space-x-1">
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setIsEditing(true)}>
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-6 w-6">
-                        <Link className="h-3.5 w-3.5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      {availableBlocks.length > 0 ? (
-                        availableBlocks.map((targetBlock) => (
-                          <DropdownMenuItem 
-                            key={targetBlock.id}
-                            onClick={() => onConnect(block.id, targetBlock.id)}
-                          >
-                            {blockTypeIcons[targetBlock.type]}
-                            <span className="ml-2">
-                              {targetBlock.title || blockTypeTitles[targetBlock.type]}
-                            </span>
-                          </DropdownMenuItem>
-                        ))
-                      ) : (
-                        <DropdownMenuItem disabled>
-                          Nenhum bloco disponível
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onDelete(block.id)}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-3">
-              <div>
-                <h4 className="font-medium text-sm">{block.title}</h4>
-                {block.type === 'question' && block.data.question && (
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                    {block.data.question}
-                  </p>
-                )}
-                {block.type === 'diagnosis' && block.data.description && (
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                    {block.data.description}
-                  </p>
-                )}
-                {block.type === 'plan' && block.data.price && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    R$ {block.data.price.toFixed(2)}
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </Draggable>
-      
-      <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{`Editar ${blockTypeTitles[block.type]}`}</DialogTitle>
-            <DialogDescription>
-              Configure os detalhes e a lógica deste bloco.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <BlockEditor 
-            block={block}
-            onUpdate={(updatedBlock) => {
-              onUpdate(updatedBlock);
-            }}
-            tags={tags}
-            onClose={() => setIsEditing(false)}
-          />
-        </DialogContent>
-      </Dialog>
-    </>
-  );
+  return null;
 };
 
 export default FlowBlockComponent;

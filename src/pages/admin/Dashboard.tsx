@@ -9,16 +9,10 @@ import {
   CalendarClock,
   TrendingUp,
   User,
-  BarChart3,
-  Sparkles,
-  FileText,
-  ChevronRight,
-  ArrowRightLeft
+  ChevronRight
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const [dateRange, setDateRange] = useState<'day' | 'week' | 'month' | 'year'>('month');
-  
   // Mock stats data
   const stats = {
     totalUsers: 1254,
@@ -26,9 +20,7 @@ const AdminDashboard = () => {
     totalTreatments: 982,
     activeSubscriptions: 743,
     monthlyRevenue: 98670.50,
-    averageSessionTime: 18.5,
-    capillaryLossPatients: 624,
-    erectileDysfunctionPatients: 358
+    averageSessionTime: 18.5
   };
   
   // Mock recent users data
@@ -123,74 +115,6 @@ const AdminDashboard = () => {
             <p className="text-xs text-gray-500 mt-1">
               <span className="text-amber-500 font-medium">+3%</span> em relação ao mês anterior
             </p>
-          </CardContent>
-        </Card>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <div>
-              <CardTitle>Distribuição de Pacientes</CardTitle>
-              <CardDescription>
-                Por tipo de tratamento
-              </CardDescription>
-            </div>
-            <div className="flex gap-2">
-              {(['day', 'week', 'month', 'year'] as const).map((range) => (
-                <Button
-                  key={range}
-                  size="sm"
-                  variant={dateRange === range ? "default" : "outline"}
-                  onClick={() => setDateRange(range)}
-                >
-                  {range === 'day' ? 'Dia' : range === 'week' ? 'Semana' : range === 'month' ? 'Mês' : 'Ano'}
-                </Button>
-              ))}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px] flex items-center justify-center">
-              <BarChart3 size={120} className="text-gray-300" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Distribuição de Tratamentos</CardTitle>
-            <CardDescription>
-              Total de pacientes por categoria
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <Sparkles className="w-4 h-4 mr-2 text-amber-500" />
-                  <span>Queda Capilar</span>
-                </div>
-                <span className="font-medium">{stats.capillaryLossPatients}</span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <FileText className="w-4 h-4 mr-2 text-blue-500" />
-                  <span>Disfunção Erétil</span>
-                </div>
-                <span className="font-medium">{stats.erectileDysfunctionPatients}</span>
-              </div>
-              
-              <div className="border-t border-gray-100 pt-4 mt-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <ArrowRightLeft className="w-4 h-4 mr-2 text-gray-500" />
-                    <span>Conversão</span>
-                  </div>
-                  <span className="font-medium">64.2%</span>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
