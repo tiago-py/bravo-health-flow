@@ -62,7 +62,7 @@ const HowItWorksSection = () => {
           {howItWorks.map((step, index) => (
             <div 
               key={step.id}
-              className={`bg-bravo-beige p-6 rounded-lg shadow-sm flex-1 w-full md:w-1/5 md:mx-2 mb-4 md:mb-0 md:transform transition-all duration-300 ease-in-out`}
+              className={`bg-slate-100 p-6 rounded-lg shadow-sm flex-1 w-full md:w-1/5 md:mx-2 mb-4 md:mb-0 md:transform transition-all duration-300 ease-in-out`}
               style={{
                 marginTop: `${index * 20}px`,
                 zIndex: 5 - index

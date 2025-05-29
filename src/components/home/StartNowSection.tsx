@@ -9,6 +9,8 @@ interface Treatment {
   price: string;
   image: string;
   path: string;
+  color: string;
+  bgColor: string;
 }
 interface StartNowSectionProps {
   treatments: Treatment[];
@@ -34,13 +36,13 @@ const StartNowSection = ({
                   <img src={treatment.image} alt={treatment.title} className="w-full h-60 object-cover" />
                 </div>
                 <CardContent className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold text-bravo-blue mb-1">{treatment.title}</h3>
+                  <h3 className={`text-xl font-bold ${treatment.color} mb-1`}>{treatment.title}</h3>
                   <p className="text-gray-700 mb-4 flex-grow">{treatment.description}</p>
                   <div className="mt-auto">
                     <p className="text-sm text-gray-600 mb-1">a partir de</p>
                     <p className="font-bold text-gray-800 text-lg mb-4">R$ XX/mês</p>
                     <Link to={treatment.path} className="block">
-                      <Button className="w-full rounded-full bg-bravo-blue hover:bg-bravo-dark">
+                      <Button className={`w-full rounded-full ${treatment.bgColor} hover:bg-bravo-dark`}>
                         Começar agora
                       </Button>
                     </Link>

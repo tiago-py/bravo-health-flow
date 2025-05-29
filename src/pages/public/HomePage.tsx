@@ -25,24 +25,30 @@ const HomePage = () => {
       title: 'Bravo Hair',
       description: 'Tratamento para queda, entradas e calvície.',
       price: 'R$ XX/mês',
-      image: '/lovable-uploads/7673d9b3-9048-488f-8c54-e00ee99cc10c.png',
+      image: '/lovable-uploads/homem-loiro-cabelos-grandes.png',
       path: '/tratamento/queda-capilar',
+      color: 'text-bravo-blue',
+      bgColor: "bg-bravo-blue"
     },
     {
       id: 2,
       title: 'Bravo Max',
       description: 'Tratamento para disfunção erétil e performance.',
       price: 'R$ XX/mês',
-      image: '/lovable-uploads/c3b0d7bb-6e5f-4883-90bc-09a23028a1b2.png',
+      image: '/lovable-uploads/homem-camisa-amarela.png',
       path: '/tratamento/disfuncao-eretil',
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-600"
     },
     {
       id: 3,
       title: 'Combinação Bravo(Hair + Max)',
       description: 'Tratamento completo ideal para solucionar tudo de uma vez.',
       price: 'R$ XX/mês',
-      image: '/lovable-uploads/3cb9c079-bd08-492d-a8aa-dbeed3acd3ae.png',
+      image: '/lovable-uploads/homem-camisa-cinza.png',
       path: '/tratamento/combinacao',
+      color: "text-bravo-blue",
+      bgColor: "bg-bravo-blue"
     },
   ];
 
