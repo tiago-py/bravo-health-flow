@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,13 +5,31 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/components/ui/sonner';
-import { Search, User, Mail, Phone, Edit, MoreVertical, Shield } from 'lucide-react';
+import { Search, User, Mail, Phone, Edit, MoreVertical, Shield, Plus } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from 'react-hook-form';
 
 interface Doctor {
   id: string;
@@ -26,9 +43,28 @@ interface Doctor {
   joinedDate: string;
 }
 
+interface AddDoctorForm {
+  name: string;
+  email: string;
+  phone: string;
+  crm: string;
+  specialty: string;
+}
+
 const AdminDoctors = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const form = useForm<AddDoctorForm>({
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      crm: '',
+      specialty: '',
+    },
+  });
   
   // Mock doctors data
   const doctors: Doctor[] = [
@@ -114,6 +150,13 @@ const AdminDoctors = () => {
     toast.info('Funcionalidade de edição em desenvolvimento.');
   };
 
+  const onSubmit = (data: AddDoctorForm) => {
+    console.log('Dados do médico:', data);
+    toast.success('Médico adicionado com sucesso!');
+    setIsModalOpen(false);
+    form.reset();
+  };
+
   return (
     <div>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
@@ -124,9 +167,114 @@ const AdminDoctors = () => {
           </p>
         </div>
         
-        <Button className="mt-4 md:mt-0">
-          Adicionar Médico
-        </Button>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <Button className="mt-4 md:mt-0">
+              <Plus className="mr-2 h-4 w-4" />
+              Adicionar Médico
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Adicionar Novo Médico</DialogTitle>
+              <DialogDescription>
+                Preencha os dados do médico para adicionar à plataforma.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome Completo</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Dr. João Silva" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>E-mail</FormLabel>
+                      <FormControl>
+                        <Input placeholder="joao@bravohomem.com" type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefone</FormLabel>
+                      <FormControl>
+                        <Input placeholder="(11) 99999-9999" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="crm"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>CRM</FormLabel>
+                      <FormControl>
+                        <Input placeholder="CRM/SP 123456" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="specialty"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Especialidade</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a especialidade" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Dermatologia">Dermatologia</SelectItem>
+                          <SelectItem value="Urologia">Urologia</SelectItem>
+                          <SelectItem value="Endocrinologia">Endocrinologia</SelectItem>
+                          <SelectItem value="Clínica Geral">Clínica Geral</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit">
+                    Adicionar Médico
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
       </div>
       
       {/* Filters */}
