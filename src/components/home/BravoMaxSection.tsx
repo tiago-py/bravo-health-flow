@@ -5,7 +5,7 @@ const BravoMaxSection = () => {
   return <section className="py-16 bg-bravo-light">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <h2 className="text-4xl md:text-5xl font-bold text-bravo-blue mb-2">Bravo Max</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-2 text-yellow-600">Bravo Max</h2>
           <p className="text-xl text-gray-700">Para sua potência não falhar</p>
         </div>
         
@@ -39,7 +39,7 @@ const BravoMaxSection = () => {
                   aumentar o desejo e devolver sua confiança.
                 </p>
                 <div className="flex justify-end">
-                  <Button className="bg-bravo-blue hover:bg-bravo-dark rounded-full">
+                  <Button className="rounded-full bg-yellow-600 hover:bg-yellow-500">
                     Quero mais potência
                   </Button>
                 </div>

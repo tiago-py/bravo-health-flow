@@ -1,9 +1,6 @@
-
 import { Link } from 'react-router-dom';
-
 const PublicFooter = () => {
-  return (
-    <footer className="bg-bravo-beige pt-12 pb-4">
+  return <footer className="pt-12 pb-4 bg-slate-100">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8">
           {/* Brand Column */}
@@ -104,8 +101,6 @@ const PublicFooter = () => {
           © {new Date().getFullYear()} Bravo. Todos os direitos reservados.
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default PublicFooter;

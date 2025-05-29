@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 const TratamentoCapilarPage = () => {
   return <PublicLayout>
       {/* Hero Section */}
-      <section className="py-20 bg-bravo-beige">
+      <section className="py-20 bg-slate-100">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-10 md:mb-0">
@@ -51,7 +51,7 @@ const TratamentoCapilarPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                <div className="p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6 bg-slate-100">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M13 2.05C13 2.05 16 6 16 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -69,7 +69,7 @@ const TratamentoCapilarPage = () => {
 
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                <div className="p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6 bg-slate-100">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 9L12 5L21 9L12 13L3 9Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M21 9V15" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -85,7 +85,7 @@ const TratamentoCapilarPage = () => {
 
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                <div className="p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6 bg-slate-100">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 8V16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M8 12H16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -186,7 +186,7 @@ const TratamentoCapilarPage = () => {
       </section>
 
       {/* Benefícios section */}
-      <section className="py-16 bg-bravo-beige">
+      <section className="py-16 bg-slate-100">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0">
