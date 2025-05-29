@@ -30,7 +30,7 @@ const TratamentoCapilarPage = () => {
               </div>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/2ad5113d-c331-4d17-afd9-0811ba6ca70e.png" alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" />
+              <img alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" src="/lovable-uploads/7ef515bd-3f89-46d9-91de-938a15572671.png" />
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ const TratamentoCapilarPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/43c5372f-8de7-44dc-9c30-386b39e1a0c9.png" alt="Homem com cabelo crespo" className="w-full rounded-lg shadow-lg" />
+              <img alt="Homem com cabelo crespo" className="w-full rounded-lg shadow-lg" src="/lovable-uploads/cc489b53-968d-4728-a78d-da2c8f24debb.png" />
             </div>
           </div>
 
