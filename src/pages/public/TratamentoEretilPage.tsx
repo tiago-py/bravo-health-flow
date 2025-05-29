@@ -11,7 +11,7 @@ const TratamentoEretilPage = () => {
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-10 md:mb-0">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Recupere sua <span className="text-yellow-600">performance</span> e <span className="text-bravo-blue">confiança</span>
+                Recupere sua <span className="text-yellow-600">confiança</span> e <span className="text-bravo-blue">confiança</span>
               </h1>
               <p className="text-lg text-gray-700 mb-8">
                 Tratamento personalizado e discreto para disfunção erétil e melhora do desempenho sexual. Desenvolvido por especialistas em saúde masculina.
