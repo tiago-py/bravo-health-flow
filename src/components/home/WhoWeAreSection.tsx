@@ -1,10 +1,7 @@
-
 import { BadgeCheck, User, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-
 const WhoWeAreSection = () => {
-  return (
-    <section className="py-16 bg-bravo-beige">
+  return <section className="py-16 bg-slate-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold mb-2">
@@ -27,11 +24,7 @@ const WhoWeAreSection = () => {
                   </h3>
                 </div>
                 <div className="mt-4">
-                  <img
-                    src="/lovable-uploads/4814ac17-67a9-4748-866b-a0018d46bc06.png"
-                    alt="Médico especialista"
-                    className="w-full h-auto rounded-lg"
-                  />
+                  <img src="/lovable-uploads/4814ac17-67a9-4748-866b-a0018d46bc06.png" alt="Médico especialista" className="w-full h-auto rounded-lg" />
                 </div>
               </div>
             </Card>
@@ -48,11 +41,7 @@ const WhoWeAreSection = () => {
                   </h3>
                 </div>
                 <div className="mt-4">
-                  <img
-                    src="/lovable-uploads/9faa8b96-66ab-43e8-b7dd-de313586efc0.png"
-                    alt="Profissional de atendimento"
-                    className="w-full h-auto rounded-lg"
-                  />
+                  <img src="/lovable-uploads/9faa8b96-66ab-43e8-b7dd-de313586efc0.png" alt="Profissional de atendimento" className="w-full h-auto rounded-lg" />
                 </div>
               </div>
             </Card>
@@ -69,19 +58,13 @@ const WhoWeAreSection = () => {
                   </h3>
                 </div>
                 <div className="mt-4">
-                  <img
-                    src="/lovable-uploads/0e0a614e-dd02-4dd5-a663-72e1477e5795.png"
-                    alt="Equipe de planejamento"
-                    className="w-full h-auto rounded-lg"
-                  />
+                  <img src="/lovable-uploads/0e0a614e-dd02-4dd5-a663-72e1477e5795.png" alt="Equipe de planejamento" className="w-full h-auto rounded-lg" />
                 </div>
               </div>
             </Card>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default WhoWeAreSection;

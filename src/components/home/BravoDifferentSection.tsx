@@ -1,10 +1,7 @@
-
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
 const BravoDifferentSection = () => {
-  return (
-    <section className="py-16 bg-bravo-beige">
+  return <section className="py-16 bg-slate-100">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           {/* Coluna de texto - Esquerda */}
@@ -45,16 +42,10 @@ const BravoDifferentSection = () => {
           
           {/* Imagem - Direita */}
           <div className="w-full md:w-1/2">
-            <img 
-              src="/lovable-uploads/35fd93b1-34c9-4858-a15a-3e306cc50712.png" 
-              alt="Homem sorridente com cabelo black power" 
-              className="w-full h-auto"
-            />
+            <img src="/lovable-uploads/35fd93b1-34c9-4858-a15a-3e306cc50712.png" alt="Homem sorridente com cabelo black power" className="w-full h-auto" />
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default BravoDifferentSection;

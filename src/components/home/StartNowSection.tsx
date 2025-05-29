@@ -1,9 +1,7 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-
 interface Treatment {
   id: number;
   title: string;
@@ -12,14 +10,13 @@ interface Treatment {
   image: string;
   path: string;
 }
-
 interface StartNowSectionProps {
   treatments: Treatment[];
 }
-
-const StartNowSection = ({ treatments }: StartNowSectionProps) => {
-  return (
-    <section className="py-16 bg-bravo-beige">
+const StartNowSection = ({
+  treatments
+}: StartNowSectionProps) => {
+  return <section className="py-16 bg-slate-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-800">
@@ -31,20 +28,10 @@ const StartNowSection = ({ treatments }: StartNowSectionProps) => {
         </div>
         
         <div className="flex flex-col md:flex-row justify-center gap-6 md:gap-8 relative">
-          {treatments.map((treatment, index) => (
-            <div 
-              key={treatment.id} 
-              className={`w-full md:w-72 transform ${
-                index === 0 ? 'md:-translate-y-4' : index === 2 ? 'md:translate-y-4' : ''
-              } transition-all duration-300`}
-            >
+          {treatments.map((treatment, index) => <div key={treatment.id} className={`w-full md:w-72 transform ${index === 0 ? 'md:-translate-y-4' : index === 2 ? 'md:translate-y-4' : ''} transition-all duration-300`}>
               <Card className="bg-white rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
                 <div className="rounded-lg overflow-hidden">
-                  <img 
-                    src={treatment.image} 
-                    alt={treatment.title} 
-                    className="w-full h-60 object-cover" 
-                  />
+                  <img src={treatment.image} alt={treatment.title} className="w-full h-60 object-cover" />
                 </div>
                 <CardContent className="p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-bold text-bravo-blue mb-1">{treatment.title}</h3>
@@ -60,12 +47,9 @@ const StartNowSection = ({ treatments }: StartNowSectionProps) => {
                   </div>
                 </CardContent>
               </Card>
-            </div>
-          ))}
+            </div>)}
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default StartNowSection;
