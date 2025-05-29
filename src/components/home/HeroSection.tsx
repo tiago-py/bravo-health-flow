@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 const HeroSection = () => {
-  return <section className="bg-bravo-beige py-0">
+  return <section className="py-0 bg-slate-100">
       <div className="container mx-auto flex flex-col md:flex-row items-center bg-slate-100">
         <div className="md:w-1/2 p-8 md:p-16">
           <h1 className="text-3xl md:text-5xl font-bold mb-6">
