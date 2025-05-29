@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,33 +24,34 @@ Senha: cliente123
 */
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const {
+    login
+  } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
-  
+  const from = (location.state as {
+    from?: {
+      pathname: string;
+    };
+  })?.from?.pathname || '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-    
     try {
       await login(email, password);
-      
       toast({
         title: 'Login realizado com sucesso',
         description: 'Seja bem-vindo à plataforma Bravo Homem.',
-        duration: 3000,
+        duration: 3000
       });
-      
+
       // Redirect to the original intended page or dashboard based on role
       navigate(from);
-      
     } catch (error) {
       console.error('Login error:', error);
       setError('Email ou senha incorretos. Tente novamente.');
@@ -59,9 +59,7 @@ const LoginPage = () => {
       setIsLoading(false);
     }
   };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-bravo-beige p-4">
+  return <div className="min-h-screen flex items-center justify-center p-4 bg-slate-100">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <Link to="/" className="inline-block">
@@ -78,11 +76,9 @@ const LoginPage = () => {
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                   {error}
-                </div>
-              )}
+                </div>}
               
               {/* Test Credentials Helper */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs">
@@ -96,43 +92,22 @@ const LoginPage = () => {
               
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+                <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
               </div>
               
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <Label htmlFor="password">Senha</Label>
-                  <Link 
-                    to="/esqueci-senha"
-                    className="text-xs text-bravo-blue hover:underline"
-                  >
+                  <Link to="/esqueci-senha" className="text-xs text-bravo-blue hover:underline">
                     Esqueceu a senha?
                   </Link>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
               </div>
             </CardContent>
             
             <CardFooter className="flex flex-col space-y-4">
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? 'Entrando...' : 'Entrar'}
               </Button>
               
@@ -152,8 +127,6 @@ const LoginPage = () => {
           </Link>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default LoginPage;
