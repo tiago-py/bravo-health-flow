@@ -31,7 +31,7 @@ const HeroSection = () => {
           backgroundSize: "cover",
           zIndex: -1
         }}></div>
-          <img src="/lovable-uploads/4ce4a204-aeff-445e-a1f8-ee3536e3d5fc.png" alt="Homem confiante" className="w-full h-full object-cover" />
+          <img alt="Homem confiante" className="w-full h-full object-cover" src="/lovable-uploads/73fe6304-e9fd-4798-bc31-17ceb95c0c32.png" />
         </div>
       </div>
     </section>;
