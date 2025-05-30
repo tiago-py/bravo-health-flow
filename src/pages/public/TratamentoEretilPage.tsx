@@ -136,7 +136,7 @@ const TratamentoEretilPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/920c445a-8f05-42b5-a9d3-04d9b65d638f.png" alt="Homem sorridente com camisa azul" className="w-full rounded-lg shadow-lg" />
+              <img alt="Homem sorridente com camisa azul" className="w-full rounded-lg shadow-lg" src="/lovable-uploads/30eace37-d1b8-42f8-8829-eeadb9293a94.png" />
             </div>
           </div>
 
