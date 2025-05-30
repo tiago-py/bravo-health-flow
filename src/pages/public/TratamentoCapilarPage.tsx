@@ -142,7 +142,7 @@ const TratamentoCapilarPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/43c5372f-8de7-44dc-9c30-386b39e1a0c9.png" alt="Homem com cabelo crespo" className="w-full rounded-lg shadow-lg" />
+              <img alt="Homem com cabelo crespo" className="w-full rounded-lg shadow-lg" src="/lovable-uploads/eec69e20-9c4f-4d68-8c52-99f6c8f72b4e.png" />
             </div>
           </div>
 
