@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 const TratamentoCapilarPage = () => {
   return <PublicLayout>
       {/* Hero Section */}
-      <section className="py-20 bg-slate-100">
+      <section className="py-20 bg-bravo-beige">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-10 md:mb-0">
@@ -30,7 +30,7 @@ const TratamentoCapilarPage = () => {
               </div>
             </div>
             <div className="md:w-1/2">
-              <img alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" src="/lovable-uploads/7ef515bd-3f89-46d9-91de-938a15572671.png" />
+              <img src="/lovable-uploads/2ad5113d-c331-4d17-afd9-0811ba6ca70e.png" alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
@@ -51,7 +51,7 @@ const TratamentoCapilarPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6 bg-slate-100">
+                <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M13 2.05C13 2.05 16 6 16 12" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -69,7 +69,7 @@ const TratamentoCapilarPage = () => {
 
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6 bg-slate-100">
+                <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 9L12 5L21 9L12 13L3 9Z" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M21 9V15" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -85,7 +85,7 @@ const TratamentoCapilarPage = () => {
 
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6 bg-slate-100">
+                <div className="bg-bravo-beige p-4 rounded-full w-16 h-16 flex items-center justify-center mb-6">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 8V16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M8 12H16" stroke="#0075FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -142,7 +142,7 @@ const TratamentoCapilarPage = () => {
               </ul>
             </div>
             <div className="md:w-1/2">
-              <img alt="Homem com cabelo crespo" className="w-full rounded-lg shadow-lg" src="/lovable-uploads/cc489b53-968d-4728-a78d-da2c8f24debb.png" />
+              <img src="/lovable-uploads/43c5372f-8de7-44dc-9c30-386b39e1a0c9.png" alt="Homem com cabelo crespo" className="w-full rounded-lg shadow-lg" />
             </div>
           </div>
 
@@ -186,7 +186,7 @@ const TratamentoCapilarPage = () => {
       </section>
 
       {/* Benefícios section */}
-      <section className="py-16 bg-slate-100">
+      <section className="py-16 bg-bravo-beige">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0">
