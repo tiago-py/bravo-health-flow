@@ -30,7 +30,7 @@ const TratamentoCapilarPage = () => {
               </div>
             </div>
             <div className="md:w-1/2">
-              <img src="/lovable-uploads/2ad5113d-c331-4d17-afd9-0811ba6ca70e.png" alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" />
+              <img alt="Homem com cabelo saudável" className="w-full rounded-lg shadow-lg" src="/lovable-uploads/49ffab53-f0ba-445e-9f56-a3c9fd05d417.png" />
             </div>
           </div>
         </div>
