@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -55,7 +56,7 @@ export default {
         // Bravo Homem colors
         bravo: {
           beige: "#F6E8E2",
-          blue: "#5D7C8A",
+          blue: "#58819d",
           black: "#333333",
           white: "#FFFFFF",
           light: "#FAF7F5",  // Lighter beige for backgrounds

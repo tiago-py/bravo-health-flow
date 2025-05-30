@@ -1,8 +1,11 @@
+
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
+
 const BravoMaxSection = () => {
-  return <section className="py-16 bg-bravo-light">
+  return (
+    <section className="py-16 bg-bravo-light">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-4xl md:text-5xl font-bold text-bravo-blue mb-2">Bravo Max</h2>
@@ -16,19 +19,6 @@ const BravoMaxSection = () => {
               {/* Imagem com os rótulos informativos */}
               <div className="relative">
                 <img src="/lovable-uploads/0087efeb-bff4-47e0-98e8-86830938bb11.png" alt="Bravo Max - Homem confiante" className="w-full" />
-                
-                {/* Tags informativas posicionadas ao redor da imagem */}
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
               </div>
               
               <div className="p-6 md:p-10">
@@ -48,6 +38,8 @@ const BravoMaxSection = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default BravoMaxSection;

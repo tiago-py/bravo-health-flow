@@ -1,8 +1,11 @@
+
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
+
 const HeroSection = () => {
-  return <section className="bg-bravo-beige py-0">
+  return (
+    <section className="bg-bravo-beige py-0">
       <div className="container mx-auto flex flex-col md:flex-row items-center">
         <div className="md:w-1/2 p-8 md:p-16">
           <h1 className="text-3xl md:text-5xl font-bold mb-6">
@@ -21,7 +24,7 @@ const HeroSection = () => {
           </div>
           <Link to="/anamnese/queda-capilar">
             <Button className="rounded-full bg-bravo-blue hover:bg-bravo-dark">
-              Começar meu tratamento agora+
+              Começar meu tratamento agora
             </Button>
           </Link>
         </div>
@@ -34,6 +37,8 @@ const HeroSection = () => {
           <img alt="Homem confiante" className="w-full h-full object-cover" src="/lovable-uploads/388f08e2-7e3c-41e0-b7c6-3165c091ee56.png" />
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default HeroSection;
