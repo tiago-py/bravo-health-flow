@@ -1,11 +1,8 @@
-
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
-
 const HeroSection = () => {
-  return (
-    <section className="bg-bravo-beige py-0">
+  return <section className="bg-bravo-beige py-0">
       <div className="container mx-auto flex flex-col md:flex-row items-center">
         <div className="md:w-1/2 p-8 md:p-16">
           <h1 className="text-3xl md:text-5xl font-bold mb-6">
@@ -29,20 +26,14 @@ const HeroSection = () => {
           </Link>
         </div>
         <div className="md:w-1/2 relative">
-          <div className="absolute inset-0 bg-right bg-no-repeat opacity-50" style={{ 
-            backgroundImage: "url('/lovable-uploads/4ce4a204-aeff-445e-a1f8-ee3536e3d5fc.png')",
-            backgroundSize: "cover",
-            zIndex: -1
-          }}></div>
-          <img 
-            src="/lovable-uploads/4ce4a204-aeff-445e-a1f8-ee3536e3d5fc.png" 
-            alt="Homem confiante" 
-            className="w-full h-full object-cover"
-          />
+          <div className="absolute inset-0 bg-right bg-no-repeat opacity-50" style={{
+          backgroundImage: "url('/lovable-uploads/4ce4a204-aeff-445e-a1f8-ee3536e3d5fc.png')",
+          backgroundSize: "cover",
+          zIndex: -1
+        }}></div>
+          <img alt="Homem confiante" className="w-full h-full object-cover" src="/lovable-uploads/49fbf43e-431b-49b3-817b-bce59ab54364.png" />
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default HeroSection;
