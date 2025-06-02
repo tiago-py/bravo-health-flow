@@ -13,7 +13,8 @@ import {
   Menu, 
   X, 
   FileText,
-  ClipboardList
+  ClipboardList,
+  Package
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -24,6 +25,7 @@ const AdminLayout = () => {
     { name: 'Dashboard', path: '/admin/dashboard', icon: <Home size={20} /> },
     { name: 'Construtor de Fluxos', path: '/admin/flow-builder', icon: <FileText size={20} /> },
     { name: 'Todas as Prescrições', path: '/admin/prescricoes', icon: <ClipboardList size={20} /> },
+    { name: 'Produtos', path: '/admin/produtos', icon: <Package size={20} /> },
     { name: 'Usuários', path: '/admin/usuarios', icon: <Users size={20} /> },
     { name: 'Médicos', path: '/admin/medicos', icon: <User size={20} /> },
     { name: 'Financeiro', path: '/admin/financeiro', icon: <DollarSign size={20} /> },

@@ -46,6 +46,7 @@ import AdminFinancial from "./pages/admin/Financial";
 import AdminSettings from "./pages/admin/Settings";
 import AdminAnamneseEdit from "./pages/admin/AnamneseEdit";
 import FlowBuilder from "./pages/admin/FlowBuilder";
+import AdminProducts from "./pages/admin/Products";
 
 // Auth Guards
 import RequireAuth from "./components/guards/RequireAuth";
@@ -123,6 +124,7 @@ const App = () => (
             <Route path="anamnese/editar/:id" element={<AdminAnamneseEdit />} />
             <Route path="flow-builder" element={<FlowBuilder />} />
             <Route path="prescricoes" element={<AllPrescriptions />} />
+            <Route path="produtos" element={<AdminProducts />} />
             <Route path="usuarios" element={<AdminUsers />} />
             <Route path="medicos" element={<AdminDoctors />} />
             <Route path="financeiro" element={<AdminFinancial />} />

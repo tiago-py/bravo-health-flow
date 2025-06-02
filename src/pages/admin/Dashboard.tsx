@@ -1,8 +1,12 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format, subDays, subWeeks, subMonths, isAfter, isBefore } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 import {
   Users,
   CreditCard,
@@ -13,23 +17,57 @@ import {
   Sparkles,
   FileText,
   ChevronRight,
-  ArrowRightLeft
+  ArrowRightLeft,
+  CalendarIcon
 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const [dateRange, setDateRange] = useState<'day' | 'week' | 'month' | 'year'>('month');
+  const [customDateFrom, setCustomDateFrom] = useState<Date>();
+  const [customDateTo, setCustomDateTo] = useState<Date>();
   
-  // Mock stats data
-  const stats = {
-    totalUsers: 1254,
-    activeUsers: 874,
-    totalTreatments: 982,
-    activeSubscriptions: 743,
-    monthlyRevenue: 98670.50,
-    averageSessionTime: 18.5,
-    capillaryLossPatients: 624,
-    erectileDysfunctionPatients: 358
+  // Função para calcular a data de início baseada no filtro selecionado
+  const getDateFrom = () => {
+    const today = new Date();
+    switch (dateRange) {
+      case 'day':
+        return subDays(today, 1);
+      case 'week':
+        return subWeeks(today, 1);
+      case 'month':
+        return subMonths(today, 1);
+      case 'year':
+        return subMonths(today, 12);
+      default:
+        return customDateFrom || subMonths(today, 1);
+    }
   };
+
+  const getDateTo = () => {
+    return customDateTo || new Date();
+  };
+  
+  // Mock stats data baseado no período selecionado
+  const getStatsForPeriod = () => {
+    const dateFrom = getDateFrom();
+    const dateTo = getDateTo();
+    
+    // Simular dados diferentes baseados no período
+    const multiplier = dateRange === 'day' ? 0.1 : dateRange === 'week' ? 0.3 : dateRange === 'year' ? 4 : 1;
+    
+    return {
+      totalUsers: Math.floor(1254 * multiplier),
+      activeUsers: Math.floor(874 * multiplier),
+      totalTreatments: Math.floor(982 * multiplier),
+      activeSubscriptions: Math.floor(743 * multiplier),
+      monthlyRevenue: 98670.50 * multiplier,
+      averageSessionTime: 18.5,
+      capillaryLossPatients: Math.floor(624 * multiplier),
+      erectileDysfunctionPatients: Math.floor(358 * multiplier)
+    };
+  };
+
+  const stats = getStatsForPeriod();
   
   // Mock recent users data
   const recentUsers = [
@@ -49,6 +87,21 @@ const AdminDashboard = () => {
     { id: '5', name: 'Lucas Martins', amount: 139.90, date: '2023-03-16', plan: 'Mensal' }
   ];
 
+  const getPeriodLabel = () => {
+    switch (dateRange) {
+      case 'day':
+        return 'Último dia';
+      case 'week':
+        return 'Última semana';
+      case 'month':
+        return 'Último mês';
+      case 'year':
+        return 'Último ano';
+      default:
+        return 'Período personalizado';
+    }
+  };
+
   return (
     <div>
       <div className="mb-8">
@@ -59,7 +112,99 @@ const AdminDashboard = () => {
           Visão geral da plataforma e métricas principais
         </p>
       </div>
+
+      {/* Filtros de Data */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-lg">Filtros de Período</CardTitle>
+          <CardDescription>
+            Selecione o período para visualizar as métricas
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex gap-2">
+              {(['day', 'week', 'month', 'year'] as const).map((range) => (
+                <Button
+                  key={range}
+                  size="sm"
+                  variant={dateRange === range ? "default" : "outline"}
+                  onClick={() => setDateRange(range)}
+                >
+                  {range === 'day' ? 'Dia' : range === 'week' ? 'Semana' : range === 'month' ? 'Mês' : 'Ano'}
+                </Button>
+              ))}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">ou</span>
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !customDateFrom && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {customDateFrom ? format(customDateFrom, "dd/MM/yyyy", { locale: ptBR }) : "Data início"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={customDateFrom}
+                    onSelect={setCustomDateFrom}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+              
+              <span className="text-sm text-gray-500">até</span>
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !customDateTo && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {customDateTo ? format(customDateTo, "dd/MM/yyyy", { locale: ptBR }) : "Data fim"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={customDateTo}
+                    onSelect={setCustomDateTo}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            
+            <div className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+              Período: {getPeriodLabel()}
+              {customDateFrom && customDateTo && (
+                <span className="ml-2">
+                  ({format(customDateFrom, "dd/MM/yyyy", { locale: ptBR })} - {format(customDateTo, "dd/MM/yyyy", { locale: ptBR })})
+                </span>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       
+      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -71,7 +216,7 @@ const AdminDashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalUsers}</div>
             <p className="text-xs text-gray-500 mt-1">
-              <span className="text-green-500 font-medium">+16%</span> em relação ao mês anterior
+              <span className="text-green-500 font-medium">+16%</span> em relação ao período anterior
             </p>
           </CardContent>
         </Card>
@@ -86,7 +231,7 @@ const AdminDashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
             <p className="text-xs text-gray-500 mt-1">
-              <span className="text-green-500 font-medium">+9%</span> em relação ao mês anterior
+              <span className="text-green-500 font-medium">+9%</span> em relação ao período anterior
             </p>
           </CardContent>
         </Card>
@@ -94,7 +239,7 @@ const AdminDashboard = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">
-              Receita Mensal
+              Receita do Período
             </CardTitle>
             <TrendingUp size={18} className="text-gray-500" />
           </CardHeader>
@@ -106,7 +251,7 @@ const AdminDashboard = () => {
               })}
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              <span className="text-green-500 font-medium">+23%</span> em relação ao mês anterior
+              <span className="text-green-500 font-medium">+23%</span> em relação ao período anterior
             </p>
           </CardContent>
         </Card>
@@ -121,32 +266,21 @@ const AdminDashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{stats.averageSessionTime} min</div>
             <p className="text-xs text-gray-500 mt-1">
-              <span className="text-amber-500 font-medium">+3%</span> em relação ao mês anterior
+              <span className="text-amber-500 font-medium">+3%</span> em relação ao período anterior
             </p>
           </CardContent>
         </Card>
       </div>
       
+      {/* Charts and Data Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle>Distribuição de Pacientes</CardTitle>
               <CardDescription>
-                Por tipo de tratamento
+                Por tipo de tratamento no período selecionado
               </CardDescription>
-            </div>
-            <div className="flex gap-2">
-              {(['day', 'week', 'month', 'year'] as const).map((range) => (
-                <Button
-                  key={range}
-                  size="sm"
-                  variant={dateRange === range ? "default" : "outline"}
-                  onClick={() => setDateRange(range)}
-                >
-                  {range === 'day' ? 'Dia' : range === 'week' ? 'Semana' : range === 'month' ? 'Mês' : 'Ano'}
-                </Button>
-              ))}
             </div>
           </CardHeader>
           <CardContent>
@@ -160,7 +294,7 @@ const AdminDashboard = () => {
           <CardHeader>
             <CardTitle>Distribuição de Tratamentos</CardTitle>
             <CardDescription>
-              Total de pacientes por categoria
+              Total de pacientes por categoria no período
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -195,6 +329,7 @@ const AdminDashboard = () => {
         </Card>
       </div>
       
+      {/* Recent Users and Transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
