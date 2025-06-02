@@ -7,7 +7,7 @@ import { toast } from '@/components/ui/sonner';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Download, FileText, Calendar, FileText } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 
 const ClientProfile = () => {
   const { user } = useAuth();
