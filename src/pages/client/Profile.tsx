@@ -6,9 +6,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/sonner';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Download, Calendar, FileText } from 'lucide-react';
+import { Download, FileText, Calendar, FileText } from 'lucide-react';
 
 const ClientProfile = () => {
   const { user } = useAuth();
@@ -39,25 +38,33 @@ const ClientProfile = () => {
     confirmPassword: '',
   });
 
-  // Mock prescription data
-  const currentPrescription = {
-    id: 1,
-    doctorName: 'Dr. Bruno Silva',
-    date: '2023-03-15',
-    expiry: '2023-09-15',
-    products: [{
-      name: 'Minoxidil 5%',
-      instructions: 'Aplicar 1ml na região afetada, duas vezes ao dia (manhã e noite)'
-    }, {
-      name: 'Finasterida 1mg',
-      instructions: 'Tomar 1 comprimido por dia, sempre no mesmo horário'
-    }, {
-      name: 'Complexo Vitamínico Capilar',
-      instructions: 'Tomar 1 cápsula por dia, preferencialmente com o almoço'
-    }],
-    generalInstructions: 'Mantenha o uso contínuo para melhores resultados. Evite interromper o tratamento sem consulta médica. Em caso de efeitos adversos, entre em contato imediatamente.',
-    pdfUrl: '#'
-  };
+  // Mock prescription data in list format
+  const prescriptions = [
+    {
+      id: 1,
+      name: 'Dutasterida 0.5 mg',
+      date: '28 maio 2025',
+      pdfUrl: '#'
+    },
+    {
+      id: 2,
+      name: 'Minoxidil 2.5mg',
+      date: '28 maio 2025',
+      pdfUrl: '#'
+    },
+    {
+      id: 3,
+      name: 'Dutasterida 0.5 mg',
+      date: '27 fevereiro 2025',
+      pdfUrl: '#'
+    },
+    {
+      id: 4,
+      name: 'Minoxidil 2.5mg',
+      date: '27 fevereiro 2025',
+      pdfUrl: '#'
+    }
+  ];
   
   // Handle personal info change
   const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,9 +126,9 @@ const ClientProfile = () => {
     });
   };
 
-  const handleDownload = () => {
+  const handleDownload = (prescriptionName: string) => {
     toast.success('Baixando prescrição...', {
-      description: 'O arquivo será baixado em instantes.',
+      description: `Baixando ${prescriptionName}`,
     });
   };
 
@@ -308,63 +315,53 @@ const ClientProfile = () => {
             <CardHeader>
               <CardTitle>Minhas Prescrições</CardTitle>
               <CardDescription>
-                Visualize e baixe suas prescrições médicas
+                Baixe seus documentos no seu celular ou computador como PDF
               </CardDescription>
             </CardHeader>
             
             <CardContent>
-              <div className="space-y-4">
-                <Card className="border-l-4 border-l-bravo-blue">
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">Prescrição Atual</CardTitle>
-                        <CardDescription>
-                          {currentPrescription.doctorName} • {new Date(currentPrescription.date).toLocaleDateString('pt-BR')}
-                        </CardDescription>
-                      </div>
-                      <Badge variant="secondary">Ativa</Badge>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center">
-                          <Calendar size={16} className="mr-1 text-gray-500" />
-                          <span className="text-gray-500">
-                            Válida até {new Date(currentPrescription.expiry).toLocaleDateString('pt-BR')}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-medium text-bravo-blue mb-3">Medicamentos Prescritos</h4>
-                        <div className="space-y-3">
-                          {currentPrescription.products.map((product, index) => (
-                            <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                              <h5 className="font-medium mb-1">{product.name}</h5>
-                              <p className="text-sm text-gray-700">{product.instructions}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="bg-bravo-beige bg-opacity-30 p-4 rounded-lg">
-                        <h4 className="font-medium mb-2">Instruções Gerais</h4>
-                        <p className="text-sm text-gray-700">{currentPrescription.generalInstructions}</p>
-                      </div>
-                      
-                      <div className="flex justify-end pt-4">
-                        <Button variant="outline" onClick={handleDownload}>
-                          <Download size={16} className="mr-2" />
-                          Baixar PDF
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ Lembre-se de que esses documentos podem conter informações pessoais.
+                </p>
               </div>
+
+              <div className="space-y-3">
+                {prescriptions.map((prescription) => (
+                  <div 
+                    key={prescription.id} 
+                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                        <FileText size={20} className="text-gray-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Prescrição</h4>
+                        <p className="text-sm font-medium text-gray-700">{prescription.name}</p>
+                        <p className="text-xs text-gray-500">{prescription.date}</p>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDownload(prescription.name)}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                    >
+                      <Download size={16} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              {prescriptions.length === 0 && (
+                <div className="text-center py-8">
+                  <FileText size={48} className="mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-500">Nenhuma prescrição encontrada.</p>
+                  <p className="text-sm text-gray-400">Suas prescrições aparecerão aqui quando disponíveis.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
