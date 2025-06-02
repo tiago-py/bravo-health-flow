@@ -4,16 +4,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { ArrowLeft, Calendar, CheckSquare } from 'lucide-react';
+import { ArrowLeft, Upload, CheckSquare, FileText } from 'lucide-react';
 
 const DoctorPatientDetail = () => {
   const { id } = useParams<{id: string}>();
   const navigate = useNavigate();
   
   const [observations, setObservations] = useState('');
-  const [prescription, setPrescription] = useState('');
+  const [prescriptionFile, setPrescriptionFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Mock patient data
@@ -79,14 +79,23 @@ const DoctorPatientDetail = () => {
       birthdate: '1990-05-10',
       height: '178',
       weight: '75',
-    },
-    previousEvaluations: []
+    }
   };
   
-  // Handle form submission
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type === 'application/pdf') {
+        setPrescriptionFile(file);
+      } else {
+        toast.error('Por favor, selecione apenas arquivos PDF.');
+      }
+    }
+  };
+  
   const handleSubmit = async () => {
-    if (!observations || !prescription) {
-      toast.error('Por favor, preencha todos os campos obrigatórios.');
+    if (!prescriptionFile) {
+      toast.error('Por favor, faça upload da prescrição em PDF.');
       return;
     }
     
@@ -209,73 +218,64 @@ const DoctorPatientDetail = () => {
             <CardHeader>
               <CardTitle>Avaliação Médica</CardTitle>
               <CardDescription>
-                Forneça suas observações e prescrição
+                Forneça suas observações e faça upload da prescrição
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="evaluation">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="evaluation">Avaliação</TabsTrigger>
-                  {patient.previousEvaluations.length > 0 && (
-                    <TabsTrigger value="history">Histórico</TabsTrigger>
-                  )}
-                </TabsList>
-                
-                <TabsContent value="evaluation" className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Observações médicas
-                    </label>
-                    <Textarea
-                      value={observations}
-                      onChange={(e) => setObservations(e.target.value)}
-                      placeholder="Digite suas observações sobre o caso..."
-                      rows={4}
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Prescrição sugerida
-                    </label>
-                    <Textarea
-                      value={prescription}
-                      onChange={(e) => setPrescription(e.target.value)}
-                      placeholder="Digite a prescrição detalhada para o paciente..."
-                      rows={6}
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      Inclua nome dos medicamentos, dosagens, frequência e outras orientações relevantes.
+            <CardContent className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Observações médicas (opcional)
+                </label>
+                <Textarea
+                  value={observations}
+                  onChange={(e) => setObservations(e.target.value)}
+                  placeholder="Digite suas observações sobre o caso..."
+                  rows={4}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Upload da Prescrição (PDF) *
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                  <div className="text-center">
+                    <Upload size={48} className="mx-auto text-gray-400 mb-4" />
+                    <div className="mb-2">
+                      <Input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="prescription-upload"
+                      />
+                      <label htmlFor="prescription-upload" className="cursor-pointer">
+                        <Button variant="outline" asChild>
+                          <span>Selecionar arquivo PDF</span>
+                        </Button>
+                      </label>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      Faça upload da prescrição em formato PDF
                     </p>
                   </div>
-                </TabsContent>
-                
-                {patient.previousEvaluations.length > 0 && (
-                  <TabsContent value="history" className="space-y-4">
-                    {patient.previousEvaluations.map((evaluation, index) => (
-                      <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center text-sm text-gray-500 mb-2">
-                          <Calendar size={14} className="mr-1" />
-                          <span>{new Date(evaluation.date).toLocaleDateString('pt-BR')}</span>
-                        </div>
-                        <div className="mb-3">
-                          <h4 className="font-medium text-sm text-gray-700">Observações:</h4>
-                          <p className="text-gray-900 mt-1">{evaluation.observations}</p>
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-sm text-gray-700">Prescrição:</h4>
-                          <p className="text-gray-900 mt-1">{evaluation.prescription}</p>
-                        </div>
+                  {prescriptionFile && (
+                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center">
+                        <FileText size={20} className="text-green-600 mr-2" />
+                        <span className="text-sm font-medium text-green-800">
+                          {prescriptionFile.name}
+                        </span>
                       </div>
-                    ))}
-                  </TabsContent>
-                )}
-              </Tabs>
+                    </div>
+                  )}
+                </div>
+              </div>
             </CardContent>
             <CardFooter className="border-t border-gray-100 pt-4 flex justify-end">
               <Button 
                 onClick={handleSubmit}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !prescriptionFile}
               >
                 <CheckSquare size={16} className="mr-2" />
                 {isSubmitting ? 'Salvando...' : 'Finalizar avaliação'}

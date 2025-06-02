@@ -34,6 +34,7 @@ import ClientSupport from "./pages/client/Support";
 import DoctorLayout from "./layouts/DoctorLayout";
 import DoctorDashboard from "./pages/doctor/Dashboard";
 import DoctorPatientDetail from "./pages/doctor/PatientDetail";
+import DoctorPrescriptions from "./pages/doctor/Prescriptions";
 import DoctorHistory from "./pages/doctor/History";
 import DoctorProfile from "./pages/doctor/Profile";
 
@@ -104,6 +105,7 @@ const App = () => (
           >
             <Route path="dashboard" element={<DoctorDashboard />} />
             <Route path="paciente/:id" element={<DoctorPatientDetail />} />
+            <Route path="prescricoes" element={<DoctorPrescriptions />} />
             <Route path="historico" element={<DoctorHistory />} />
             <Route path="perfil" element={<DoctorProfile />} />
           </Route>
