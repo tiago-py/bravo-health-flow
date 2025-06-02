@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -51,6 +50,7 @@ import FlowBuilder from "./pages/admin/FlowBuilder";
 // Auth Guards
 import RequireAuth from "./components/guards/RequireAuth";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import AllPrescriptions from "./pages/admin/AllPrescriptions";
 
 const queryClient = new QueryClient();
 
@@ -122,6 +122,7 @@ const App = () => (
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="anamnese/editar/:id" element={<AdminAnamneseEdit />} />
             <Route path="flow-builder" element={<FlowBuilder />} />
+            <Route path="prescricoes" element={<AllPrescriptions />} />
             <Route path="usuarios" element={<AdminUsers />} />
             <Route path="medicos" element={<AdminDoctors />} />
             <Route path="financeiro" element={<AdminFinancial />} />

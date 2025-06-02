@@ -1,26 +1,29 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { User, Calendar, Search, FileText, Download, Eye } from 'lucide-react';
+import { User, Calendar, Search, FileText, Download, Eye, UserCheck } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const DoctorPrescriptions = () => {
+const AllPrescriptions = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [doctorFilter, setDoctorFilter] = useState('all');
   
-  // Mock prescriptions data
+  // Mock prescriptions data with doctor info
   const allPrescriptions = [
     {
       id: '1',
       patientName: 'João Silva',
       patientAge: 32,
+      doctorName: 'Dr. Carlos Mendes',
+      doctorCRM: 'CRM/SP 123456',
       evaluationDate: '2023-03-25',
+      uploadDate: '2023-03-25',
       type: 'queda-capilar',
       observations: 'Paciente apresenta alopecia androgenética grau 3. Indicado tratamento com finasterida e minoxidil.',
       prescriptionFile: 'prescricao_joao_silva_25032023.pdf'
@@ -29,7 +32,10 @@ const DoctorPrescriptions = () => {
       id: '2',
       patientName: 'Marcos Oliveira',
       patientAge: 45,
+      doctorName: 'Dr. Ana Santos',
+      doctorCRM: 'CRM/RJ 789012',
       evaluationDate: '2023-03-25',
+      uploadDate: '2023-03-26',
       type: 'disfuncao-eretil',
       observations: 'Paciente relata dificuldades de ereção há 6 meses. Indicado tadalafila 5mg.',
       prescriptionFile: 'prescricao_marcos_oliveira_25032023.pdf'
@@ -38,7 +44,10 @@ const DoctorPrescriptions = () => {
       id: '3',
       patientName: 'André Costa',
       patientAge: 28,
+      doctorName: 'Dr. Carlos Mendes',
+      doctorCRM: 'CRM/SP 123456',
       evaluationDate: '2023-03-24',
+      uploadDate: '2023-03-24',
       type: 'queda-capilar',
       observations: 'Início de calvície masculina. Tratamento preventivo com finasterida.',
       prescriptionFile: 'prescricao_andre_costa_24032023.pdf'
@@ -47,7 +56,10 @@ const DoctorPrescriptions = () => {
       id: '4',
       patientName: 'Carlos Eduardo',
       patientAge: 41,
+      doctorName: 'Dr. Roberto Silva',
+      doctorCRM: 'CRM/MG 345678',
       evaluationDate: '2023-03-23',
+      uploadDate: '2023-03-23',
       type: 'disfuncao-eretil',
       observations: 'DE moderada. Prescrito sildenafila 50mg conforme necessário.',
       prescriptionFile: 'prescricao_carlos_eduardo_23032023.pdf'
@@ -56,46 +68,55 @@ const DoctorPrescriptions = () => {
       id: '5',
       patientName: 'Paulo Vieira',
       patientAge: 35,
-      evaluationDate: '2023-03-23',
+      doctorName: 'Dr. Ana Santos',
+      doctorCRM: 'CRM/RJ 789012',
+      evaluationDate: '2023-03-22',
+      uploadDate: '2023-03-23',
       type: 'queda-capilar',
       observations: 'Calvície avançada. Combinação de finasterida 1mg e minoxidil 5%.',
-      prescriptionFile: 'prescricao_paulo_vieira_23032023.pdf'
+      prescriptionFile: 'prescricao_paulo_vieira_22032023.pdf'
     },
   ];
+
+  // Get unique doctors for filter
+  const uniqueDoctors = Array.from(new Set(allPrescriptions.map(p => p.doctorName)));
   
   // Filter prescriptions based on search query and filters
   const filteredPrescriptions = allPrescriptions.filter(prescription => {
-    // Search filter
-    const matchesSearch = prescription.patientName.toLowerCase().includes(searchQuery.toLowerCase());
+    // Search filter (patient name or doctor name)
+    const matchesSearch = 
+      prescription.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      prescription.doctorName.toLowerCase().includes(searchQuery.toLowerCase());
     
     // Type filter
     const matchesType = typeFilter === 'all' || prescription.type === typeFilter;
     
-    // Date filter
+    // Doctor filter
+    const matchesDoctor = doctorFilter === 'all' || prescription.doctorName === doctorFilter;
+    
+    // Date filter (based on upload date)
     let matchesDate = true;
-    const evaluationDate = new Date(prescription.evaluationDate);
+    const uploadDate = new Date(prescription.uploadDate);
     const today = new Date();
     const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
     const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
     
     if (dateFilter === 'today') {
-      matchesDate = evaluationDate.toDateString() === today.toDateString();
+      matchesDate = uploadDate.toDateString() === today.toDateString();
     } else if (dateFilter === 'week') {
-      matchesDate = evaluationDate >= lastWeek;
+      matchesDate = uploadDate >= lastWeek;
     } else if (dateFilter === 'month') {
-      matchesDate = evaluationDate >= lastMonth;
+      matchesDate = uploadDate >= lastMonth;
     }
     
-    return matchesSearch && matchesType && matchesDate;
+    return matchesSearch && matchesType && matchesDoctor && matchesDate;
   });
 
   const handleDownload = (filename: string) => {
-    // Simulate PDF download
     console.log('Downloading:', filename);
   };
 
   const handleView = (filename: string) => {
-    // Simulate PDF view
     console.log('Viewing:', filename);
   };
 
@@ -103,10 +124,10 @@ const DoctorPrescriptions = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-[#58819d] mb-2">
-          Minhas Prescrições
+          Todas as Prescrições
         </h1>
         <p className="text-gray-600">
-          Gerencie todas as prescrições realizadas
+          Visualize e gerencie todas as prescrições dos médicos
         </p>
       </div>
       
@@ -115,16 +136,16 @@ const DoctorPrescriptions = () => {
         <CardHeader className="pb-3">
           <CardTitle>Filtros</CardTitle>
           <CardDescription>
-            Filtre por nome do paciente, tipo de tratamento ou data
+            Filtre por paciente, médico, tipo de tratamento ou data de upload
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="sm:col-span-2">
               <div className="relative">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  placeholder="Buscar por nome do paciente..."
+                  placeholder="Buscar por paciente ou médico..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-8"
@@ -134,11 +155,28 @@ const DoctorPrescriptions = () => {
             
             <div>
               <Select
+                value={doctorFilter}
+                onValueChange={setDoctorFilter}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Médico" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os médicos</SelectItem>
+                  {uniqueDoctors.map(doctor => (
+                    <SelectItem key={doctor} value={doctor}>{doctor}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Select
                 value={typeFilter}
                 onValueChange={setTypeFilter}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Tipo de tratamento" />
+                  <SelectValue placeholder="Tipo" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os tipos</SelectItem>
@@ -154,7 +192,7 @@ const DoctorPrescriptions = () => {
                 onValueChange={setDateFilter}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Filtrar por data" />
+                  <SelectValue placeholder="Data upload" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas as datas</SelectItem>
@@ -182,13 +220,14 @@ const DoctorPrescriptions = () => {
           {filteredPrescriptions.length > 0 ? (
             <div className="space-y-4">
               {/* Desktop Table */}
-              <div className="hidden lg:block">
+              <div className="hidden xl:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Paciente</TableHead>
+                      <TableHead>Médico</TableHead>
                       <TableHead>Tipo</TableHead>
-                      <TableHead>Data</TableHead>
+                      <TableHead>Data Upload</TableHead>
                       <TableHead>Observações</TableHead>
                       <TableHead>Ações</TableHead>
                     </TableRow>
@@ -206,6 +245,15 @@ const DoctorPrescriptions = () => {
                           </div>
                         </TableCell>
                         <TableCell>
+                          <div className="flex items-center">
+                            <UserCheck size={16} className="mr-2 text-gray-400" />
+                            <div>
+                              <div className="font-medium">{prescription.doctorName}</div>
+                              <div className="text-sm text-gray-500">{prescription.doctorCRM}</div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
                           <Badge variant="outline">
                             {prescription.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
                           </Badge>
@@ -213,7 +261,7 @@ const DoctorPrescriptions = () => {
                         <TableCell>
                           <div className="flex items-center text-sm">
                             <Calendar size={14} className="mr-1 text-gray-400" />
-                            {new Date(prescription.evaluationDate).toLocaleDateString('pt-BR')}
+                            {new Date(prescription.uploadDate).toLocaleDateString('pt-BR')}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -249,13 +297,13 @@ const DoctorPrescriptions = () => {
                 </Table>
               </div>
 
-              {/* Mobile Cards */}
-              <div className="lg:hidden space-y-4">
+              {/* Mobile/Tablet Cards */}
+              <div className="xl:hidden space-y-4">
                 {filteredPrescriptions.map(prescription => (
                   <Card key={prescription.id}>
                     <CardContent className="p-4">
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
                           <div className="flex items-center">
                             <User size={16} className="mr-2 text-gray-400" />
                             <div>
@@ -268,9 +316,17 @@ const DoctorPrescriptions = () => {
                           </Badge>
                         </div>
                         
+                        <div className="flex items-center">
+                          <UserCheck size={16} className="mr-2 text-gray-400" />
+                          <div>
+                            <div className="font-medium text-sm">{prescription.doctorName}</div>
+                            <div className="text-xs text-gray-500">{prescription.doctorCRM}</div>
+                          </div>
+                        </div>
+                        
                         <div className="flex items-center text-sm text-gray-600">
                           <Calendar size={14} className="mr-1 text-gray-400" />
-                          {new Date(prescription.evaluationDate).toLocaleDateString('pt-BR')}
+                          Upload: {new Date(prescription.uploadDate).toLocaleDateString('pt-BR')}
                         </div>
                         
                         <p className="text-sm text-gray-600">{prescription.observations}</p>
@@ -316,4 +372,4 @@ const DoctorPrescriptions = () => {
   );
 };
 
-export default DoctorPrescriptions;
+export default AllPrescriptions;

@@ -13,7 +13,7 @@ import {
   Menu, 
   X, 
   FileText,
-  Tag
+  ClipboardList
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -23,6 +23,7 @@ const AdminLayout = () => {
   const navigations = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: <Home size={20} /> },
     { name: 'Construtor de Fluxos', path: '/admin/flow-builder', icon: <FileText size={20} /> },
+    { name: 'Todas as Prescrições', path: '/admin/prescricoes', icon: <ClipboardList size={20} /> },
     { name: 'Usuários', path: '/admin/usuarios', icon: <Users size={20} /> },
     { name: 'Médicos', path: '/admin/medicos', icon: <User size={20} /> },
     { name: 'Financeiro', path: '/admin/financeiro', icon: <DollarSign size={20} /> },
@@ -34,7 +35,7 @@ const AdminLayout = () => {
       {/* Sidebar - Desktop */}
       <aside className="hidden md:flex md:flex-col w-64 bg-white border-r border-gray-200">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <span className="text-xl font-montserrat font-bold text-bravo-blue">Bravo Admin</span>
+          <span className="text-xl font-montserrat font-bold text-[#58819d]">Bravo Admin</span>
         </div>
         
         <div className="flex-1 py-6 flex flex-col px-4 space-y-1 overflow-y-auto">
@@ -45,7 +46,7 @@ const AdminLayout = () => {
               className={({ isActive }) =>
                 `flex items-center px-3 py-3 rounded-lg text-sm ${
                   isActive
-                    ? 'bg-bravo-beige text-bravo-blue font-medium'
+                    ? 'bg-bravo-beige text-[#58819d] font-medium'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`
               }
@@ -76,10 +77,10 @@ const AdminLayout = () => {
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 inset-x-0 z-50 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between h-16 px-4">
-          <span className="text-xl font-montserrat font-bold text-bravo-blue">Bravo Admin</span>
+          <span className="text-xl font-montserrat font-bold text-[#58819d]">Bravo Admin</span>
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-gray-600 hover:text-bravo-blue"
+            className="p-2 text-gray-600 hover:text-[#58819d]"
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -99,7 +100,7 @@ const AdminLayout = () => {
                   className={({ isActive }) =>
                     `flex items-center px-3 py-3 rounded-lg text-sm ${
                       isActive
-                        ? 'bg-bravo-beige text-bravo-blue font-medium'
+                        ? 'bg-bravo-beige text-[#58819d] font-medium'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`
                   }
