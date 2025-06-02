@@ -2,10 +2,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { ImageUploadField } from '@/components/anamnese/ImageUploadField';
-import { Download, Calendar, Camera, FileText, Trash2, Plus } from 'lucide-react';
+import { Camera, Trash2, Plus } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 const ClientPrescriptions = () => {
@@ -29,26 +28,6 @@ const ClientPrescriptions = () => {
     description: '',
     size: 'medium' as 'small' | 'medium' | 'large'
   });
-
-  // Mock prescription data
-  const currentPrescription = {
-    id: 1,
-    doctorName: 'Dr. Bruno Silva',
-    date: '2023-03-15',
-    expiry: '2023-09-15',
-    products: [{
-      name: 'Minoxidil 5%',
-      instructions: 'Aplicar 1ml na região afetada, duas vezes ao dia (manhã e noite)'
-    }, {
-      name: 'Finasterida 1mg',
-      instructions: 'Tomar 1 comprimido por dia, sempre no mesmo horário'
-    }, {
-      name: 'Complexo Vitamínico Capilar',
-      instructions: 'Tomar 1 cápsula por dia, preferencialmente com o almoço'
-    }],
-    generalInstructions: 'Mantenha o uso contínuo para melhores resultados. Evite interromper o tratamento sem consulta médica. Em caso de efeitos adversos, entre em contato imediatamente.',
-    pdfUrl: '#'
-  };
 
   const handleAddPhoto = () => {
     if (newPhoto.url && newPhoto.description) {
@@ -75,78 +54,13 @@ const ClientPrescriptions = () => {
     });
   };
 
-  const handleDownload = () => {
-    toast({
-      title: 'Baixando prescrição...',
-      description: 'O arquivo será baixado em instantes.',
-    });
-  };
-
   return (
     <div className="p-6">
       <div className="mb-8">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-bravo-blue mb-2">Acompanhamento do Tratamento</h1>
-            <p className="text-gray-600">
-              Registre sua evolução com fotos e acompanhe seu progresso
-            </p>
-          </div>
-          
-          {/* Prescrição Button - Less Visible */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs">
-                <FileText size={14} className="mr-1" />
-                Ver prescrição
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Prescrição Atual</DialogTitle>
-                <DialogDescription>
-                  {currentPrescription.doctorName} • {new Date(currentPrescription.date).toLocaleDateString('pt-BR')}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-6">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center">
-                    <Calendar size={16} className="mr-1 text-gray-500" />
-                    <span className="text-gray-500">
-                      Válida até {new Date(currentPrescription.expiry).toLocaleDateString('pt-BR')}
-                    </span>
-                  </div>
-                  <Badge variant="secondary">Ativa</Badge>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-bravo-blue mb-4">Medicamentos e Orientações</h3>
-                  <div className="space-y-4">
-                    {currentPrescription.products.map((product, index) => (
-                      <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-medium mb-2">{product.name}</h4>
-                        <p className="text-sm text-gray-700">{product.instructions}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="bg-bravo-beige bg-opacity-30 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">Instruções Gerais</h4>
-                  <p className="text-sm text-gray-700">{currentPrescription.generalInstructions}</p>
-                </div>
-                
-                <div className="flex justify-end">
-                  <Button variant="outline" onClick={handleDownload}>
-                    <Download size={16} className="mr-2" />
-                    Baixar PDF
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+        <h1 className="text-2xl font-bold text-bravo-blue mb-2">Acompanhamento do Tratamento</h1>
+        <p className="text-gray-600">
+          Registre sua evolução com fotos e acompanhe seu progresso
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

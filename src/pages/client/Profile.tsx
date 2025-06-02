@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,9 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/sonner';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Download, Calendar, FileText } from 'lucide-react';
 
 const ClientProfile = () => {
   const { user } = useAuth();
@@ -36,6 +38,26 @@ const ClientProfile = () => {
     newPassword: '',
     confirmPassword: '',
   });
+
+  // Mock prescription data
+  const currentPrescription = {
+    id: 1,
+    doctorName: 'Dr. Bruno Silva',
+    date: '2023-03-15',
+    expiry: '2023-09-15',
+    products: [{
+      name: 'Minoxidil 5%',
+      instructions: 'Aplicar 1ml na região afetada, duas vezes ao dia (manhã e noite)'
+    }, {
+      name: 'Finasterida 1mg',
+      instructions: 'Tomar 1 comprimido por dia, sempre no mesmo horário'
+    }, {
+      name: 'Complexo Vitamínico Capilar',
+      instructions: 'Tomar 1 cápsula por dia, preferencialmente com o almoço'
+    }],
+    generalInstructions: 'Mantenha o uso contínuo para melhores resultados. Evite interromper o tratamento sem consulta médica. Em caso de efeitos adversos, entre em contato imediatamente.',
+    pdfUrl: '#'
+  };
   
   // Handle personal info change
   const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,8 +119,14 @@ const ClientProfile = () => {
     });
   };
 
+  const handleDownload = () => {
+    toast.success('Baixando prescrição...', {
+      description: 'O arquivo será baixado em instantes.',
+    });
+  };
+
   return (
-    <div>
+    <div className="p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-bravo-blue mb-2">Meu Perfil</h1>
         <p className="text-gray-600">
@@ -110,6 +138,7 @@ const ClientProfile = () => {
         <TabsList>
           <TabsTrigger value="personal">Informações Pessoais</TabsTrigger>
           <TabsTrigger value="address">Endereço de Entrega</TabsTrigger>
+          <TabsTrigger value="prescriptions">Minhas Prescrições</TabsTrigger>
           <TabsTrigger value="security">Segurança</TabsTrigger>
         </TabsList>
         
@@ -270,6 +299,73 @@ const ClientProfile = () => {
                 Salvar endereço
               </Button>
             </CardFooter>
+          </Card>
+        </TabsContent>
+
+        {/* Prescriptions */}
+        <TabsContent value="prescriptions">
+          <Card>
+            <CardHeader>
+              <CardTitle>Minhas Prescrições</CardTitle>
+              <CardDescription>
+                Visualize e baixe suas prescrições médicas
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent>
+              <div className="space-y-4">
+                <Card className="border-l-4 border-l-bravo-blue">
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-lg">Prescrição Atual</CardTitle>
+                        <CardDescription>
+                          {currentPrescription.doctorName} • {new Date(currentPrescription.date).toLocaleDateString('pt-BR')}
+                        </CardDescription>
+                      </div>
+                      <Badge variant="secondary">Ativa</Badge>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center">
+                          <Calendar size={16} className="mr-1 text-gray-500" />
+                          <span className="text-gray-500">
+                            Válida até {new Date(currentPrescription.expiry).toLocaleDateString('pt-BR')}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium text-bravo-blue mb-3">Medicamentos Prescritos</h4>
+                        <div className="space-y-3">
+                          {currentPrescription.products.map((product, index) => (
+                            <div key={index} className="bg-gray-50 p-3 rounded-lg">
+                              <h5 className="font-medium mb-1">{product.name}</h5>
+                              <p className="text-sm text-gray-700">{product.instructions}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-bravo-beige bg-opacity-30 p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">Instruções Gerais</h4>
+                        <p className="text-sm text-gray-700">{currentPrescription.generalInstructions}</p>
+                      </div>
+                      
+                      <div className="flex justify-end pt-4">
+                        <Button variant="outline" onClick={handleDownload}>
+                          <Download size={16} className="mr-2" />
+                          Baixar PDF
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
           </Card>
         </TabsContent>
         
