@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -32,7 +31,26 @@ const RegisterPage = () => {
     setIsLoading(true);
     
     try {
-      await register(name, email, password);
+      const response = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erro ao criar conta');
+      }
+
+      // Se a API retornar sucesso, também chama o register do contexto (se necessário)
+      // await register(name, email, password);
       
       toast({
         title: 'Cadastro realizado com sucesso',
@@ -44,7 +62,13 @@ const RegisterPage = () => {
       
     } catch (error) {
       console.error('Registration error:', error);
-      setError('Falha ao criar conta. Verifique seus dados e tente novamente.');
+      
+      // Tratamento de erro mais específico
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Falha ao criar conta. Verifique seus dados e tente novamente.');
+      }
     } finally {
       setIsLoading(false);
     }

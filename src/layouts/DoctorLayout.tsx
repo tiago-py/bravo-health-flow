@@ -18,10 +18,10 @@ const DoctorLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const navigations = [
-    { name: 'Dashboard', path: '/medico/dashboard', icon: <Home size={20} /> },
-    { name: 'Prescrições', path: '/medico/prescricoes', icon: <ClipboardList size={20} /> },
-    { name: 'Histórico', path: '/medico/historico', icon: <Users size={20} /> },
-    { name: 'Meu Perfil', path: '/medico/perfil', icon: <User size={20} /> },
+    { name: 'Dashboard', path: '/doctor/dashboard', icon: <Home size={20} /> },
+    { name: 'Prescrições', path: '/doctor/prescricoes', icon: <ClipboardList size={20} /> },
+    { name: 'Histórico', path: '/doctor/historico', icon: <Users size={20} /> },
+    { name: 'Meu Perfil', path: '/doctor/perfil', icon: <User size={20} /> },
   ];
 
   return (

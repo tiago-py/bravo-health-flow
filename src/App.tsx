@@ -82,11 +82,15 @@ const App = () => (
           {/* Client Routes - Protected */}
           <Route 
             path="/cliente" 
+         
             element={
               <RequireAuth role="client">
                 <ClientLayout />
-              </RequireAuth>
+                </RequireAuth>
+              
+              
             }
+            
           >
             <Route path="dashboard" element={<ClientDashboard />} />
             <Route path="tratamentos" element={<ClientPrescriptions />} />
@@ -97,12 +101,16 @@ const App = () => (
           
           {/* Doctor Routes - Protected */}
           <Route 
-            path="/medico" 
+            path="/doctor" 
+            
             element={
-              <RequireAuth role="doctor">
+              <RequireAuth role="medico">
                 <DoctorLayout />
-              </RequireAuth>
+                </RequireAuth>
+              
+              
             }
+            
           >
             <Route path="dashboard" element={<DoctorDashboard />} />
             <Route path="paciente/:id" element={<DoctorPatientDetail />} />
@@ -114,11 +122,15 @@ const App = () => (
           {/* Admin Routes - Protected */}
           <Route 
             path="/admin" 
+           
             element={
               <RequireAuth role="admin">
                 <AdminLayout />
-              </RequireAuth>
+                </RequireAuth>
+              
+              
             }
+            
           >
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="anamnese/editar/:id" element={<AdminAnamneseEdit />} />
