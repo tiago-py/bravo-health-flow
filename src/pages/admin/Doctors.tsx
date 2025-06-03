@@ -14,6 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+type DoctorStatus = 'active' | 'inactive' | 'pending';
+
 interface Doctor {
   id: string;
   name: string;
@@ -21,7 +23,7 @@ interface Doctor {
   phone: string;
   crm: string;
   specialty: string;
-  status: 'active' | 'inactive' | 'pending';
+  status: DoctorStatus;
   patientsCount: number;
   joinedDate: string;
 }
@@ -30,7 +32,6 @@ const AdminDoctors = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   
-  // Mock doctors data
   const doctors: Doctor[] = [
     {
       id: '1',
@@ -78,7 +79,6 @@ const AdminDoctors = () => {
     }
   ];
   
-  // Filter doctors based on search query and status filter
   const filteredDoctors = doctors.filter(doctor => {
     const matchesSearch = doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          doctor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -87,30 +87,29 @@ const AdminDoctors = () => {
     return matchesSearch && matchesStatus;
   });
   
-  // Helper function to get status badge
-  const getStatusBadge = (status: Doctor['status']) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-green-100 text-green-800">Ativo</Badge>;
-      case 'inactive':
-        return <Badge className="bg-gray-100 text-gray-800">Inativo</Badge>;
-      case 'pending':
-        return <Badge className="bg-amber-100 text-amber-800">Pendente</Badge>;
-      default:
-        return null;
-    }
+  const getStatusBadge = (status: DoctorStatus) => {
+    const statusConfig = {
+      active: { className: "bg-green-100 text-green-800", text: "Ativo" },
+      inactive: { className: "bg-gray-100 text-gray-800", text: "Inativo" },
+      pending: { className: "bg-amber-100 text-amber-800", text: "Pendente" }
+    };
+    
+    const config = statusConfig[status];
+    return <Badge className={config.className}>{config.text}</Badge>;
   };
   
-  // Doctor actions
   const activateDoctor = (doctorId: string) => {
+    console.log('Activating doctor:', doctorId);
     toast.success('Médico ativado com sucesso.');
   };
   
   const deactivateDoctor = (doctorId: string) => {
+    console.log('Deactivating doctor:', doctorId);
     toast.success('Médico desativado com sucesso.');
   };
   
   const editDoctor = (doctorId: string) => {
+    console.log('Editing doctor:', doctorId);
     toast.info('Funcionalidade de edição em desenvolvimento.');
   };
 
@@ -129,7 +128,6 @@ const AdminDoctors = () => {
         </Button>
       </div>
       
-      {/* Filters */}
       <Card className="mb-6">
         <CardHeader className="pb-3">
           <CardTitle>Filtros</CardTitle>
@@ -171,7 +169,6 @@ const AdminDoctors = () => {
         </CardContent>
       </Card>
       
-      {/* Doctors List */}
       <div className="space-y-4">
         {filteredDoctors.map((doctor) => (
           <Card key={doctor.id}>

@@ -2,13 +2,25 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { ImageUploadField } from '@/components/anamnese/ImageUploadField';
 import { Camera, Trash2, Plus } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
+interface Photo {
+  id: number;
+  url: string;
+  date: string;
+  description: string;
+}
+
+interface NewPhoto {
+  url: string;
+  description: string;
+  size: 'small' | 'medium' | 'large';
+}
+
 const ClientPrescriptions = () => {
-  const [photos, setPhotos] = useState([
+  const [photos, setPhotos] = useState<Photo[]>([
     {
       id: 1,
       url: '/lovable-uploads/0087efeb-bff4-47e0-98e8-86830938bb11.png',
@@ -23,15 +35,15 @@ const ClientPrescriptions = () => {
     }
   ]);
 
-  const [newPhoto, setNewPhoto] = useState({
+  const [newPhoto, setNewPhoto] = useState<NewPhoto>({
     url: '',
     description: '',
-    size: 'medium' as 'small' | 'medium' | 'large'
+    size: 'medium'
   });
 
   const handleAddPhoto = () => {
     if (newPhoto.url && newPhoto.description) {
-      const photo = {
+      const photo: Photo = {
         id: Date.now(),
         url: newPhoto.url,
         date: new Date().toISOString().split('T')[0],
@@ -54,6 +66,9 @@ const ClientPrescriptions = () => {
     });
   };
 
+  const daysSinceStart = Math.floor((Date.now() - new Date('2023-03-01').getTime()) / (1000 * 60 * 60 * 24));
+  const nextConsultation = new Date('2023-04-15').toLocaleDateString('pt-BR');
+
   return (
     <div className="p-6">
       <div className="mb-8">
@@ -64,7 +79,6 @@ const ClientPrescriptions = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Add New Photo Section */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -105,7 +119,6 @@ const ClientPrescriptions = () => {
           </CardContent>
         </Card>
 
-        {/* Progress Summary */}
         <Card>
           <CardHeader>
             <CardTitle>Resumo do Progresso</CardTitle>
@@ -120,9 +133,7 @@ const ClientPrescriptions = () => {
                 <div className="text-sm text-green-600">Fotos registradas</div>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">
-                  {Math.floor((Date.now() - new Date('2023-03-01').getTime()) / (1000 * 60 * 60 * 24))}
-                </div>
+                <div className="text-2xl font-bold text-blue-600">{daysSinceStart}</div>
                 <div className="text-sm text-blue-600">Dias de tratamento</div>
               </div>
             </div>
@@ -130,14 +141,13 @@ const ClientPrescriptions = () => {
             <div className="bg-bravo-beige bg-opacity-30 p-4 rounded-lg">
               <h4 className="font-medium mb-2">Próxima consulta</h4>
               <p className="text-sm text-gray-700">
-                Agendada para {new Date('2023-04-15').toLocaleDateString('pt-BR')}
+                Agendada para {nextConsultation}
               </p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Photos Gallery */}
       <Card className="mt-8">
         <CardHeader>
           <CardTitle>Histórico de Evolução</CardTitle>

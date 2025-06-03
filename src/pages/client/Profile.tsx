@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -9,19 +10,47 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Download, FileText } from 'lucide-react';
 
+interface PersonalInfo {
+  name: string;
+  email: string;
+  phone: string;
+  birthdate: string;
+}
+
+interface AddressInfo {
+  street: string;
+  number: string;
+  complement: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipcode: string;
+}
+
+interface PasswordInfo {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+interface Prescription {
+  id: number;
+  name: string;
+  date: string;
+  pdfUrl: string;
+}
+
 const ClientProfile = () => {
   const { user } = useAuth();
   
-  // Personal information state
-  const [personalInfo, setPersonalInfo] = useState({
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     name: user?.name || '',
     email: user?.email || '',
     phone: '(11) 98765-4321',
     birthdate: '1990-05-15',
   });
   
-  // Address information state
-  const [addressInfo, setAddressInfo] = useState({
+  const [addressInfo, setAddressInfo] = useState<AddressInfo>({
     street: 'Rua Exemplo',
     number: '123',
     complement: 'Apto 45',
@@ -31,15 +60,13 @@ const ClientProfile = () => {
     zipcode: '01234-567',
   });
   
-  // Password change state
-  const [passwordInfo, setPasswordInfo] = useState({
+  const [passwordInfo, setPasswordInfo] = useState<PasswordInfo>({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
 
-  // Mock prescription data in list format
-  const prescriptions = [
+  const prescriptions: Prescription[] = [
     {
       id: 1,
       name: 'Dutasterida 0.5 mg',
@@ -66,45 +93,39 @@ const ClientProfile = () => {
     }
   ];
   
-  // Handle personal info change
   const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPersonalInfo({
-      ...personalInfo,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setPersonalInfo(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
   
-  // Handle address info change
   const handleAddressInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddressInfo({
-      ...addressInfo,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setAddressInfo(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
   
-  // Handle password change
   const handlePasswordInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordInfo({
-      ...passwordInfo,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setPasswordInfo(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
   
-  // Save personal information
   const savePersonalInfo = () => {
-    // In a real app, this would send an API request
     toast.success('Informações pessoais salvas com sucesso!');
   };
   
-  // Save address information
   const saveAddressInfo = () => {
-    // In a real app, this would send an API request
     toast.success('Endereço salvo com sucesso!');
   };
   
-  // Change password
   const changePassword = () => {
-    // Validate passwords
     if (passwordInfo.newPassword !== passwordInfo.confirmPassword) {
       toast.error('As senhas não conferem.');
       return;
@@ -115,10 +136,8 @@ const ClientProfile = () => {
       return;
     }
     
-    // In a real app, this would send an API request
     toast.success('Senha alterada com sucesso!');
     
-    // Clear password fields
     setPasswordInfo({
       currentPassword: '',
       newPassword: '',
@@ -149,7 +168,6 @@ const ClientProfile = () => {
           <TabsTrigger value="security">Segurança</TabsTrigger>
         </TabsList>
         
-        {/* Personal Information */}
         <TabsContent value="personal">
           <Card>
             <CardHeader>
@@ -217,7 +235,6 @@ const ClientProfile = () => {
           </Card>
         </TabsContent>
         
-        {/* Address Information */}
         <TabsContent value="address">
           <Card>
             <CardHeader>
@@ -309,7 +326,6 @@ const ClientProfile = () => {
           </Card>
         </TabsContent>
 
-        {/* Prescriptions */}
         <TabsContent value="prescriptions">
           <Card>
             <CardHeader>
@@ -366,7 +382,6 @@ const ClientProfile = () => {
           </Card>
         </TabsContent>
         
-        {/* Security */}
         <TabsContent value="security">
           <Card>
             <CardHeader>

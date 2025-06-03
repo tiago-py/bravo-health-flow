@@ -13,20 +13,27 @@ import {
   X 
 } from 'lucide-react';
 
+interface Navigation {
+  name: string;
+  path: string;
+  icon: React.ReactNode;
+}
+
 const DoctorLayout = () => {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  const navigations = [
+  const navigations: Navigation[] = [
     { name: 'Dashboard', path: '/medico/dashboard', icon: <Home size={20} /> },
     { name: 'Prescrições', path: '/medico/prescricoes', icon: <ClipboardList size={20} /> },
     { name: 'Histórico', path: '/medico/historico', icon: <Users size={20} /> },
     { name: 'Meu Perfil', path: '/medico/perfil', icon: <User size={20} /> },
   ];
 
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar - Desktop */}
       <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 fixed h-full">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
           <div className="flex items-center">
@@ -70,7 +77,6 @@ const DoctorLayout = () => {
         </div>
       </aside>
       
-      {/* Mobile Header */}
       <div className="md:hidden fixed top-0 inset-x-0 z-50 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between h-16 px-4">
           <span className="text-xl font-montserrat font-bold text-bravo-blue">Bravo Médico</span>
@@ -83,7 +89,6 @@ const DoctorLayout = () => {
         </div>
       </div>
       
-      {/* Mobile Sidebar */}
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-0 z-40 bg-black bg-opacity-50">
           <div className="absolute right-0 top-16 bottom-0 w-64 bg-white shadow-lg">
@@ -92,7 +97,7 @@ const DoctorLayout = () => {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                   className={({ isActive }) =>
                     `flex items-center px-3 py-3 rounded-lg text-sm ${
                       isActive
@@ -117,7 +122,7 @@ const DoctorLayout = () => {
                 variant="ghost" 
                 onClick={() => {
                   logout();
-                  setMobileMenuOpen(false);
+                  closeMobileMenu();
                 }} 
                 className="w-full mt-3 text-gray-700 justify-start"
               >
@@ -129,7 +134,6 @@ const DoctorLayout = () => {
         </div>
       )}
       
-      {/* Main Content */}
       <div className="flex-1 ml-0 md:ml-64 mt-16 md:mt-0">
         <div className="px-6 py-4">
           <Outlet />
