@@ -56,7 +56,7 @@ export default {
         // Bravo Homem colors
         bravo: {
           beige: "#F6E8E2",
-          blue: "#58819d",
+          blue: "#58819e",
           black: "#333333",
           white: "#FFFFFF",
           light: "#FAF7F5",  // Lighter beige for backgrounds
