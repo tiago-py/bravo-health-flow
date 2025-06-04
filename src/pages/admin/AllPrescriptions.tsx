@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,15 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { User, Calendar, Search, FileText, Download, Eye, UserCheck } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 
 const AllPrescriptions = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [selectedPrescriptions, setSelectedPrescriptions] = useState<string[]>([]);
+  const [dateFilter, setDateFilter] = useState('all');
+  const [doctorFilter, setDoctorFilter] = useState('all');
   
   // Mock prescriptions data with doctor info
   const allPrescriptions = [
@@ -79,6 +77,9 @@ const AllPrescriptions = () => {
       prescriptionFile: 'prescricao_paulo_vieira_22032023.pdf'
     },
   ];
+
+  // Get unique doctors for filter
+  const uniqueDoctors = Array.from(new Set(allPrescriptions.map(p => p.doctorName)));
   
   // Filter prescriptions based on search query and filters
   const filteredPrescriptions = allPrescriptions.filter(prescription => {
@@ -90,22 +91,25 @@ const AllPrescriptions = () => {
     // Type filter
     const matchesType = typeFilter === 'all' || prescription.type === typeFilter;
     
-    // Date range filter (based on upload date)
-    let matchesDateRange = true;
+    // Doctor filter
+    const matchesDoctor = doctorFilter === 'all' || prescription.doctorName === doctorFilter;
+    
+    // Date filter (based on upload date)
+    let matchesDate = true;
     const uploadDate = new Date(prescription.uploadDate);
+    const today = new Date();
+    const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
     
-    if (startDate) {
-      const start = new Date(startDate);
-      matchesDateRange = matchesDateRange && uploadDate >= start;
+    if (dateFilter === 'today') {
+      matchesDate = uploadDate.toDateString() === today.toDateString();
+    } else if (dateFilter === 'week') {
+      matchesDate = uploadDate >= lastWeek;
+    } else if (dateFilter === 'month') {
+      matchesDate = uploadDate >= lastMonth;
     }
     
-    if (endDate) {
-      const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999); // Include the entire end date
-      matchesDateRange = matchesDateRange && uploadDate <= end;
-    }
-    
-    return matchesSearch && matchesType && matchesDateRange;
+    return matchesSearch && matchesType && matchesDoctor && matchesDate;
   });
 
   const handleDownload = (filename: string) => {
@@ -115,34 +119,6 @@ const AllPrescriptions = () => {
   const handleView = (filename: string) => {
     console.log('Viewing:', filename);
   };
-
-  const handleSelectPrescription = (prescriptionId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedPrescriptions([...selectedPrescriptions, prescriptionId]);
-    } else {
-      setSelectedPrescriptions(selectedPrescriptions.filter(id => id !== prescriptionId));
-    }
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedPrescriptions(filteredPrescriptions.map(p => p.id));
-    } else {
-      setSelectedPrescriptions([]);
-    }
-  };
-
-  const handleDownloadSelected = () => {
-    const selectedFiles = filteredPrescriptions
-      .filter(p => selectedPrescriptions.includes(p.id))
-      .map(p => p.prescriptionFile);
-    
-    console.log('Downloading selected prescriptions:', selectedFiles);
-    // Aqui você implementaria o download em lote dos PDFs
-  };
-
-  const isAllSelected = filteredPrescriptions.length > 0 && 
-    filteredPrescriptions.every(p => selectedPrescriptions.includes(p.id));
 
   return (
     <div className="space-y-6">
@@ -160,7 +136,7 @@ const AllPrescriptions = () => {
         <CardHeader className="pb-3">
           <CardTitle>Filtros</CardTitle>
           <CardDescription>
-            Filtre por paciente, tipo de tratamento ou período
+            Filtre por paciente, médico, tipo de tratamento ou data de upload
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -178,40 +154,51 @@ const AllPrescriptions = () => {
             </div>
             
             <div>
-              <Label htmlFor="start-date" className="text-sm font-medium">Data Início</Label>
-              <Input
-                id="start-date"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="mt-1"
-              />
+              <Select
+                value={doctorFilter}
+                onValueChange={setDoctorFilter}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Médico" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os médicos</SelectItem>
+                  {uniqueDoctors.map(doctor => (
+                    <SelectItem key={doctor} value={doctor}>{doctor}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             
             <div>
-              <Label htmlFor="end-date" className="text-sm font-medium">Data Fim</Label>
-              <Input
-                id="end-date"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            
-            <div>
-              <Label className="text-sm font-medium">Tipo</Label>
               <Select
                 value={typeFilter}
                 onValueChange={setTypeFilter}
               >
-                <SelectTrigger className="w-full mt-1">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Tipo" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os tipos</SelectItem>
                   <SelectItem value="queda-capilar">Queda Capilar</SelectItem>
                   <SelectItem value="disfuncao-eretil">Disfunção Erétil</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Select
+                value={dateFilter}
+                onValueChange={setDateFilter}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Data upload" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as datas</SelectItem>
+                  <SelectItem value="today">Hoje</SelectItem>
+                  <SelectItem value="week">Última semana</SelectItem>
+                  <SelectItem value="month">Último mês</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -224,20 +211,9 @@ const AllPrescriptions = () => {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle>Prescrições</CardTitle>
-            <div className="flex items-center gap-4">
-              {selectedPrescriptions.length > 0 && (
-                <Button
-                  onClick={handleDownloadSelected}
-                  className="flex items-center gap-2"
-                >
-                  <Download size={16} />
-                  Baixar Selecionados ({selectedPrescriptions.length})
-                </Button>
-              )}
-              <span className="text-sm text-gray-500">
-                {filteredPrescriptions.length} {filteredPrescriptions.length === 1 ? 'prescrição' : 'prescrições'}
-              </span>
-            </div>
+            <span className="text-sm text-gray-500">
+              {filteredPrescriptions.length} {filteredPrescriptions.length === 1 ? 'prescrição' : 'prescrições'}
+            </span>
           </div>
         </CardHeader>
         <CardContent>
@@ -248,13 +224,6 @@ const AllPrescriptions = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-12">
-                        <Checkbox
-                          checked={isAllSelected}
-                          onCheckedChange={handleSelectAll}
-                          aria-label="Selecionar todos"
-                        />
-                      </TableHead>
                       <TableHead>Paciente</TableHead>
                       <TableHead>Médico</TableHead>
                       <TableHead>Tipo</TableHead>
@@ -266,13 +235,6 @@ const AllPrescriptions = () => {
                   <TableBody>
                     {filteredPrescriptions.map(prescription => (
                       <TableRow key={prescription.id}>
-                        <TableCell>
-                          <Checkbox
-                            checked={selectedPrescriptions.includes(prescription.id)}
-                            onCheckedChange={(checked) => handleSelectPrescription(prescription.id, checked as boolean)}
-                            aria-label={`Selecionar prescrição de ${prescription.patientName}`}
-                          />
-                        </TableCell>
                         <TableCell>
                           <div className="flex items-center">
                             <User size={16} className="mr-2 text-gray-400" />
@@ -342,18 +304,11 @@ const AllPrescriptions = () => {
                     <CardContent className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between flex-wrap gap-2">
-                          <div className="flex items-center gap-3">
-                            <Checkbox
-                              checked={selectedPrescriptions.includes(prescription.id)}
-                              onCheckedChange={(checked) => handleSelectPrescription(prescription.id, checked as boolean)}
-                              aria-label={`Selecionar prescrição de ${prescription.patientName}`}
-                            />
-                            <div className="flex items-center">
-                              <User size={16} className="mr-2 text-gray-400" />
-                              <div>
-                                <div className="font-medium">{prescription.patientName}</div>
-                                <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
-                              </div>
+                          <div className="flex items-center">
+                            <User size={16} className="mr-2 text-gray-400" />
+                            <div>
+                              <div className="font-medium">{prescription.patientName}</div>
+                              <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
                             </div>
                           </div>
                           <Badge variant="outline">

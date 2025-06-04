@@ -11,27 +11,19 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit, Trash2, Package } from 'lucide-react';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  type: string;
-  price: number;
-  status: string;
-}
-
 const Products = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   
   // Mock products data
-  const [products, setProducts] = useState<Product[]>([
+  const [products, setProducts] = useState([
     {
       id: '1',
       name: 'Finasterida 1mg',
       description: 'Medicamento para tratamento de queda capilar masculina',
       type: 'queda-capilar',
       price: 89.90,
+      stock: 150,
       status: 'active'
     },
     {
@@ -40,6 +32,7 @@ const Products = () => {
       description: 'Medicamento para tratamento de disfunção erétil',
       type: 'disfuncao-eretil',
       price: 12.50,
+      stock: 200,
       status: 'active'
     },
     {
@@ -48,6 +41,7 @@ const Products = () => {
       description: 'Solução tópica para crescimento capilar',
       type: 'queda-capilar',
       price: 45.90,
+      stock: 75,
       status: 'active'
     }
   ]);
@@ -57,6 +51,7 @@ const Products = () => {
     description: '',
     type: '',
     price: '',
+    stock: '',
     status: 'active'
   });
 
@@ -66,14 +61,15 @@ const Products = () => {
     if (editingProduct) {
       setProducts(products.map(p => 
         p.id === editingProduct.id 
-          ? { ...editingProduct, ...formData, price: parseFloat(formData.price) }
+          ? { ...editingProduct, ...formData, price: parseFloat(formData.price), stock: parseInt(formData.stock) }
           : p
       ));
     } else {
-      const newProduct: Product = {
+      const newProduct = {
         id: Date.now().toString(),
         ...formData,
-        price: parseFloat(formData.price)
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock)
       };
       setProducts([...products, newProduct]);
     }
@@ -87,19 +83,21 @@ const Products = () => {
       description: '',
       type: '',
       price: '',
+      stock: '',
       status: 'active'
     });
     setEditingProduct(null);
     setIsDialogOpen(false);
   };
 
-  const handleEdit = (product: Product) => {
+  const handleEdit = (product: any) => {
     setEditingProduct(product);
     setFormData({
       name: product.name,
       description: product.description,
       type: product.type,
       price: product.price.toString(),
+      stock: product.stock.toString(),
       status: product.status
     });
     setIsDialogOpen(true);
@@ -206,17 +204,31 @@ const Products = () => {
                   </div>
                 </div>
                 
-                <div className="grid gap-2">
-                  <Label htmlFor="price">Preço (R$)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="0.00"
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="price">Preço (R$)</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      placeholder="0.00"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="grid gap-2">
+                    <Label htmlFor="stock">Estoque</Label>
+                    <Input
+                      id="stock"
+                      type="number"
+                      value={formData.stock}
+                      onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                      placeholder="0"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
               <DialogFooter>
@@ -249,6 +261,7 @@ const Products = () => {
                 <TableHead>Nome</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead>Preço</TableHead>
+                <TableHead>Estoque</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="w-[100px]">Ações</TableHead>
               </TableRow>
@@ -269,6 +282,11 @@ const Products = () => {
                   </TableCell>
                   <TableCell>
                     R$ {product.price.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    <span className={product.stock < 10 ? 'text-red-600 font-medium' : ''}>
+                      {product.stock} unidades
+                    </span>
                   </TableCell>
                   <TableCell>
                     {getStatusBadge(product.status)}

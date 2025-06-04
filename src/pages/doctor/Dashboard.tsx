@@ -1,179 +1,75 @@
 
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowRight, Clock, Calendar, User, Download, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
-import * as XLSX from 'xlsx';
-
-interface Patient {
-  id: string;
-  name: string;
-  cpf: string;
-  age: number;
-  date: string;
-  type: 'queda-capilar' | 'disfuncao-eretil';
-  priority?: 'high' | 'normal';
-  medicationHabit: 'habitual' | 'needs-attention' | 'not-habitual';
-}
+import { ArrowRight, Clock, Calendar, User } from 'lucide-react';
 
 const DoctorDashboard = () => {
   const { user } = useAuth();
-  const [selectedPatients, setSelectedPatients] = useState<string[]>([]);
-  const [habitFilter, setHabitFilter] = useState<string>('all');
   
   // Mock data for patients awaiting evaluation
-  const pendingEvaluations: Patient[] = [
+  const pendingEvaluations = [
     {
       id: '1',
       name: 'João Silva',
-      cpf: '123.456.789-01',
       age: 32,
       date: '2023-03-25T14:30:00',
       type: 'queda-capilar',
-      priority: 'normal',
-      medicationHabit: 'habitual'
+      priority: 'normal'
     },
     {
       id: '2',
       name: 'Marcos Oliveira',
-      cpf: '987.654.321-02',
       age: 45,
       date: '2023-03-25T10:15:00',
       type: 'disfuncao-eretil',
-      priority: 'high',
-      medicationHabit: 'not-habitual'
+      priority: 'high'
     },
     {
       id: '3',
       name: 'André Costa',
-      cpf: '456.789.123-03',
       age: 28,
       date: '2023-03-24T16:45:00',
       type: 'queda-capilar',
-      priority: 'normal',
-      medicationHabit: 'needs-attention'
+      priority: 'normal'
     },
     {
       id: '4',
       name: 'Ricardo Mendes',
-      cpf: '321.654.987-04',
       age: 37,
       date: '2023-03-24T09:20:00',
       type: 'disfuncao-eretil',
-      priority: 'normal',
-      medicationHabit: 'habitual'
+      priority: 'normal'
     },
   ];
   
   // Mock data for recent evaluations
-  const recentEvaluations: Patient[] = [
+  const recentEvaluations = [
     {
       id: '5',
       name: 'Carlos Eduardo',
-      cpf: '789.123.456-05',
       age: 41,
       date: '2023-03-23T15:10:00',
-      type: 'disfuncao-eretil',
-      medicationHabit: 'habitual'
+      type: 'disfuncao-eretil'
     },
     {
       id: '6',
       name: 'Paulo Vieira',
-      cpf: '654.321.987-06',
       age: 35,
       date: '2023-03-23T11:30:00',
-      type: 'queda-capilar',
-      medicationHabit: 'needs-attention'
+      type: 'queda-capilar'
     },
     {
       id: '7',
       name: 'Gustavo Martins',
-      cpf: '147.258.369-07',
       age: 29,
       date: '2023-03-22T14:45:00',
-      type: 'queda-capilar',
-      medicationHabit: 'not-habitual'
+      type: 'queda-capilar'
     },
   ];
-
-  const getMedicationHabitIcon = (habit: string) => {
-    switch (habit) {
-      case 'habitual':
-        return <CheckCircle size={16} className="text-green-600" />;
-      case 'needs-attention':
-        return <AlertTriangle size={16} className="text-yellow-600" />;
-      case 'not-habitual':
-        return <XCircle size={16} className="text-red-600" />;
-      default:
-        return null;
-    }
-  };
-
-  const getMedicationHabitText = (habit: string) => {
-    switch (habit) {
-      case 'habitual':
-        return 'Hábito';
-      case 'needs-attention':
-        return 'Atenção';
-      case 'not-habitual':
-        return 'Inábito';
-      default:
-        return '';
-    }
-  };
-
-  const filterPatientsByHabit = (patients: Patient[]) => {
-    if (habitFilter === 'all') return patients;
-    return patients.filter(patient => patient.medicationHabit === habitFilter);
-  };
-
-  const handleSelectPatient = (patientId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedPatients(prev => [...prev, patientId]);
-    } else {
-      setSelectedPatients(prev => prev.filter(id => id !== patientId));
-    }
-  };
-
-  const handleSelectAll = (patients: Patient[], checked: boolean) => {
-    const filteredPatients = filterPatientsByHabit(patients);
-    if (checked) {
-      const patientIds = filteredPatients.map(p => p.id);
-      setSelectedPatients(prev => [...new Set([...prev, ...patientIds])]);
-    } else {
-      const patientIds = filteredPatients.map(p => p.id);
-      setSelectedPatients(prev => prev.filter(id => !patientIds.includes(id)));
-    }
-  };
-
-  const exportToExcel = () => {
-    const allPatients = [...pendingEvaluations, ...recentEvaluations];
-    const selectedPatientsData = allPatients.filter(patient => 
-      selectedPatients.includes(patient.id)
-    );
-
-    const excelData = selectedPatientsData.map(patient => ({
-      'Nome': patient.name,
-      'CPF': patient.cpf,
-      'Idade': patient.age,
-      'Tipo de Tratamento': patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil',
-      'Data': new Date(patient.date).toLocaleDateString('pt-BR'),
-      'Prioridade': patient.priority === 'high' ? 'Alta' : 'Normal',
-      'Hábito Medicação': getMedicationHabitText(patient.medicationHabit)
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Pacientes');
-    
-    XLSX.writeFile(workbook, `pacientes_${new Date().toISOString().split('T')[0]}.xlsx`);
-  };
   
   // Dashboard stats
   const stats = [
@@ -197,49 +93,6 @@ const DoctorDashboard = () => {
     },
   ];
 
-  const renderPatientCard = (patient: Patient, showCheckbox = true) => (
-    <div key={patient.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-gray-200 transition-all">
-      <div className="flex items-center flex-1">
-        {showCheckbox && (
-          <Checkbox
-            checked={selectedPatients.includes(patient.id)}
-            onCheckedChange={(checked) => handleSelectPatient(patient.id, checked as boolean)}
-            className="mr-3"
-          />
-        )}
-        <div className="flex-1">
-          <div className="flex items-center">
-            <h3 className="font-medium">{patient.name}</h3>
-            <span className="text-sm text-gray-500 ml-2">{patient.age} anos</span>
-            {patient.priority === 'high' && (
-              <Badge className="ml-2 bg-red-100 text-red-800 hover:bg-red-200">Urgente</Badge>
-            )}
-            <Badge className="ml-2" variant="outline">
-              {patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
-            </Badge>
-            <div className="flex items-center ml-2">
-              {getMedicationHabitIcon(patient.medicationHabit)}
-              <span className="text-xs ml-1 font-medium">
-                {getMedicationHabitText(patient.medicationHabit)}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center text-sm text-gray-500 mt-1">
-            <Clock size={14} className="mr-1" />
-            <span>Enviado em {new Date(patient.date).toLocaleString('pt-BR')}</span>
-          </div>
-        </div>
-      </div>
-      <Button asChild>
-        <Link to={`/medico/paciente/${patient.id}`}>
-          {showCheckbox ? 'Avaliar' : 'Ver detalhes'}
-        </Link>
-      </Button>
-    </div>
-  );
-
-  const filteredPendingEvaluations = filterPatientsByHabit(pendingEvaluations);
-
   return (
     <div>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
@@ -247,13 +100,7 @@ const DoctorDashboard = () => {
           Painel do Médico
         </h1>
         
-        <div className="mt-4 md:mt-0 flex gap-2">
-          {selectedPatients.length > 0 && (
-            <Button onClick={exportToExcel} variant="outline">
-              <Download className="mr-2" size={16} />
-              Exportar Excel ({selectedPatients.length})
-            </Button>
-          )}
+        <div className="mt-4 md:mt-0">
           <Button asChild>
             <Link to="/medico/historico">
               Ver histórico completo
@@ -294,37 +141,10 @@ const DoctorDashboard = () => {
       <div className="mb-10">
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Fila de Avaliação</CardTitle>
-                <CardDescription>
-                  Pacientes aguardando avaliação médica
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Filtrar por hábito:</span>
-                  <Select value={habitFilter} onValueChange={setHabitFilter}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Selecione o hábito" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      <SelectItem value="habitual">Hábito</SelectItem>
-                      <SelectItem value="needs-attention">Precisa Atenção</SelectItem>
-                      <SelectItem value="not-habitual">Inábito</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={filteredPendingEvaluations.every(p => selectedPatients.includes(p.id))}
-                    onCheckedChange={(checked) => handleSelectAll(pendingEvaluations, checked as boolean)}
-                  />
-                  <span className="text-sm text-gray-600">Selecionar todos</span>
-                </div>
-              </div>
-            </div>
+            <CardTitle>Fila de Avaliação</CardTitle>
+            <CardDescription>
+              Pacientes aguardando avaliação médica
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="all">
@@ -336,23 +156,89 @@ const DoctorDashboard = () => {
               
               <TabsContent value="all">
                 <div className="space-y-4">
-                  {filteredPendingEvaluations.map((patient) => renderPatientCard(patient))}
+                  {pendingEvaluations.map((patient) => (
+                    <div key={patient.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-gray-200 transition-all">
+                      <div className="flex-1">
+                        <div className="flex items-center">
+                          <h3 className="font-medium">{patient.name}</h3>
+                          <span className="text-sm text-gray-500 ml-2">{patient.age} anos</span>
+                          {patient.priority === 'high' && (
+                            <Badge className="ml-2 bg-red-100 text-red-800 hover:bg-red-200">Urgente</Badge>
+                          )}
+                          <Badge className="ml-2" variant="outline">
+                            {patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-500 mt-1">
+                          <Clock size={14} className="mr-1" />
+                          <span>Enviado em {new Date(patient.date).toLocaleString('pt-BR')}</span>
+                        </div>
+                      </div>
+                      <Button asChild>
+                        <Link to={`/medico/paciente/${patient.id}`}>
+                          Avaliar
+                        </Link>
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               </TabsContent>
               
               <TabsContent value="hair">
                 <div className="space-y-4">
-                  {filteredPendingEvaluations
+                  {pendingEvaluations
                     .filter(p => p.type === 'queda-capilar')
-                    .map((patient) => renderPatientCard(patient))}
+                    .map((patient) => (
+                      <div key={patient.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-gray-200 transition-all">
+                        <div className="flex-1">
+                          <div className="flex items-center">
+                            <h3 className="font-medium">{patient.name}</h3>
+                            <span className="text-sm text-gray-500 ml-2">{patient.age} anos</span>
+                            {patient.priority === 'high' && (
+                              <Badge className="ml-2 bg-red-100 text-red-800 hover:bg-red-200">Urgente</Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-500 mt-1">
+                            <Clock size={14} className="mr-1" />
+                            <span>Enviado em {new Date(patient.date).toLocaleString('pt-BR')}</span>
+                          </div>
+                        </div>
+                        <Button asChild>
+                          <Link to={`/medico/paciente/${patient.id}`}>
+                            Avaliar
+                          </Link>
+                        </Button>
+                      </div>
+                    ))}
                 </div>
               </TabsContent>
               
               <TabsContent value="ed">
                 <div className="space-y-4">
-                  {filteredPendingEvaluations
+                  {pendingEvaluations
                     .filter(p => p.type === 'disfuncao-eretil')
-                    .map((patient) => renderPatientCard(patient))}
+                    .map((patient) => (
+                      <div key={patient.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-gray-200 transition-all">
+                        <div className="flex-1">
+                          <div className="flex items-center">
+                            <h3 className="font-medium">{patient.name}</h3>
+                            <span className="text-sm text-gray-500 ml-2">{patient.age} anos</span>
+                            {patient.priority === 'high' && (
+                              <Badge className="ml-2 bg-red-100 text-red-800 hover:bg-red-200">Urgente</Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-500 mt-1">
+                            <Clock size={14} className="mr-1" />
+                            <span>Enviado em {new Date(patient.date).toLocaleString('pt-BR')}</span>
+                          </div>
+                        </div>
+                        <Button asChild>
+                          <Link to={`/medico/paciente/${patient.id}`}>
+                            Avaliar
+                          </Link>
+                        </Button>
+                      </div>
+                    ))}
                 </div>
               </TabsContent>
             </Tabs>
@@ -381,12 +267,6 @@ const DoctorDashboard = () => {
                       <Badge className="ml-2" variant="outline">
                         {patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
                       </Badge>
-                      <div className="flex items-center ml-2">
-                        {getMedicationHabitIcon(patient.medicationHabit)}
-                        <span className="text-xs ml-1 font-medium">
-                          {getMedicationHabitText(patient.medicationHabit)}
-                        </span>
-                      </div>
                     </div>
                     <div className="flex items-center text-sm text-gray-500 mt-1">
                       <Calendar size={14} className="mr-1" />
