@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { 
   Card, 
@@ -32,6 +33,70 @@ interface User {
   subscription: 'active' | 'cancelled' | 'expired' | null;
 }
 
+// Mock data
+const mockUsers: User[] = [
+  {
+    id: '1',
+    name: 'João Silva Santos',
+    email: 'joao.santos@email.com',
+    phone: '(11) 99999-1234',
+    registrationDate: '2024-01-15',
+    status: 'active',
+    type: 'returning',
+    anamneseStatus: 'completed',
+    treatment: 'queda-capilar',
+    subscription: 'active'
+  },
+  {
+    id: '2',
+    name: 'Maria Oliveira Costa',
+    email: 'maria.costa@email.com',
+    phone: '(11) 98888-5678',
+    registrationDate: '2024-02-20',
+    status: 'active',
+    type: 'new',
+    anamneseStatus: 'completed',
+    treatment: 'disfuncao-eretil',
+    subscription: 'active'
+  },
+  {
+    id: '3',
+    name: 'Carlos Eduardo Lima',
+    email: 'carlos.lima@email.com',
+    phone: '(11) 97777-9012',
+    registrationDate: '2024-03-10',
+    status: 'pending',
+    type: 'new',
+    anamneseStatus: 'incomplete',
+    treatment: null,
+    subscription: null
+  },
+  {
+    id: '4',
+    name: 'Ana Paula Ferreira',
+    email: 'ana.ferreira@email.com',
+    phone: '(11) 96666-3456',
+    registrationDate: '2024-04-05',
+    status: 'blocked',
+    type: 'returning',
+    anamneseStatus: 'completed',
+    treatment: 'queda-capilar',
+    subscription: 'cancelled'
+  },
+  {
+    id: '5',
+    name: 'Roberto Almeida',
+    email: 'roberto.almeida@email.com',
+    phone: '(11) 95555-7890',
+    registrationDate: '2024-05-12',
+    status: 'active',
+    type: 'new',
+    anamneseStatus: 'not_started',
+    treatment: null,
+    subscription: null
+  }
+];
+
 const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,53 +106,19 @@ const AdminUsers = () => {
   const [treatmentFilter, setTreatmentFilter] = useState('all');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const API_BASE_URL = 'http://localhost:3000';
-
-  const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        ...options,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error(`API Error for ${endpoint}:`, error);
-      throw error;
-    }
-  };
-
   const loadUsers = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const data = await fetchAPI('/api/admin/users');
-      
-      const adaptedUsers = Array.isArray(data) ? data : data.users || [];
-      setUsers(adaptedUsers.map(user => ({
-        id: user.id || user._id,
-        name: user.name || user.fullName || 'Nome não informado',
-        email: user.email,
-        phone: user.phone || user.phoneNumber || 'Não informado',
-        registrationDate: user.registrationDate || user.createdAt || user.created_at,
-        status: user.status || 'pending',
-        type: user.type || (user.isNewUser ? 'new' : 'returning'),
-        anamneseStatus: user.anamneseStatus || user.anamnesis_status || 'not_started',
-        treatment: user.treatment || user.treatmentType || null,
-        subscription: user.subscription || user.subscriptionStatus || null,
-      })));
+      // Simulate loading delay
+      setTimeout(() => {
+        setUsers(mockUsers);
+        setLoading(false);
+      }, 500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar usuários');
       console.error('Error loading users:', err);
-    } finally {
       setLoading(false);
     }
   };
@@ -133,19 +164,18 @@ const AdminUsers = () => {
   const blockUser = async (userId: string) => {
     try {
       setActionLoading(userId);
-      await fetchAPI(`/api/admin/users/${userId}/block`, {
-        method: 'PUT',
-      });
       
-      setUsers(users.map(user => 
-        user.id === userId ? { ...user, status: 'blocked' } : user
-      ));
-      
-      toast.success('Usuário bloqueado com sucesso.');
+      // Simulate API call
+      setTimeout(() => {
+        setUsers(users.map(user => 
+          user.id === userId ? { ...user, status: 'blocked' } : user
+        ));
+        setActionLoading(null);
+        toast.success('Usuário bloqueado com sucesso.');
+      }, 500);
     } catch (error) {
       toast.error('Erro ao bloquear usuário.');
       console.error('Error blocking user:', error);
-    } finally {
       setActionLoading(null);
     }
   };
@@ -153,19 +183,18 @@ const AdminUsers = () => {
   const unblockUser = async (userId: string) => {
     try {
       setActionLoading(userId);
-      await fetchAPI(`/api/admin/users/${userId}/unblock`, {
-        method: 'PUT',
-      });
       
-      setUsers(users.map(user => 
-        user.id === userId ? { ...user, status: 'active' } : user
-      ));
-      
-      toast.success('Usuário desbloqueado com sucesso.');
+      // Simulate API call
+      setTimeout(() => {
+        setUsers(users.map(user => 
+          user.id === userId ? { ...user, status: 'active' } : user
+        ));
+        setActionLoading(null);
+        toast.success('Usuário desbloqueado com sucesso.');
+      }, 500);
     } catch (error) {
       toast.error('Erro ao desbloquear usuário.');
       console.error('Error unblocking user:', error);
-    } finally {
       setActionLoading(null);
     }
   };
@@ -173,15 +202,15 @@ const AdminUsers = () => {
   const sendEmail = async (userId: string) => {
     try {
       setActionLoading(userId);
-      await fetchAPI(`/api/admin/users/${userId}/send-email`, {
-        method: 'POST',
-      });
       
-      toast.success('E-mail enviado com sucesso.');
+      // Simulate API call
+      setTimeout(() => {
+        setActionLoading(null);
+        toast.success('E-mail enviado com sucesso.');
+      }, 1000);
     } catch (error) {
       toast.error('Erro ao enviar e-mail.');
       console.error('Error sending email:', error);
-    } finally {
       setActionLoading(null);
     }
   };

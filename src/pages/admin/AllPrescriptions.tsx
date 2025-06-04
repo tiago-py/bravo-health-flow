@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,35 +8,111 @@ import { User, Calendar, Search, FileText, Download, Eye, UserCheck, Loader2, Al
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
+interface Prescription {
+  id: string;
+  patientName: string;
+  patientAge: number;
+  doctorName: string;
+  doctorCRM: string;
+  type: 'queda-capilar' | 'disfuncao-eretil';
+  uploadDate: string;
+  observations: string;
+  prescriptionFile: string;
+}
+
+// Mock data
+const mockPrescriptions: Prescription[] = [
+  {
+    id: '1',
+    patientName: 'João Silva Santos',
+    patientAge: 32,
+    doctorName: 'Dr. Carlos Oliveira',
+    doctorCRM: 'CRM-SP 123456',
+    type: 'queda-capilar',
+    uploadDate: '2024-06-03',
+    observations: 'Paciente apresenta alopecia androgenética grau 3. Indicado tratamento com finasterida 1mg e minoxidil 5%.',
+    prescriptionFile: 'prescricao_joao_silva_03062024.pdf'
+  },
+  {
+    id: '2',
+    patientName: 'Maria Oliveira Costa',
+    patientAge: 28,
+    doctorName: 'Dra. Ana Santos',
+    doctorCRM: 'CRM-RJ 654321',
+    type: 'disfuncao-eretil',
+    uploadDate: '2024-06-02',
+    observations: 'Paciente relata dificuldades de ereção há 4 meses. Prescrito tadalafila 5mg uso diário.',
+    prescriptionFile: 'prescricao_maria_costa_02062024.pdf'
+  },
+  {
+    id: '3',
+    patientName: 'Carlos Eduardo Lima',
+    patientAge: 45,
+    doctorName: 'Dr. Pedro Martins',
+    doctorCRM: 'CRM-SP 789012',
+    type: 'queda-capilar',
+    uploadDate: '2024-06-01',
+    observations: 'Calvície em estágio inicial. Tratamento preventivo com finasterida 1mg.',
+    prescriptionFile: 'prescricao_carlos_lima_01062024.pdf'
+  },
+  {
+    id: '4',
+    patientName: 'Roberto Almeida',
+    patientAge: 38,
+    doctorName: 'Dr. Carlos Oliveira',
+    doctorCRM: 'CRM-SP 123456',
+    type: 'disfuncao-eretil',
+    uploadDate: '2024-05-31',
+    observations: 'DE moderada. Prescrito sildenafila 50mg conforme necessário.',
+    prescriptionFile: 'prescricao_roberto_almeida_31052024.pdf'
+  },
+  {
+    id: '5',
+    patientName: 'André Costa Silva',
+    patientAge: 29,
+    doctorName: 'Dra. Ana Santos',
+    doctorCRM: 'CRM-RJ 654321',
+    type: 'queda-capilar',
+    uploadDate: '2024-05-30',
+    observations: 'Alopecia androgenética inicial. Kit completo com finasterida + minoxidil.',
+    prescriptionFile: 'prescricao_andre_silva_30052024.pdf'
+  },
+  {
+    id: '6',
+    patientName: 'Paulo Henrique Vieira',
+    patientAge: 41,
+    doctorName: 'Dr. Pedro Martins',
+    doctorCRM: 'CRM-SP 789012',
+    type: 'disfuncao-eretil',
+    uploadDate: '2024-05-29',
+    observations: 'Disfunção erétil severa. Tadalafila 20mg conforme necessário.',
+    prescriptionFile: 'prescricao_paulo_vieira_29052024.pdf'
+  }
+];
+
 const AllPrescriptions = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [doctorFilter, setDoctorFilter] = useState('all');
-  const [prescriptions, setPrescriptions] = useState([]);
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  const API_BASE_URL = 'http://localhost:3000';
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch prescriptions from API
+  // Fetch prescriptions (mock data)
   const fetchPrescriptions = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`${API_BASE_URL}/api/prescriptions`);
-      
-      if (!response.ok) {
-        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      setPrescriptions(data);
+      // Simulate loading delay
+      setTimeout(() => {
+        setPrescriptions(mockPrescriptions);
+        setLoading(false);
+      }, 500);
     } catch (err) {
       console.error('Erro ao buscar prescrições:', err);
-      setError(err.message || 'Erro ao conectar com o servidor');
-    } finally {
+      setError(err instanceof Error ? err.message : 'Erro ao carregar prescrições');
       setLoading(false);
     }
   };
@@ -81,46 +158,27 @@ const AllPrescriptions = () => {
     return matchesSearch && matchesType && matchesDoctor && matchesDate;
   });
 
-  // Download prescription file
-  const handleDownload = async (prescriptionId, filename) => {
+  // Download prescription file (mock)
+  const handleDownload = async (prescriptionId: string, filename: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/prescriptions/${prescriptionId}/download`);
-      
-      if (!response.ok) {
-        throw new Error('Erro ao baixar arquivo');
-      }
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      // Mock download functionality
+      console.log('Downloading prescription:', prescriptionId, filename);
+      alert(`Download iniciado: ${filename}`);
     } catch (err) {
       console.error('Erro ao baixar arquivo:', err);
-      alert('Erro ao baixar arquivo: ' + err.message);
+      alert('Erro ao baixar arquivo');
     }
   };
 
-  // View prescription file
-  const handleView = async (prescriptionId) => {
+  // View prescription file (mock)
+  const handleView = async (prescriptionId: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/prescriptions/${prescriptionId}/view`);
-      
-      if (!response.ok) {
-        throw new Error('Erro ao visualizar arquivo');
-      }
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      // Mock view functionality  
+      console.log('Viewing prescription:', prescriptionId);
+      alert('Visualizando prescrição...');
     } catch (err) {
       console.error('Erro ao visualizar arquivo:', err);
-      alert('Erro ao visualizar arquivo: ' + err.message);
+      alert('Erro ao visualizar arquivo');
     }
   };
 

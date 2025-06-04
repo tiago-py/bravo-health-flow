@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,14 +11,80 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Edit, Trash2, Package, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const API_BASE_URL = 'http://localhost:3000';
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  type: string;
+  price: number;
+  stock: number;
+  status: string;
+}
+
+// Mock data
+const mockProducts: Product[] = [
+  {
+    id: '1',
+    name: 'Finasterida 1mg',
+    description: 'Medicamento para tratamento da calvície masculina',
+    type: 'queda-capilar',
+    price: 89.90,
+    stock: 150,
+    status: 'active'
+  },
+  {
+    id: '2',
+    name: 'Minoxidil 5%',
+    description: 'Solução tópica para estimular o crescimento capilar',
+    type: 'queda-capilar',
+    price: 65.50,
+    stock: 89,
+    status: 'active'
+  },
+  {
+    id: '3',
+    name: 'Tadalafila 5mg',
+    description: 'Medicamento para disfunção erétil uso diário',
+    type: 'disfuncao-eretil',
+    price: 125.00,
+    stock: 45,
+    status: 'active'
+  },
+  {
+    id: '4',
+    name: 'Sildenafila 50mg',
+    description: 'Medicamento para disfunção erétil uso conforme necessário',
+    type: 'disfuncao-eretil',
+    price: 95.75,
+    stock: 8,
+    status: 'active'
+  },
+  {
+    id: '5',
+    name: 'Kit Completo Capilar',
+    description: 'Kit com finasterida + minoxidil para 3 meses',
+    type: 'queda-capilar',
+    price: 285.00,
+    stock: 25,
+    status: 'active'
+  },
+  {
+    id: '6',
+    name: 'Dutasterida 0.5mg',
+    description: 'Alternativa à finasterida para casos mais severos',
+    type: 'queda-capilar',
+    price: 145.90,
+    stock: 0,
+    status: 'inactive'
+  }
+];
 
 const Products = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -31,75 +98,48 @@ const Products = () => {
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
-    try {
-      const response = await fetch(`${API_BASE_URL}/products`);
-      if (!response.ok) {
-        throw new Error(`Erro ao buscar produtos: ${response.status}`);
-      }
-      const data = await response.json();
-      setProducts(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar produtos');
-      console.error('Erro ao buscar produtos:', err);
-    } finally {
+    
+    // Simulate loading delay
+    setTimeout(() => {
+      setProducts(mockProducts);
       setLoading(false);
-    }
+    }, 500);
   };
 
   const createProduct = async (productData: any) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/products`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productData),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Erro ao criar produto: ${response.status}`);
-      }
-      
-      const newProduct = await response.json();
-      return newProduct;
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : 'Erro ao criar produto');
-    }
+    const newProduct: Product = {
+      id: Date.now().toString(),
+      name: productData.name,
+      description: productData.description,
+      type: productData.type,
+      price: parseFloat(productData.price),
+      stock: parseInt(productData.stock),
+      status: productData.status
+    };
+    
+    setProducts(prev => [...prev, newProduct]);
+    return newProduct;
   };
 
   const updateProduct = async (id: string, productData: any) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productData),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Erro ao atualizar produto: ${response.status}`);
-      }
-      
-      const updatedProduct = await response.json();
-      return updatedProduct;
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : 'Erro ao atualizar produto');
-    }
+    const updatedProduct = {
+      name: productData.name,
+      description: productData.description,
+      type: productData.type,
+      price: parseFloat(productData.price),
+      stock: parseInt(productData.stock),
+      status: productData.status
+    };
+    
+    setProducts(prev => prev.map(product => 
+      product.id === id ? { ...product, ...updatedProduct } : product
+    ));
+    
+    return updatedProduct;
   };
 
   const deleteProduct = async (id: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Erro ao deletar produto: ${response.status}`);
-      }
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : 'Erro ao deletar produto');
-    }
+    setProducts(prev => prev.filter(product => product.id !== id));
   };
 
   useEffect(() => {
@@ -115,8 +155,8 @@ const Products = () => {
         name: formData.name,
         description: formData.description,
         type: formData.type,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock),
+        price: formData.price,
+        stock: formData.stock,
         status: formData.status
       };
 
@@ -126,7 +166,6 @@ const Products = () => {
         await createProduct(productData);
       }
       
-      await fetchProducts(); // Recarregar a lista
       resetForm();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao salvar produto');
@@ -171,7 +210,6 @@ const Products = () => {
     
     try {
       await deleteProduct(id);
-      await fetchProducts(); // Recarregar a lista
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao deletar produto');
     } finally {
