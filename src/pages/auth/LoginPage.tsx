@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -41,7 +40,28 @@ const LoginPage = () => {
     setIsLoading(true);
     
     try {
-      await login(email, password);
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erro ao fazer login');
+      }
+
+      
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+
       
       toast({
         title: 'Login realizado com sucesso',
@@ -49,12 +69,32 @@ const LoginPage = () => {
         duration: 3000,
       });
       
-      // Redirect to the original intended page or dashboard based on role
-      navigate(from);
+      if (data.user && data.user.role) {
+        switch (data.user.role) {
+          case 'admin':
+            navigate('/admin/dashboard');
+            break;
+          case 'medico':
+            navigate('/medico/dashboard');
+            break;
+          case 'cliente':
+            navigate('/cliente/dashboard');
+            break;
+          default:
+            navigate(from);
+        }
+      } else {
+        navigate(from);
+      }
       
     } catch (error) {
       console.error('Login error:', error);
-      setError('Email ou senha incorretos. Tente novamente.');
+      
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Email ou senha incorretos. Tente novamente.');
+      }
     } finally {
       setIsLoading(false);
     }

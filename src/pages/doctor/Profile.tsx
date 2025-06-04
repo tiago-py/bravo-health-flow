@@ -11,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 const DoctorProfile = () => {
   const { user } = useAuth();
   
-  // Professional information state
   const [profileInfo, setProfileInfo] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -20,14 +19,12 @@ const DoctorProfile = () => {
     phone: '(11) 98765-4321',
   });
   
-  // Password change state
   const [passwordInfo, setPasswordInfo] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
   
-  // Handle profile info change
   const handleProfileInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfileInfo({
       ...profileInfo,
@@ -35,7 +32,6 @@ const DoctorProfile = () => {
     });
   };
   
-  // Handle password change
   const handlePasswordInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordInfo({
       ...passwordInfo,
@@ -43,13 +39,11 @@ const DoctorProfile = () => {
     });
   };
   
-  // Save profile information
   const saveProfileInfo = () => {
     // In a real app, this would send an API request
     toast.success('Informações profissionais salvas com sucesso!');
   };
   
-  // Change password
   const changePassword = () => {
     // Validate passwords
     if (passwordInfo.newPassword !== passwordInfo.confirmPassword) {

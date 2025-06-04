@@ -23,7 +23,7 @@ const DoctorLayout = () => {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  const navigations: Navigation[] = [
+  const navigations = [
     { name: 'Dashboard', path: '/medico/dashboard', icon: <Home size={20} /> },
     { name: 'Prescrições', path: '/medico/prescricoes', icon: <ClipboardList size={20} /> },
     { name: 'Histórico', path: '/medico/historico', icon: <Users size={20} /> },

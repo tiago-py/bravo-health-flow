@@ -1,31 +1,133 @@
-
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, CheckCircle, Clock, CalendarClock } from 'lucide-react';
+import { ArrowRight, CheckCircle, Clock, CalendarClock, Loader2, AlertCircle } from 'lucide-react';
 
 const ClientDashboard = () => {
   const { user } = useAuth();
-  
-  // Mock treatment status
-  const treatmentStatus = {
-    status: 'active', // active, pending, awaiting_review
-    type: 'Queda Capilar',
-    planName: 'Plano Premium',
-    lastEvaluation: '2023-03-15',
-    nextShipment: '2023-04-10',
-    progressPercentage: 75,
-    notifications: 1,
+  const [profileData, setProfileData] = useState(null);
+  const [treatmentData, setTreatmentData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const API_BASE_URL = 'http://localhost:3000';
+
+  const fetchAPI = async (endpoint) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', 
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching ${endpoint}:`, error);
+      throw error;
+    }
   };
-  
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [profile, treatments] = await Promise.all([
+          fetchAPI('/api/auth/profile'),
+          fetchAPI('/api/clients/treatments')
+        ]);
+
+        setProfileData(profile);
+        setTreatmentData(treatments);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error loading dashboard data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const getTreatmentStatus = (treatment) => {
+    if (!treatment) return { status: 'none', color: 'gray', icon: Clock, text: 'Sem tratamento' };
+    
+    switch (treatment.status?.toLowerCase()) {
+      case 'active':
+      case 'ativo':
+        return { status: 'active', color: 'green', icon: CheckCircle, text: 'Ativo' };
+      case 'pending':
+      case 'pendente':
+        return { status: 'pending', color: 'amber', icon: Clock, text: 'Pendente' };
+      case 'awaiting_review':
+      case 'em_analise':
+        return { status: 'awaiting_review', color: 'blue', icon: Clock, text: 'Em análise médica' };
+      default:
+        return { status: 'unknown', color: 'gray', icon: AlertCircle, text: 'Status desconhecido' };
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-4">
+        <div className="flex items-center justify-center h-64">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="animate-spin" size={24} />
+            <span>Carregando seus dados...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <Card className="border-red-200">
+          <CardHeader>
+            <div className="flex items-center space-x-2">
+              <AlertCircle className="text-red-500" size={24} />
+              <CardTitle className="text-red-700">Erro ao carregar dados</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-600 mb-4">
+              Não foi possível conectar com o servidor: {error}
+            </p>
+            <Button 
+              onClick={() => window.location.reload()}
+              variant="outline"
+            >
+              Tentar novamente
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const displayName = profileData?.name || user?.name || 'Usuário';
+  const currentTreatment = treatmentData?.current || treatmentData?.[0];
+  const treatmentStatusInfo = getTreatmentStatus(currentTreatment);
+  const StatusIcon = treatmentStatusInfo.icon;
+
   return (
     <div className="p-4">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold text-bravo-blue">
-            Bem-vindo, {user?.name?.split(' ')[0]}
+            Bem-vindo, {displayName.split(' ')[0]}
           </h1>
           <p className="text-gray-600">
             Aqui você pode acompanhar seu tratamento e avaliações
@@ -59,76 +161,91 @@ const ClientDashboard = () => {
                 <CardDescription>Status atual e informações</CardDescription>
               </div>
               <div className="flex items-center">
-                {treatmentStatus.status === 'active' && (
-                  <span className="flex items-center text-sm text-green-600 font-medium">
-                    <CheckCircle size={16} className="mr-1" />
-                    Ativo
-                  </span>
-                )}
-                {treatmentStatus.status === 'pending' && (
-                  <span className="flex items-center text-sm text-amber-600 font-medium">
-                    <Clock size={16} className="mr-1" />
-                    Pendente
-                  </span>
-                )}
-                {treatmentStatus.status === 'awaiting_review' && (
-                  <span className="flex items-center text-sm text-blue-600 font-medium">
-                    <Clock size={16} className="mr-1" />
-                    Em análise médica
-                  </span>
-                )}
+                <span className={`flex items-center text-sm text-${treatmentStatusInfo.color}-600 font-medium`}>
+                  <StatusIcon size={16} className="mr-1" />
+                  {treatmentStatusInfo.text}
+                </span>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Tipo de Tratamento</h3>
-                <p className="font-medium">{treatmentStatus.type}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Plano</h3>
-                <p className="font-medium">{treatmentStatus.planName}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Última Avaliação</h3>
-                <p className="font-medium">{new Date(treatmentStatus.lastEvaluation).toLocaleDateString('pt-BR')}</p>
-              </div>
-            </div>
-            
-            {treatmentStatus.status === 'active' && (
-              <div className="mt-4">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="font-medium">Progresso do Tratamento</span>
-                  <span>{treatmentStatus.progressPercentage}%</span>
-                </div>
-                <div className="h-2 bg-gray-100 rounded-full">
-                  <div 
-                    className="h-2 bg-green-500 rounded-full" 
-                    style={{ width: `${treatmentStatus.progressPercentage}%` }}
-                  />
+            {currentTreatment ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 mb-1">Tipo de Tratamento</h3>
+                    <p className="font-medium">{currentTreatment.type || currentTreatment.treatmentType || 'Não especificado'}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 mb-1">Plano</h3>
+                    <p className="font-medium">{currentTreatment.plan || currentTreatment.planName || 'Não especificado'}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 mb-1">Última Avaliação</h3>
+                    <p className="font-medium">
+                      {currentTreatment.lastEvaluation 
+                        ? new Date(currentTreatment.lastEvaluation).toLocaleDateString('pt-BR')
+                        : 'Não informado'
+                      }
+                    </p>
+                  </div>
                 </div>
                 
-                <div className="flex items-center mt-4 text-sm text-gray-600">
-                  <CalendarClock size={16} className="mr-2" />
-                  <span>Próxima entrega em {new Date(treatmentStatus.nextShipment).toLocaleDateString('pt-BR')}</span>
-                </div>
+                {treatmentStatusInfo.status === 'active' && (
+                  <div className="mt-4">
+                    {currentTreatment.progress !== undefined && (
+                      <>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="font-medium">Progresso do Tratamento</span>
+                          <span>{currentTreatment.progress || 0}%</span>
+                        </div>
+                        <div className="h-2 bg-gray-100 rounded-full">
+                          <div 
+                            className="h-2 bg-green-500 rounded-full" 
+                            style={{ width: `${currentTreatment.progress || 0}%` }}
+                          />
+                        </div>
+                      </>
+                    )}
+                    
+                    {currentTreatment.nextShipment && (
+                      <div className="flex items-center mt-4 text-sm text-gray-600">
+                        <CalendarClock size={16} className="mr-2" />
+                        <span>
+                          Próxima entrega em {new Date(currentTreatment.nextShipment).toLocaleDateString('pt-BR')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <AlertCircle size={48} className="mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-600 mb-4">Nenhum tratamento ativo encontrado</p>
+                <Button asChild>
+                  <Link to="/anamnese/queda-capilar">
+                    Iniciar Avaliação
+                  </Link>
+                </Button>
               </div>
             )}
           </CardContent>
-          <CardFooter className="border-t border-gray-100 pt-4">
-            <div className="w-full flex justify-between items-center">
-              <p className="text-sm text-gray-600">
-                Veja mais detalhes sobre seu tratamento e histórico
-              </p>
-              <Button variant="outline" asChild>
-                <Link to="/cliente/tratamentos">
-                  Ver prescrições
-                  <ArrowRight size={16} className="ml-2" />
-                </Link>
-              </Button>
-            </div>
-          </CardFooter>
+          {currentTreatment && (
+            <CardFooter className="border-t border-gray-100 pt-4">
+              <div className="w-full flex justify-between items-center">
+                <p className="text-sm text-gray-600">
+                  Veja mais detalhes sobre seu tratamento e histórico
+                </p>
+                <Button variant="outline" asChild>
+                  <Link to="/cliente/tratamentos">
+                    Ver prescrições
+                    <ArrowRight size={16} className="ml-2" />
+                  </Link>
+                </Button>
+              </div>
+            </CardFooter>
+          )}
         </Card>
         
         {/* Quick Action Cards */}

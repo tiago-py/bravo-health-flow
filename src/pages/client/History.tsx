@@ -1,104 +1,87 @@
-
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Calendar, User, CheckCircle, AlertCircle } from 'lucide-react';
+import { FileText, Calendar, User, CheckCircle, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
+import { toast } from '@/components/ui/sonner';
+
+interface HistoryItem {
+  id: string;
+  type: 'anamnese' | 'prescription' | 'shipment' | 'follow-up' | string;
+  title: string;
+  date: string;
+  status: 'completed' | 'scheduled';
+  details: {
+    doctor?: string;
+    observations?: string;
+    medications?: string[];
+    duration?: string;
+    address?: string;
+    tracking?: string;
+    notes?: string;
+  };
+}
 
 const ClientHistory = () => {
-  // Mock history data
-  const history = [
-    {
-      id: 1,
-      type: 'anamnese',
-      title: 'Anamnese inicial de queda capilar',
-      date: '2022-09-10',
-      status: 'completed',
-      details: {
-        doctor: 'Dr. Bruno Silva',
-        observations: 'Paciente apresenta queda capilar moderada nas entradas frontais e coroa. Recomendado tratamento inicial com minoxidil 2% e finasterida 1mg.'
+  const { user } = useAuth();
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+  const fetchHistory = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Usuário não autenticado');
       }
-    },
-    {
-      id: 2,
-      type: 'prescription',
-      title: 'Prescrição inicial',
-      date: '2022-09-12',
-      status: 'completed',
-      details: {
-        doctor: 'Dr. Bruno Silva',
-        medications: ['Minoxidil 2%', 'Finasterida 1mg'],
-        duration: '6 meses'
+
+      const response = await fetch(`${API_BASE_URL}/api/users/treatment-history`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Erro na requisição: ${response.status}`);
       }
-    },
-    {
-      id: 3,
-      type: 'shipment',
-      title: 'Entrega de medicamentos',
-      date: '2022-09-15',
-      status: 'completed',
-      details: {
-        address: 'Rua Exemplo, 123 - São Paulo, SP',
-        tracking: 'BR123456789SP'
+      
+      const data = await response.json();
+      
+      if (!Array.isArray(data)) {
+        throw new Error('Formato de dados inválido da API');
       }
-    },
-    {
-      id: 4,
-      type: 'follow-up',
-      title: 'Acompanhamento de 3 meses',
-      date: '2022-12-10',
-      status: 'completed',
-      details: {
-        doctor: 'Dr. Bruno Silva',
-        observations: 'Paciente relata melhora na queda e início de novos crescimentos. Recomendado continuar tratamento atual.'
-      }
-    },
-    {
-      id: 5,
-      type: 'anamnese',
-      title: 'Reavaliação de 6 meses',
-      date: '2023-03-12',
-      status: 'completed',
-      details: {
-        doctor: 'Dr. Bruno Silva',
-        observations: 'Melhora significativa observada. Recomendado ajustar o tratamento para minoxidil 5% para otimizar resultados.'
-      }
-    },
-    {
-      id: 6,
-      type: 'prescription',
-      title: 'Prescrição atualizada',
-      date: '2023-03-15',
-      status: 'completed',
-      details: {
-        doctor: 'Dr. Bruno Silva',
-        medications: ['Minoxidil 5%', 'Finasterida 1mg', 'Complexo Vitamínico Capilar'],
-        duration: '6 meses'
-      }
-    },
-    {
-      id: 7,
-      type: 'shipment',
-      title: 'Entrega de medicamentos',
-      date: '2023-03-18',
-      status: 'completed',
-      details: {
-        address: 'Rua Exemplo, 123 - São Paulo, SP',
-        tracking: 'BR987654321SP'
-      }
-    },
-    {
-      id: 8,
-      type: 'follow-up',
-      title: 'Próximo acompanhamento',
-      date: '2023-06-15',
-      status: 'scheduled',
-      details: {
-        doctor: 'Dr. Bruno Silva',
-        notes: 'Avaliação trimestral de acompanhamento'
-      }
+
+      // Validação básica dos dados
+      const validatedData = data.map((item: any) => ({
+        id: item.id || '',
+        type: item.type || 'unknown',
+        title: item.title || 'Sem título',
+        date: item.date || new Date().toISOString(),
+        status: item.status || 'completed',
+        details: item.details || {}
+      }));
+
+      setHistory(validatedData);
+    } catch (err) {
+      console.error('Erro ao carregar histórico:', err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      toast.error('Falha ao carregar histórico');
+    } finally {
+      setLoading(false);
     }
-  ];
-  
-  // Helper function to get icon by type
+  };
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
   const getIcon = (type: string) => {
     switch (type) {
       case 'anamnese':
@@ -114,7 +97,6 @@ const ClientHistory = () => {
     }
   };
   
-  // Helper function to get badge by type and status
   const getBadge = (type: string, status: string) => {
     if (status === 'scheduled') {
       return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">Agendado</Badge>;
@@ -134,13 +116,72 @@ const ClientHistory = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="p-6">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Histórico de Tratamento</h1>
+          <p className="text-gray-600">Acompanhe todas as etapas do seu tratamento</p>
+        </div>
+        <div className="flex flex-col items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-bravo-blue mb-4" />
+          <p className="text-gray-600">Carregando seu histórico...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Histórico de Tratamento</h1>
+          <p className="text-gray-600">Acompanhe todas as etapas do seu tratamento</p>
+        </div>
+        <Card>
+          <CardContent className="py-8 text-center">
+            <AlertCircle className="h-8 w-8 mx-auto text-red-500 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Erro ao carregar histórico</h3>
+            <p className="text-sm text-gray-500 mb-6">{error}</p>
+            <Button 
+              variant="outline" 
+              onClick={fetchHistory}
+              className="mx-auto"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Tentar novamente
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (history.length === 0) {
+    return (
+      <div className="p-6">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Histórico de Tratamento</h1>
+          <p className="text-gray-600">Acompanhe todas as etapas do seu tratamento</p>
+        </div>
+        <Card>
+          <CardContent className="py-8 text-center">
+            <Calendar className="h-8 w-8 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum registro encontrado</h3>
+            <p className="text-sm text-gray-500">
+              Seu histórico de tratamento aparecerá aqui assim que houver registros
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div className="p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-bravo-blue mb-2">Histórico de Tratamento</h1>
-        <p className="text-gray-600">
-          Acompanhe todas as etapas do seu tratamento
-        </p>
+        <p className="text-gray-600">Acompanhe todas as etapas do seu tratamento</p>
       </div>
       
       <div className="relative">
@@ -197,7 +238,7 @@ const ClientHistory = () => {
                         <div className="text-sm text-gray-700">
                           <span className="font-medium block">Medicamentos:</span>
                           <ul className="list-disc pl-5 mt-1">
-                            {item.details.medications.map((med, index) => (
+                            {item.details.medications?.map((med, index) => (
                               <li key={index}>{med}</li>
                             ))}
                           </ul>

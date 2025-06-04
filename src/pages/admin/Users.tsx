@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -11,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Mail, Phone, AlertTriangle, FileText, MoreVertical } from 'lucide-react';
+import { Search, Mail, Phone, AlertTriangle, FileText, MoreVertical, Loader2, RefreshCw } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,51 +33,69 @@ interface User {
 }
 
 const AdminUsers = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [treatmentFilter, setTreatmentFilter] = useState('all');
-  
-  // Mock users data
-  const users: User[] = [
-    {
-      id: '1',
-      name: 'João Silva',
-      email: 'joao.silva@email.com',
-      phone: '(11) 98765-4321',
-      registrationDate: '2023-03-15',
-      status: 'active',
-      type: 'returning',
-      anamneseStatus: 'completed',
-      treatment: 'queda-capilar',
-      subscription: 'active'
-    },
-    {
-      id: '2',
-      name: 'Carlos Santos',
-      email: 'carlos.santos@email.com',
-      phone: '(11) 97654-3210',
-      registrationDate: '2023-03-20',
-      status: 'pending',
-      type: 'new',
-      anamneseStatus: 'incomplete',
-      treatment: 'disfuncao-eretil',
-      subscription: null
-    },
-    {
-      id: '3',
-      name: 'Pedro Oliveira',
-      email: 'pedro.oliveira@email.com',
-      phone: '(11) 96543-2109',
-      registrationDate: '2023-02-10',
-      status: 'blocked',
-      type: 'returning',
-      anamneseStatus: 'completed',
-      treatment: 'queda-capilar',
-      subscription: 'cancelled'
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const API_BASE_URL = 'http://localhost:3000';
+
+  const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        ...options,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`API Error for ${endpoint}:`, error);
+      throw error;
     }
-  ];
-  
-  // Filter users based on search query and filters
+  };
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const data = await fetchAPI('/api/admin/users');
+      
+      const adaptedUsers = Array.isArray(data) ? data : data.users || [];
+      setUsers(adaptedUsers.map(user => ({
+        id: user.id || user._id,
+        name: user.name || user.fullName || 'Nome não informado',
+        email: user.email,
+        phone: user.phone || user.phoneNumber || 'Não informado',
+        registrationDate: user.registrationDate || user.createdAt || user.created_at,
+        status: user.status || 'pending',
+        type: user.type || (user.isNewUser ? 'new' : 'returning'),
+        anamneseStatus: user.anamneseStatus || user.anamnesis_status || 'not_started',
+        treatment: user.treatment || user.treatmentType || null,
+        subscription: user.subscription || user.subscriptionStatus || null,
+      })));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao carregar usuários');
+      console.error('Error loading users:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchQuery.toLowerCase());
@@ -87,7 +104,6 @@ const AdminUsers = () => {
     return matchesSearch && matchesStatus && matchesTreatment;
   });
   
-  // Helper function to get status badge
   const getStatusBadge = (status: User['status']) => {
     switch (status) {
       case 'active':
@@ -101,7 +117,6 @@ const AdminUsers = () => {
     }
   };
   
-  // Helper function to get subscription badge
   const getSubscriptionBadge = (subscription: User['subscription']) => {
     switch (subscription) {
       case 'active':
@@ -115,30 +130,111 @@ const AdminUsers = () => {
     }
   };
   
-  // User actions
-  const blockUser = (userId: string) => {
-    toast.success('Usuário bloqueado com sucesso.');
+  const blockUser = async (userId: string) => {
+    try {
+      setActionLoading(userId);
+      await fetchAPI(`/api/admin/users/${userId}/block`, {
+        method: 'PUT',
+      });
+      
+      setUsers(users.map(user => 
+        user.id === userId ? { ...user, status: 'blocked' } : user
+      ));
+      
+      toast.success('Usuário bloqueado com sucesso.');
+    } catch (error) {
+      toast.error('Erro ao bloquear usuário.');
+      console.error('Error blocking user:', error);
+    } finally {
+      setActionLoading(null);
+    }
   };
   
-  const unblockUser = (userId: string) => {
-    toast.success('Usuário desbloqueado com sucesso.');
+  const unblockUser = async (userId: string) => {
+    try {
+      setActionLoading(userId);
+      await fetchAPI(`/api/admin/users/${userId}/unblock`, {
+        method: 'PUT',
+      });
+      
+      setUsers(users.map(user => 
+        user.id === userId ? { ...user, status: 'active' } : user
+      ));
+      
+      toast.success('Usuário desbloqueado com sucesso.');
+    } catch (error) {
+      toast.error('Erro ao desbloquear usuário.');
+      console.error('Error unblocking user:', error);
+    } finally {
+      setActionLoading(null);
+    }
   };
   
-  const sendEmail = (userId: string) => {
-    toast.success('E-mail enviado com sucesso.');
+  const sendEmail = async (userId: string) => {
+    try {
+      setActionLoading(userId);
+      await fetchAPI(`/api/admin/users/${userId}/send-email`, {
+        method: 'POST',
+      });
+      
+      toast.success('E-mail enviado com sucesso.');
+    } catch (error) {
+      toast.error('Erro ao enviar e-mail.');
+      console.error('Error sending email:', error);
+    } finally {
+      setActionLoading(null);
+    }
   };
   
   const viewAnamneseHistory = (userId: string) => {
-    // Navigate to anamnese history page
+    window.location.href = `/admin/users/${userId}/anamnese`;
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="animate-spin" size={24} />
+          <span>Carregando usuários...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <Card className="border-red-200">
+          <CardHeader>
+            <CardTitle className="text-red-700">Erro ao carregar usuários</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={loadUsers} variant="outline">
+              <RefreshCw size={16} className="mr-2" />
+              Tentar novamente
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-bravo-blue mb-2">Usuários</h1>
-        <p className="text-gray-600">
-          Gerencie e monitore os usuários da plataforma
-        </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-bravo-blue mb-2">Usuários</h1>
+            <p className="text-gray-600">
+              Gerencie e monitore os usuários da plataforma ({users.length} usuários)
+            </p>
+          </div>
+          <Button onClick={loadUsers} variant="outline" size="sm">
+            <RefreshCw size={16} className="mr-2" />
+            Atualizar
+          </Button>
+        </div>
       </div>
       
       {/* Filters */}
@@ -223,6 +319,11 @@ const AdminUsers = () => {
                       <Phone size={14} className="mr-1" />
                       {user.phone}
                     </div>
+                    {user.registrationDate && (
+                      <div className="text-xs">
+                        Cadastrado em: {new Date(user.registrationDate).toLocaleDateString('pt-BR')}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex flex-wrap gap-2 mt-3">
@@ -248,6 +349,7 @@ const AdminUsers = () => {
                     variant="outline" 
                     size="sm"
                     onClick={() => viewAnamneseHistory(user.id)}
+                    disabled={actionLoading === user.id}
                   >
                     <FileText size={16} className="mr-2" />
                     Anamnese
@@ -257,15 +359,28 @@ const AdminUsers = () => {
                     variant="outline" 
                     size="sm"
                     onClick={() => sendEmail(user.id)}
+                    disabled={actionLoading === user.id}
                   >
-                    <Mail size={16} className="mr-2" />
+                    {actionLoading === user.id ? (
+                      <Loader2 size={16} className="mr-2 animate-spin" />
+                    ) : (
+                      <Mail size={16} className="mr-2" />
+                    )}
                     Enviar e-mail
                   </Button>
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical size={16} />
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        disabled={actionLoading === user.id}
+                      >
+                        {actionLoading === user.id ? (
+                          <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                          <MoreVertical size={16} />
+                        )}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -294,7 +409,12 @@ const AdminUsers = () => {
         
         {filteredUsers.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">Nenhum usuário encontrado com os filtros selecionados.</p>
+            <p className="text-gray-500">
+              {users.length === 0 
+                ? 'Nenhum usuário encontrado.' 
+                : 'Nenhum usuário encontrado com os filtros selecionados.'
+              }
+            </p>
           </div>
         )}
       </div>

@@ -106,7 +106,6 @@ const AdminAnamneseCreate = () => {
       return;
     }
 
-    // Aqui você pode adicionar a lógica para salvar os dados da anamnese
     console.log({
       title,
       description,

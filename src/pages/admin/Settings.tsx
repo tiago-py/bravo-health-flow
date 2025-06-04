@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,90 +8,160 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/sonner';
-import { Clock, Mail, Phone, Globe, CreditCard, Users, Truck, ShieldCheck } from 'lucide-react';
+import { Clock, Mail, Phone, Globe, CreditCard, Users, Truck, ShieldCheck, Loader2 } from 'lucide-react';
+
+interface Settings {
+  general: {
+    companyName: string;
+    siteUrl: string;
+    contactEmail: string;
+    supportPhone: string;
+    timezone: string;
+    maintenanceMode: boolean;
+  };
+  email: {
+    fromEmail: string;
+    replyTo: string;
+    emailProvider: string;
+    emailFooter: string;
+    sendWelcomeEmail: boolean;
+    sendOrderConfirmation: boolean;
+    sendShippingNotification: boolean;
+  };
+  shipping: {
+    defaultShippingMethod: string;
+    shippingTimeMinimum: string;
+    shippingTimeMaximum: string;
+    trackingUrl: string;
+    discreteShipping: boolean;
+    shippingLabel: string;
+  };
+  payment: {
+    currency: string;
+    currencySymbol: string;
+    paymentGateway: string;
+    allowedPaymentMethods: string[];
+    stripeLiveKey: string;
+    stripeTestKey: string;
+    testMode: boolean;
+  };
+}
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState('general');
-  
-  // General settings state
-  const [generalSettings, setGeneralSettings] = useState({
-    companyName: 'Bravo Homem',
-    siteUrl: 'https://bravohomem.com.br',
-    contactEmail: 'contato@bravohomem.com.br',
-    supportPhone: '(11) 3333-4444',
-    timezone: 'America/Sao_Paulo',
-    maintenanceMode: false,
+  const [settings, setSettings] = useState<Settings>({
+    general: {
+      companyName: '',
+      siteUrl: '',
+      contactEmail: '',
+      supportPhone: '',
+      timezone: 'America/Sao_Paulo',
+      maintenanceMode: false,
+    },
+    email: {
+      fromEmail: '',
+      replyTo: '',
+      emailProvider: 'ses',
+      emailFooter: '',
+      sendWelcomeEmail: true,
+      sendOrderConfirmation: true,
+      sendShippingNotification: true,
+    },
+    shipping: {
+      defaultShippingMethod: 'correios',
+      shippingTimeMinimum: '3',
+      shippingTimeMaximum: '5',
+      trackingUrl: '',
+      discreteShipping: true,
+      shippingLabel: '',
+    },
+    payment: {
+      currency: 'BRL',
+      currencySymbol: 'R$',
+      paymentGateway: 'stripe',
+      allowedPaymentMethods: ['credit_card', 'pix', 'boleto'],
+      stripeLiveKey: '',
+      stripeTestKey: '',
+      testMode: false,
+    },
   });
-  
-  // Email settings state
-  const [emailSettings, setEmailSettings] = useState({
-    fromEmail: 'no-reply@bravohomem.com.br',
-    replyTo: 'suporte@bravohomem.com.br',
-    emailProvider: 'ses',
-    emailFooter: 'Bravo Homem - Cuidando da sua saúde | Av. Paulista, 1000 - São Paulo, SP',
-    sendWelcomeEmail: true,
-    sendOrderConfirmation: true,
-    sendShippingNotification: true,
-  });
-  
-  // Shipping settings state
-  const [shippingSettings, setShippingSettings] = useState({
-    defaultShippingMethod: 'correios',
-    shippingTimeMinimum: '3',
-    shippingTimeMaximum: '5',
-    trackingUrl: 'https://bravohomem.com.br/rastreio/{tracking_code}',
-    discreteShipping: true,
-    shippingLabel: 'BH Distribuidora LTDA',
-  });
-  
-  // Payment settings state
-  const [paymentSettings, setPaymentSettings] = useState({
-    currency: 'BRL',
-    currencySymbol: 'R$',
-    paymentGateway: 'stripe',
-    allowedPaymentMethods: ['credit_card', 'pix', 'boleto'],
-    stripeLiveKey: '••••••••••••••••••••••••',
-    stripeTestKey: '••••••••••••••••••••••••',
-    testMode: false,
-  });
-  
-  // Handle general settings change
-  const handleGeneralChange = (field: string, value: any) => {
-    setGeneralSettings({
-      ...generalSettings,
-      [field]: value,
-    });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const API_BASE_URL = 'http://localhost:3000';
+
+  // Fetch settings on component mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_BASE_URL}/api/admin/settings`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch settings');
+        }
+
+        const data = await response.json();
+        setSettings(data);
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+        toast.error('Failed to load settings');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  // Handle settings change
+  const handleSettingsChange = (section: keyof Settings, field: string, value: any) => {
+    setSettings(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [field]: value
+      }
+    }));
   };
-  
-  // Handle email settings change
-  const handleEmailChange = (field: string, value: any) => {
-    setEmailSettings({
-      ...emailSettings,
-      [field]: value,
-    });
+
+  // Save all settings
+  const saveSettings = async () => {
+    try {
+      setSaving(true);
+      const response = await fetch(`${API_BASE_URL}/api/admin/settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(settings)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save settings');
+      }
+
+      toast.success('Settings saved successfully!');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error('Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
   };
-  
-  // Handle shipping settings change
-  const handleShippingChange = (field: string, value: any) => {
-    setShippingSettings({
-      ...shippingSettings,
-      [field]: value,
-    });
-  };
-  
-  // Handle payment settings change
-  const handlePaymentChange = (field: string, value: any) => {
-    setPaymentSettings({
-      ...paymentSettings,
-      [field]: value,
-    });
-  };
-  
-  // Save settings
-  const saveSettings = () => {
-    // In a real app, this would send an API request with the updated settings
-    toast.success('Configurações salvas com sucesso!');
-  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-bravo-blue" />
+        <span className="ml-2">Loading settings...</span>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -138,8 +207,8 @@ const AdminSettings = () => {
                   <Label htmlFor="companyName">Nome da empresa</Label>
                   <Input
                     id="companyName"
-                    value={generalSettings.companyName}
-                    onChange={(e) => handleGeneralChange('companyName', e.target.value)}
+                    value={settings.general.companyName}
+                    onChange={(e) => handleSettingsChange('general', 'companyName', e.target.value)}
                   />
                 </div>
                 
@@ -147,8 +216,8 @@ const AdminSettings = () => {
                   <Label htmlFor="siteUrl">URL do site</Label>
                   <Input
                     id="siteUrl"
-                    value={generalSettings.siteUrl}
-                    onChange={(e) => handleGeneralChange('siteUrl', e.target.value)}
+                    value={settings.general.siteUrl}
+                    onChange={(e) => handleSettingsChange('general', 'siteUrl', e.target.value)}
                   />
                 </div>
                 
@@ -157,8 +226,8 @@ const AdminSettings = () => {
                   <Input
                     id="contactEmail"
                     type="email"
-                    value={generalSettings.contactEmail}
-                    onChange={(e) => handleGeneralChange('contactEmail', e.target.value)}
+                    value={settings.general.contactEmail}
+                    onChange={(e) => handleSettingsChange('general', 'contactEmail', e.target.value)}
                   />
                 </div>
                 
@@ -166,16 +235,16 @@ const AdminSettings = () => {
                   <Label htmlFor="supportPhone">Telefone de suporte</Label>
                   <Input
                     id="supportPhone"
-                    value={generalSettings.supportPhone}
-                    onChange={(e) => handleGeneralChange('supportPhone', e.target.value)}
+                    value={settings.general.supportPhone}
+                    onChange={(e) => handleSettingsChange('general', 'supportPhone', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="timezone">Fuso horário</Label>
                   <Select
-                    value={generalSettings.timezone}
-                    onValueChange={(value) => handleGeneralChange('timezone', value)}
+                    value={settings.general.timezone}
+                    onValueChange={(value) => handleSettingsChange('general', 'timezone', value)}
                   >
                     <SelectTrigger id="timezone">
                       <SelectValue placeholder="Selecione o fuso horário" />
@@ -192,25 +261,20 @@ const AdminSettings = () => {
               <div className="flex items-center space-x-2 pt-4">
                 <Switch
                   id="maintenanceMode"
-                  checked={generalSettings.maintenanceMode}
-                  onCheckedChange={(checked) => handleGeneralChange('maintenanceMode', checked)}
+                  checked={settings.general.maintenanceMode}
+                  onCheckedChange={(checked) => handleSettingsChange('general', 'maintenanceMode', checked)}
                 />
                 <Label htmlFor="maintenanceMode" className="font-medium">
                   Ativar modo de manutenção
                 </Label>
               </div>
               
-              {generalSettings.maintenanceMode && (
+              {settings.general.maintenanceMode && (
                 <div className="rounded-md bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
-                  <strong>Atenção:</strong> O modo de manutenção bloqueia o acesso de usuários comuns ao site. Apenas administradores poderão fazer login.
+                  <strong>Atenção:</strong> O modo de manutenção bloqueia o acesso de usuários comuns ao site.
                 </div>
               )}
             </CardContent>
-            <CardFooter className="border-t border-gray-100 pt-4">
-              <Button onClick={saveSettings}>
-                Salvar configurações
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
         
@@ -230,8 +294,8 @@ const AdminSettings = () => {
                   <Input
                     id="fromEmail"
                     type="email"
-                    value={emailSettings.fromEmail}
-                    onChange={(e) => handleEmailChange('fromEmail', e.target.value)}
+                    value={settings.email.fromEmail}
+                    onChange={(e) => handleSettingsChange('email', 'fromEmail', e.target.value)}
                   />
                 </div>
                 
@@ -240,16 +304,16 @@ const AdminSettings = () => {
                   <Input
                     id="replyTo"
                     type="email"
-                    value={emailSettings.replyTo}
-                    onChange={(e) => handleEmailChange('replyTo', e.target.value)}
+                    value={settings.email.replyTo}
+                    onChange={(e) => handleSettingsChange('email', 'replyTo', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="emailProvider">Provedor de e-mail</Label>
                   <Select
-                    value={emailSettings.emailProvider}
-                    onValueChange={(value) => handleEmailChange('emailProvider', value)}
+                    value={settings.email.emailProvider}
+                    onValueChange={(value) => handleSettingsChange('email', 'emailProvider', value)}
                   >
                     <SelectTrigger id="emailProvider">
                       <SelectValue placeholder="Selecione o provedor" />
@@ -267,8 +331,8 @@ const AdminSettings = () => {
                 <Label htmlFor="emailFooter">Rodapé dos e-mails</Label>
                 <Textarea
                   id="emailFooter"
-                  value={emailSettings.emailFooter}
-                  onChange={(e) => handleEmailChange('emailFooter', e.target.value)}
+                  value={settings.email.emailFooter}
+                  onChange={(e) => handleSettingsChange('email', 'emailFooter', e.target.value)}
                   rows={3}
                 />
               </div>
@@ -279,42 +343,37 @@ const AdminSettings = () => {
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="sendWelcomeEmail"
-                    checked={emailSettings.sendWelcomeEmail}
-                    onCheckedChange={(checked) => handleEmailChange('sendWelcomeEmail', checked)}
+                    checked={settings.email.sendWelcomeEmail}
+                    onCheckedChange={(checked) => handleSettingsChange('email', 'sendWelcomeEmail', checked)}
                   />
                   <Label htmlFor="sendWelcomeEmail">
-                    Enviar e-mail de boas-vindas para novos usuários
+                    Enviar e-mail de boas-vindas
                   </Label>
                 </div>
                 
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="sendOrderConfirmation"
-                    checked={emailSettings.sendOrderConfirmation}
-                    onCheckedChange={(checked) => handleEmailChange('sendOrderConfirmation', checked)}
+                    checked={settings.email.sendOrderConfirmation}
+                    onCheckedChange={(checked) => handleSettingsChange('email', 'sendOrderConfirmation', checked)}
                   />
                   <Label htmlFor="sendOrderConfirmation">
-                    Enviar confirmação de assinatura/pedido
+                    Enviar confirmação de pedido
                   </Label>
                 </div>
                 
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="sendShippingNotification"
-                    checked={emailSettings.sendShippingNotification}
-                    onCheckedChange={(checked) => handleEmailChange('sendShippingNotification', checked)}
+                    checked={settings.email.sendShippingNotification}
+                    onCheckedChange={(checked) => handleSettingsChange('email', 'sendShippingNotification', checked)}
                   />
                   <Label htmlFor="sendShippingNotification">
-                    Enviar notificação de envio com código de rastreio
+                    Enviar notificação de envio
                   </Label>
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="border-t border-gray-100 pt-4">
-              <Button onClick={saveSettings}>
-                Salvar configurações
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
         
@@ -332,8 +391,8 @@ const AdminSettings = () => {
                 <div className="space-y-2">
                   <Label htmlFor="defaultShippingMethod">Método de envio padrão</Label>
                   <Select
-                    value={shippingSettings.defaultShippingMethod}
-                    onValueChange={(value) => handleShippingChange('defaultShippingMethod', value)}
+                    value={settings.shipping.defaultShippingMethod}
+                    onValueChange={(value) => handleSettingsChange('shipping', 'defaultShippingMethod', value)}
                   >
                     <SelectTrigger id="defaultShippingMethod">
                       <SelectValue placeholder="Selecione o método" />
@@ -353,8 +412,8 @@ const AdminSettings = () => {
                       id="shippingTimeMinimum"
                       type="number"
                       min="1"
-                      value={shippingSettings.shippingTimeMinimum}
-                      onChange={(e) => handleShippingChange('shippingTimeMinimum', e.target.value)}
+                      value={settings.shipping.shippingTimeMinimum}
+                      onChange={(e) => handleSettingsChange('shipping', 'shippingTimeMinimum', e.target.value)}
                     />
                   </div>
                   
@@ -364,8 +423,8 @@ const AdminSettings = () => {
                       id="shippingTimeMaximum"
                       type="number"
                       min="1"
-                      value={shippingSettings.shippingTimeMaximum}
-                      onChange={(e) => handleShippingChange('shippingTimeMaximum', e.target.value)}
+                      value={settings.shipping.shippingTimeMaximum}
+                      onChange={(e) => handleSettingsChange('shipping', 'shippingTimeMaximum', e.target.value)}
                     />
                   </div>
                 </div>
@@ -374,8 +433,8 @@ const AdminSettings = () => {
                   <Label htmlFor="trackingUrl">URL de rastreamento</Label>
                   <Input
                     id="trackingUrl"
-                    value={shippingSettings.trackingUrl}
-                    onChange={(e) => handleShippingChange('trackingUrl', e.target.value)}
+                    value={settings.shipping.trackingUrl}
+                    onChange={(e) => handleSettingsChange('shipping', 'trackingUrl', e.target.value)}
                   />
                   <p className="text-xs text-gray-500">
                     Use {'{tracking_code}'} como placeholder para o código de rastreio.
@@ -386,8 +445,8 @@ const AdminSettings = () => {
                   <Label htmlFor="shippingLabel">Nome na etiqueta de envio</Label>
                   <Input
                     id="shippingLabel"
-                    value={shippingSettings.shippingLabel}
-                    onChange={(e) => handleShippingChange('shippingLabel', e.target.value)}
+                    value={settings.shipping.shippingLabel}
+                    onChange={(e) => handleSettingsChange('shipping', 'shippingLabel', e.target.value)}
                   />
                 </div>
               </div>
@@ -395,28 +454,14 @@ const AdminSettings = () => {
               <div className="flex items-center space-x-2 pt-4">
                 <Switch
                   id="discreteShipping"
-                  checked={shippingSettings.discreteShipping}
-                  onCheckedChange={(checked) => handleShippingChange('discreteShipping', checked)}
+                  checked={settings.shipping.discreteShipping}
+                  onCheckedChange={(checked) => handleSettingsChange('shipping', 'discreteShipping', checked)}
                 />
                 <Label htmlFor="discreteShipping" className="font-medium">
                   Ativar envio discreto
                 </Label>
               </div>
-              
-              {shippingSettings.discreteShipping && (
-                <div className="rounded-md bg-gray-50 border border-gray-200 p-4 text-sm text-gray-700">
-                  <p>
-                    <ShieldCheck size={16} className="inline-block mr-1" />
-                    <strong>Envio discreto ativado:</strong> Os pacotes não terão nenhuma identificação do conteúdo ou da finalidade dos medicamentos.
-                  </p>
-                </div>
-              )}
             </CardContent>
-            <CardFooter className="border-t border-gray-100 pt-4">
-              <Button onClick={saveSettings}>
-                Salvar configurações
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
         
@@ -434,8 +479,8 @@ const AdminSettings = () => {
                 <div className="space-y-2">
                   <Label htmlFor="currency">Moeda</Label>
                   <Select
-                    value={paymentSettings.currency}
-                    onValueChange={(value) => handlePaymentChange('currency', value)}
+                    value={settings.payment.currency}
+                    onValueChange={(value) => handleSettingsChange('payment', 'currency', value)}
                   >
                     <SelectTrigger id="currency">
                       <SelectValue placeholder="Selecione a moeda" />
@@ -452,16 +497,16 @@ const AdminSettings = () => {
                   <Label htmlFor="currencySymbol">Símbolo da moeda</Label>
                   <Input
                     id="currencySymbol"
-                    value={paymentSettings.currencySymbol}
-                    onChange={(e) => handlePaymentChange('currencySymbol', e.target.value)}
+                    value={settings.payment.currencySymbol}
+                    onChange={(e) => handleSettingsChange('payment', 'currencySymbol', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="paymentGateway">Gateway de pagamento</Label>
                   <Select
-                    value={paymentSettings.paymentGateway}
-                    onValueChange={(value) => handlePaymentChange('paymentGateway', value)}
+                    value={settings.payment.paymentGateway}
+                    onValueChange={(value) => handleSettingsChange('payment', 'paymentGateway', value)}
                   >
                     <SelectTrigger id="paymentGateway">
                       <SelectValue placeholder="Selecione o gateway" />
@@ -479,8 +524,8 @@ const AdminSettings = () => {
                   <Input
                     id="stripeLiveKey"
                     type="password"
-                    value={paymentSettings.stripeLiveKey}
-                    onChange={(e) => handlePaymentChange('stripeLiveKey', e.target.value)}
+                    value={settings.payment.stripeLiveKey}
+                    onChange={(e) => handleSettingsChange('payment', 'stripeLiveKey', e.target.value)}
                   />
                 </div>
                 
@@ -489,8 +534,8 @@ const AdminSettings = () => {
                   <Input
                     id="stripeTestKey"
                     type="password"
-                    value={paymentSettings.stripeTestKey}
-                    onChange={(e) => handlePaymentChange('stripeTestKey', e.target.value)}
+                    value={settings.payment.stripeTestKey}
+                    onChange={(e) => handleSettingsChange('payment', 'stripeTestKey', e.target.value)}
                   />
                 </div>
               </div>
@@ -502,12 +547,12 @@ const AdminSettings = () => {
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="paymentMethod-credit_card"
-                      checked={paymentSettings.allowedPaymentMethods.includes('credit_card')}
+                      checked={settings.payment.allowedPaymentMethods.includes('credit_card')}
                       onCheckedChange={(checked) => {
                         const methods = checked 
-                          ? [...paymentSettings.allowedPaymentMethods, 'credit_card'] 
-                          : paymentSettings.allowedPaymentMethods.filter(m => m !== 'credit_card');
-                        handlePaymentChange('allowedPaymentMethods', methods);
+                          ? [...settings.payment.allowedPaymentMethods, 'credit_card'] 
+                          : settings.payment.allowedPaymentMethods.filter(m => m !== 'credit_card');
+                        handleSettingsChange('payment', 'allowedPaymentMethods', methods);
                       }}
                     />
                     <Label htmlFor="paymentMethod-credit_card">
@@ -518,12 +563,12 @@ const AdminSettings = () => {
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="paymentMethod-pix"
-                      checked={paymentSettings.allowedPaymentMethods.includes('pix')}
+                      checked={settings.payment.allowedPaymentMethods.includes('pix')}
                       onCheckedChange={(checked) => {
                         const methods = checked 
-                          ? [...paymentSettings.allowedPaymentMethods, 'pix'] 
-                          : paymentSettings.allowedPaymentMethods.filter(m => m !== 'pix');
-                        handlePaymentChange('allowedPaymentMethods', methods);
+                          ? [...settings.payment.allowedPaymentMethods, 'pix'] 
+                          : settings.payment.allowedPaymentMethods.filter(m => m !== 'pix');
+                        handleSettingsChange('payment', 'allowedPaymentMethods', methods);
                       }}
                     />
                     <Label htmlFor="paymentMethod-pix">
@@ -534,12 +579,12 @@ const AdminSettings = () => {
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="paymentMethod-boleto"
-                      checked={paymentSettings.allowedPaymentMethods.includes('boleto')}
+                      checked={settings.payment.allowedPaymentMethods.includes('boleto')}
                       onCheckedChange={(checked) => {
                         const methods = checked 
-                          ? [...paymentSettings.allowedPaymentMethods, 'boleto'] 
-                          : paymentSettings.allowedPaymentMethods.filter(m => m !== 'boleto');
-                        handlePaymentChange('allowedPaymentMethods', methods);
+                          ? [...settings.payment.allowedPaymentMethods, 'boleto'] 
+                          : settings.payment.allowedPaymentMethods.filter(m => m !== 'boleto');
+                        handleSettingsChange('payment', 'allowedPaymentMethods', methods);
                       }}
                     />
                     <Label htmlFor="paymentMethod-boleto">
@@ -552,28 +597,33 @@ const AdminSettings = () => {
               <div className="flex items-center space-x-2 pt-4">
                 <Switch
                   id="testMode"
-                  checked={paymentSettings.testMode}
-                  onCheckedChange={(checked) => handlePaymentChange('testMode', checked)}
+                  checked={settings.payment.testMode}
+                  onCheckedChange={(checked) => handleSettingsChange('payment', 'testMode', checked)}
                 />
                 <Label htmlFor="testMode" className="font-medium">
                   Ativar modo de teste
                 </Label>
               </div>
-              
-              {paymentSettings.testMode && (
-                <div className="rounded-md bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
-                  <strong>Atenção:</strong> O modo de teste está ativado. Nenhum pagamento real será processado.
-                </div>
-              )}
             </CardContent>
-            <CardFooter className="border-t border-gray-100 pt-4">
-              <Button onClick={saveSettings}>
-                Salvar configurações
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Save button fixed at bottom */}
+      <div className="fixed bottom-6 right-6">
+        <Button 
+          onClick={saveSettings}
+          disabled={saving}
+          className="shadow-lg"
+        >
+          {saving ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Salvando...
+            </>
+          ) : 'Salvar todas as configurações'}
+        </Button>
+      </div>
     </div>
   );
 };

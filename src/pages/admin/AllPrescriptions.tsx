@@ -1,92 +1,59 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { User, Calendar, Search, FileText, Download, Eye, UserCheck } from 'lucide-react';
+import { User, Calendar, Search, FileText, Download, Eye, UserCheck, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const AllPrescriptions = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [doctorFilter, setDoctorFilter] = useState('all');
+  const [prescriptions, setPrescriptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
-  // Mock prescriptions data with doctor info
-  const allPrescriptions = [
-    {
-      id: '1',
-      patientName: 'João Silva',
-      patientAge: 32,
-      doctorName: 'Dr. Carlos Mendes',
-      doctorCRM: 'CRM/SP 123456',
-      evaluationDate: '2023-03-25',
-      uploadDate: '2023-03-25',
-      type: 'queda-capilar',
-      observations: 'Paciente apresenta alopecia androgenética grau 3. Indicado tratamento com finasterida e minoxidil.',
-      prescriptionFile: 'prescricao_joao_silva_25032023.pdf'
-    },
-    {
-      id: '2',
-      patientName: 'Marcos Oliveira',
-      patientAge: 45,
-      doctorName: 'Dr. Ana Santos',
-      doctorCRM: 'CRM/RJ 789012',
-      evaluationDate: '2023-03-25',
-      uploadDate: '2023-03-26',
-      type: 'disfuncao-eretil',
-      observations: 'Paciente relata dificuldades de ereção há 6 meses. Indicado tadalafila 5mg.',
-      prescriptionFile: 'prescricao_marcos_oliveira_25032023.pdf'
-    },
-    {
-      id: '3',
-      patientName: 'André Costa',
-      patientAge: 28,
-      doctorName: 'Dr. Carlos Mendes',
-      doctorCRM: 'CRM/SP 123456',
-      evaluationDate: '2023-03-24',
-      uploadDate: '2023-03-24',
-      type: 'queda-capilar',
-      observations: 'Início de calvície masculina. Tratamento preventivo com finasterida.',
-      prescriptionFile: 'prescricao_andre_costa_24032023.pdf'
-    },
-    {
-      id: '4',
-      patientName: 'Carlos Eduardo',
-      patientAge: 41,
-      doctorName: 'Dr. Roberto Silva',
-      doctorCRM: 'CRM/MG 345678',
-      evaluationDate: '2023-03-23',
-      uploadDate: '2023-03-23',
-      type: 'disfuncao-eretil',
-      observations: 'DE moderada. Prescrito sildenafila 50mg conforme necessário.',
-      prescriptionFile: 'prescricao_carlos_eduardo_23032023.pdf'
-    },
-    {
-      id: '5',
-      patientName: 'Paulo Vieira',
-      patientAge: 35,
-      doctorName: 'Dr. Ana Santos',
-      doctorCRM: 'CRM/RJ 789012',
-      evaluationDate: '2023-03-22',
-      uploadDate: '2023-03-23',
-      type: 'queda-capilar',
-      observations: 'Calvície avançada. Combinação de finasterida 1mg e minoxidil 5%.',
-      prescriptionFile: 'prescricao_paulo_vieira_22032023.pdf'
-    },
-  ];
+  const API_BASE_URL = 'http://localhost:3000';
+
+  // Fetch prescriptions from API
+  const fetchPrescriptions = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch(`${API_BASE_URL}/api/prescriptions`);
+      
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      setPrescriptions(data);
+    } catch (err) {
+      console.error('Erro ao buscar prescrições:', err);
+      setError(err.message || 'Erro ao conectar com o servidor');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load prescriptions on component mount
+  useEffect(() => {
+    fetchPrescriptions();
+  }, []);
 
   // Get unique doctors for filter
-  const uniqueDoctors = Array.from(new Set(allPrescriptions.map(p => p.doctorName)));
+  const uniqueDoctors = Array.from(new Set(prescriptions.map(p => p.doctorName)));
   
   // Filter prescriptions based on search query and filters
-  const filteredPrescriptions = allPrescriptions.filter(prescription => {
+  const filteredPrescriptions = prescriptions.filter(prescription => {
     // Search filter (patient name or doctor name)
     const matchesSearch = 
-      prescription.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prescription.doctorName.toLowerCase().includes(searchQuery.toLowerCase());
+      prescription.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      prescription.doctorName?.toLowerCase().includes(searchQuery.toLowerCase());
     
     // Type filter
     const matchesType = typeFilter === 'all' || prescription.type === typeFilter;
@@ -96,39 +63,148 @@ const AllPrescriptions = () => {
     
     // Date filter (based on upload date)
     let matchesDate = true;
-    const uploadDate = new Date(prescription.uploadDate);
-    const today = new Date();
-    const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-    
-    if (dateFilter === 'today') {
-      matchesDate = uploadDate.toDateString() === today.toDateString();
-    } else if (dateFilter === 'week') {
-      matchesDate = uploadDate >= lastWeek;
-    } else if (dateFilter === 'month') {
-      matchesDate = uploadDate >= lastMonth;
+    if (prescription.uploadDate && dateFilter !== 'all') {
+      const uploadDate = new Date(prescription.uploadDate);
+      const today = new Date();
+      const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+      
+      if (dateFilter === 'today') {
+        matchesDate = uploadDate.toDateString() === today.toDateString();
+      } else if (dateFilter === 'week') {
+        matchesDate = uploadDate >= lastWeek;
+      } else if (dateFilter === 'month') {
+        matchesDate = uploadDate >= lastMonth;
+      }
     }
     
     return matchesSearch && matchesType && matchesDoctor && matchesDate;
   });
 
-  const handleDownload = (filename: string) => {
-    console.log('Downloading:', filename);
+  // Download prescription file
+  const handleDownload = async (prescriptionId, filename) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/prescriptions/${prescriptionId}/download`);
+      
+      if (!response.ok) {
+        throw new Error('Erro ao baixar arquivo');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Erro ao baixar arquivo:', err);
+      alert('Erro ao baixar arquivo: ' + err.message);
+    }
   };
 
-  const handleView = (filename: string) => {
-    console.log('Viewing:', filename);
+  // View prescription file
+  const handleView = async (prescriptionId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/prescriptions/${prescriptionId}/view`);
+      
+      if (!response.ok) {
+        throw new Error('Erro ao visualizar arquivo');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err) {
+      console.error('Erro ao visualizar arquivo:', err);
+      alert('Erro ao visualizar arquivo: ' + err.message);
+    }
   };
+
+  // Retry loading
+  const handleRetry = () => {
+    fetchPrescriptions();
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-[#58819d] mb-2">
+            Todas as Prescrições
+          </h1>
+          <p className="text-gray-600">
+            Visualize e gerencie todas as prescrições dos médicos
+          </p>
+        </div>
+        
+        <Card>
+          <CardContent className="py-8">
+            <div className="flex flex-col items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-[#58819d] mb-4" />
+              <p className="text-gray-600">Carregando prescrições...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-[#58819d] mb-2">
+            Todas as Prescrições
+          </h1>
+          <p className="text-gray-600">
+            Visualize e gerencie todas as prescrições dos médicos
+          </p>
+        </div>
+        
+        <Alert className="border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-800">
+            <div className="flex items-center justify-between">
+              <span>Erro ao carregar prescrições: {error}</span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleRetry}
+                className="ml-4"
+              >
+                <RefreshCw className="h-4 w-4 mr-1" />
+                Tentar novamente
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[#58819d] mb-2">
-          Todas as Prescrições
-        </h1>
-        <p className="text-gray-600">
-          Visualize e gerencie todas as prescrições dos médicos
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#58819d] mb-2">
+            Todas as Prescrições
+          </h1>
+          <p className="text-gray-600">
+            Visualize e gerencie todas as prescrições dos médicos
+          </p>
+        </div>
+        <Button 
+          variant="outline" 
+          onClick={handleRetry}
+          disabled={loading}
+        >
+          <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+          Atualizar
+        </Button>
       </div>
       
       {/* Filters */}
@@ -221,80 +297,82 @@ const AllPrescriptions = () => {
             <div className="space-y-4">
               {/* Desktop Table */}
               <div className="hidden xl:block">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Paciente</TableHead>
-                      <TableHead>Médico</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Data Upload</TableHead>
-                      <TableHead>Observações</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredPrescriptions.map(prescription => (
-                      <TableRow key={prescription.id}>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <User size={16} className="mr-2 text-gray-400" />
-                            <div>
-                              <div className="font-medium">{prescription.patientName}</div>
-                              <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-3 px-4 font-medium text-gray-700">Paciente</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700">Médico</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700">Tipo</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700">Data Upload</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700">Observações</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredPrescriptions.map(prescription => (
+                        <tr key={prescription.id} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center">
+                              <User size={16} className="mr-2 text-gray-400" />
+                              <div>
+                                <div className="font-medium">{prescription.patientName}</div>
+                                <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
+                              </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <UserCheck size={16} className="mr-2 text-gray-400" />
-                            <div>
-                              <div className="font-medium">{prescription.doctorName}</div>
-                              <div className="text-sm text-gray-500">{prescription.doctorCRM}</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center">
+                              <UserCheck size={16} className="mr-2 text-gray-400" />
+                              <div>
+                                <div className="font-medium">{prescription.doctorName}</div>
+                                <div className="text-sm text-gray-500">{prescription.doctorCRM}</div>
+                              </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {prescription.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center text-sm">
-                            <Calendar size={14} className="mr-1 text-gray-400" />
-                            {new Date(prescription.uploadDate).toLocaleDateString('pt-BR')}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="max-w-xs">
-                            <p className="text-sm text-gray-600 truncate" title={prescription.observations}>
-                              {prescription.observations}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleView(prescription.prescriptionFile)}
-                            >
-                              <Eye size={14} className="mr-1" />
-                              Ver
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDownload(prescription.prescriptionFile)}
-                            >
-                              <Download size={14} className="mr-1" />
-                              Download
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Badge variant="outline">
+                              {prescription.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center text-sm">
+                              <Calendar size={14} className="mr-1 text-gray-400" />
+                              {prescription.uploadDate ? new Date(prescription.uploadDate).toLocaleDateString('pt-BR') : 'N/A'}
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="max-w-xs">
+                              <p className="text-sm text-gray-600 truncate" title={prescription.observations}>
+                                {prescription.observations || 'Sem observações'}
+                              </p>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleView(prescription.id)}
+                              >
+                                <Eye size={14} className="mr-1" />
+                                Ver
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDownload(prescription.id, prescription.prescriptionFile)}
+                              >
+                                <Download size={14} className="mr-1" />
+                                Download
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               {/* Mobile/Tablet Cards */}
@@ -326,16 +404,16 @@ const AllPrescriptions = () => {
                         
                         <div className="flex items-center text-sm text-gray-600">
                           <Calendar size={14} className="mr-1 text-gray-400" />
-                          Upload: {new Date(prescription.uploadDate).toLocaleDateString('pt-BR')}
+                          Upload: {prescription.uploadDate ? new Date(prescription.uploadDate).toLocaleDateString('pt-BR') : 'N/A'}
                         </div>
                         
-                        <p className="text-sm text-gray-600">{prescription.observations}</p>
+                        <p className="text-sm text-gray-600">{prescription.observations || 'Sem observações'}</p>
                         
                         <div className="flex space-x-2">
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleView(prescription.prescriptionFile)}
+                            onClick={() => handleView(prescription.id)}
                             className="flex-1"
                           >
                             <Eye size={14} className="mr-1" />
@@ -344,7 +422,7 @@ const AllPrescriptions = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDownload(prescription.prescriptionFile)}
+                            onClick={() => handleDownload(prescription.id, prescription.prescriptionFile)}
                             className="flex-1"
                           >
                             <Download size={14} className="mr-1" />
@@ -362,7 +440,10 @@ const AllPrescriptions = () => {
               <FileText size={48} className="mx-auto text-gray-300 mb-4" />
               <p className="text-gray-500 mb-2">Nenhuma prescrição encontrada</p>
               <p className="text-sm text-gray-400">
-                Nenhuma prescrição encontrada com os filtros selecionados.
+                {prescriptions.length === 0 
+                  ? 'Nenhuma prescrição cadastrada no sistema.'
+                  : 'Nenhuma prescrição encontrada com os filtros selecionados.'
+                }
               </p>
             </div>
           )}

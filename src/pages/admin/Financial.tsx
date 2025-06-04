@@ -1,11 +1,10 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Download, ArrowUp, ArrowDown, DollarSign, TrendingUp, CreditCard, Users } from 'lucide-react';
+import { Search, Download, ArrowUp, ArrowDown, DollarSign, TrendingUp, CreditCard, Users, Loader2 } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -17,140 +16,85 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { toast } from '@/components/ui/sonner';
+
+interface FinancialSummary {
+  title: string;
+  value: string;
+  change: string;
+  changeType: 'increase' | 'decrease';
+}
+
+interface Transaction {
+  id: string;
+  date: string;
+  customer: string;
+  plan: string;
+  amount: number;
+  status: 'succeeded' | 'failed' | 'refunded';
+  paymentMethod: 'credit_card' | 'pix';
+}
 
 const AdminFinancial = () => {
   const [periodFilter, setPeriodFilter] = useState('month');
-  const [yearFilter, setYearFilter] = useState('2023');
+  const [yearFilter, setYearFilter] = useState(new Date().getFullYear().toString());
   const [searchTransaction, setSearchTransaction] = useState('');
-  
-  // Mock financial data for charts
-  const revenueData = [
-    { month: 'Jan', revenue: 105000 },
-    { month: 'Fev', revenue: 118000 },
-    { month: 'Mar', revenue: 127000 },
-    { month: 'Abr', revenue: 142000 },
-    { month: 'Mai', revenue: 150000 },
-    { month: 'Jun', revenue: 164000 },
-    { month: 'Jul', revenue: 180000 },
-    { month: 'Ago', revenue: 195000 },
-    { month: 'Set', revenue: 210000 },
-    { month: 'Out', revenue: 222000 },
-    { month: 'Nov', revenue: 238000 },
-    { month: 'Dez', revenue: 255000 },
-  ];
-  
-  const userGrowthData = [
-    { month: 'Jan', users: 1200 },
-    { month: 'Fev', users: 1350 },
-    { month: 'Mar', users: 1450 },
-    { month: 'Abr', users: 1620 },
-    { month: 'Mai', users: 1780 },
-    { month: 'Jun', users: 1950 },
-    { month: 'Jul', users: 2100 },
-    { month: 'Ago', users: 2260 },
-    { month: 'Set', users: 2380 },
-    { month: 'Out', users: 2490 },
-    { month: 'Nov', users: 2580 },
-    { month: 'Dez', users: 2650 },
-  ];
-  
-  // Mock transactions data
-  const transactions = [
-    {
-      id: '1',
-      date: '2023-12-15',
-      customer: 'João Silva',
-      plan: 'Plano Premium - Queda Capilar',
-      amount: 249.9,
-      status: 'succeeded',
-      paymentMethod: 'credit_card'
-    },
-    {
-      id: '2',
-      date: '2023-12-14',
-      customer: 'Carlos Santos',
-      plan: 'Plano Básico - Disfunção Erétil',
-      amount: 159.9,
-      status: 'succeeded',
-      paymentMethod: 'credit_card'
-    },
-    {
-      id: '3',
-      date: '2023-12-14',
-      customer: 'Pedro Oliveira',
-      plan: 'Plano Premium - Queda Capilar',
-      amount: 249.9,
-      status: 'succeeded',
-      paymentMethod: 'pix'
-    },
-    {
-      id: '4',
-      date: '2023-12-13',
-      customer: 'Ricardo Mendes',
-      plan: 'Plano Premium - Disfunção Erétil',
-      amount: 259.9,
-      status: 'failed',
-      paymentMethod: 'credit_card'
-    },
-    {
-      id: '5',
-      date: '2023-12-12',
-      customer: 'Fernando Costa',
-      plan: 'Plano Básico - Queda Capilar',
-      amount: 149.9,
-      status: 'succeeded',
-      paymentMethod: 'credit_card'
-    },
-    {
-      id: '6',
-      date: '2023-12-11',
-      customer: 'Lucas Martins',
-      plan: 'Plano Premium - Disfunção Erétil',
-      amount: 259.9,
-      status: 'refunded',
-      paymentMethod: 'pix'
-    }
-  ];
-  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [financialSummary, setFinancialSummary] = useState<FinancialSummary[]>([]);
+  const [revenueData, setRevenueData] = useState<{ month: string; revenue: number }[]>([]);
+  const [userGrowthData, setUserGrowthData] = useState<{ month: string; users: number }[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+  // Fetch financial data
+  useEffect(() => {
+    const fetchFinancialData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const [summaryRes, revenueRes, usersRes, transactionsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/financial/summary`),
+          fetch(`${API_BASE_URL}/api/financial/revenue?year=${yearFilter}`),
+          fetch(`${API_BASE_URL}/api/financial/users`),
+          fetch(`${API_BASE_URL}/api/financial/transactions`)
+        ]);
+
+        if (!summaryRes.ok || !revenueRes.ok || !usersRes.ok || !transactionsRes.ok) {
+          throw new Error('Failed to fetch financial data');
+        }
+
+        const [summaryData, revenueData, usersData, transactionsData] = await Promise.all([
+          summaryRes.json(),
+          revenueRes.json(),
+          usersRes.json(),
+          transactionsRes.json()
+        ]);
+
+        setFinancialSummary(summaryData);
+        setRevenueData(revenueData);
+        setUserGrowthData(usersData);
+        setTransactions(transactionsData);
+      } catch (err) {
+        console.error('Error fetching financial data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load financial data');
+        toast.error('Failed to load financial data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFinancialData();
+  }, [yearFilter]);
+
   // Filter transactions based on search
   const filteredTransactions = transactions.filter(transaction =>
     transaction.customer.toLowerCase().includes(searchTransaction.toLowerCase()) ||
     transaction.plan.toLowerCase().includes(searchTransaction.toLowerCase()) ||
     transaction.id.toLowerCase().includes(searchTransaction.toLowerCase())
   );
-  
-  // Financial summary stats
-  const financialSummary = [
-    {
-      title: 'Receita Total',
-      value: 'R$ 255.000',
-      change: '+12% vs mês anterior',
-      changeType: 'increase',
-      icon: <DollarSign className="h-8 w-8 text-bravo-blue opacity-80" />,
-    },
-    {
-      title: 'Total de Assinantes',
-      value: '2.650',
-      change: '+70 novos assinantes',
-      changeType: 'increase',
-      icon: <Users className="h-8 w-8 text-bravo-blue opacity-80" />,
-    },
-    {
-      title: 'Valor Médio',
-      value: 'R$ 218,50',
-      change: '+8% vs mês anterior',
-      changeType: 'increase',
-      icon: <TrendingUp className="h-8 w-8 text-bravo-blue opacity-80" />,
-    },
-    {
-      title: 'Taxa de Conversão',
-      value: '32,4%',
-      change: '+2.1% vs mês anterior',
-      changeType: 'increase',
-      icon: <CreditCard className="h-8 w-8 text-bravo-blue opacity-80" />,
-    }
-  ];
-  
+
   // Helper function to format currency
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -158,7 +102,60 @@ const AdminFinancial = () => {
       currency: 'BRL',
     }).format(value);
   };
-  
+
+  const handleExport = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/financial/export`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to export data');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `financial-report-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success('Export completed successfully');
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      toast.error('Failed to export financial data');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading financial data...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <AlertCircle className="h-8 w-8 text-red-500" />
+        <p className="text-red-600">{error}</p>
+        <Button 
+          variant="outline" 
+          onClick={() => window.location.reload()}
+        >
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="mb-8">
@@ -184,7 +181,10 @@ const AdminFinancial = () => {
                   </p>
                 </div>
                 <div className="bg-bravo-beige bg-opacity-30 p-3 rounded-full">
-                  {stat.icon}
+                  {stat.title === 'Receita Total' && <DollarSign className="h-8 w-8 text-bravo-blue opacity-80" />}
+                  {stat.title === 'Total de Assinantes' && <Users className="h-8 w-8 text-bravo-blue opacity-80" />}
+                  {stat.title === 'Valor Médio' && <TrendingUp className="h-8 w-8 text-bravo-blue opacity-80" />}
+                  {stat.title === 'Taxa de Conversão' && <CreditCard className="h-8 w-8 text-bravo-blue opacity-80" />}
                 </div>
               </div>
             </CardContent>
@@ -206,8 +206,9 @@ const AdminFinancial = () => {
                   <SelectValue placeholder="Ano" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="2022">2022</SelectItem>
-                  <SelectItem value="2023">2023</SelectItem>
+                  {Array.from({length: 5}, (_, i) => new Date().getFullYear() - i).map(year => (
+                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -286,7 +287,7 @@ const AdminFinancial = () => {
                   className="pl-8 w-full md:w-[200px]"
                 />
               </div>
-              <Button variant="outline">
+              <Button variant="outline" onClick={handleExport}>
                 <Download className="h-4 w-4 mr-2" />
                 Exportar
               </Button>

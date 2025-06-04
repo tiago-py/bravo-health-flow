@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +7,7 @@ import { toast } from '@/components/ui/sonner';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Download, FileText } from 'lucide-react';
+import { Download, FileText, Loader2 } from 'lucide-react';
 
 interface PersonalInfo {
   name: string;
@@ -42,22 +41,25 @@ interface Prescription {
 
 const ClientProfile = () => {
   const { user } = useAuth();
+  const API_BASE_URL = 'http://localhost:3000';
   
-  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
-    name: user?.name || '',
-    email: user?.email || '',
-    phone: '(11) 98765-4321',
-    birthdate: '1990-05-15',
+  // Personal information state
+  const [personalInfo, setPersonalInfo] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    birthdate: '',
   });
   
-  const [addressInfo, setAddressInfo] = useState<AddressInfo>({
-    street: 'Rua Exemplo',
-    number: '123',
-    complement: 'Apto 45',
-    neighborhood: 'Centro',
-    city: 'São Paulo',
-    state: 'SP',
-    zipcode: '01234-567',
+  // Address information state
+  const [addressInfo, setAddressInfo] = useState({
+    street: '',
+    number: '',
+    complement: '',
+    neighborhood: '',
+    city: '',
+    state: '',
+    zipcode: '',
   });
   
   const [passwordInfo, setPasswordInfo] = useState<PasswordInfo>({
@@ -66,33 +68,72 @@ const ClientProfile = () => {
     confirmPassword: '',
   });
 
-  const prescriptions: Prescription[] = [
-    {
-      id: 1,
-      name: 'Dutasterida 0.5 mg',
-      date: '28 maio 2025',
-      pdfUrl: '#'
-    },
-    {
-      id: 2,
-      name: 'Minoxidil 2.5mg',
-      date: '28 maio 2025',
-      pdfUrl: '#'
-    },
-    {
-      id: 3,
-      name: 'Dutasterida 0.5 mg',
-      date: '27 fevereiro 2025',
-      pdfUrl: '#'
-    },
-    {
-      id: 4,
-      name: 'Minoxidil 2.5mg',
-      date: '27 fevereiro 2025',
-      pdfUrl: '#'
-    }
-  ];
-  
+  // Loading states
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingAddress, setLoadingAddress] = useState(true);
+  const [loadingPrescriptions, setLoadingPrescriptions] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  // Prescriptions data
+  const [prescriptions, setPrescriptions] = useState([]);
+
+  // Load user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Fetch profile data
+        const profileResponse = await fetch(`${API_BASE_URL}/api/users/profile`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (!profileResponse.ok) throw new Error('Erro ao carregar perfil');
+        const profileData = await profileResponse.json();
+        setPersonalInfo({
+          name: profileData.name || user?.name || '',
+          email: profileData.email || user?.email || '',
+          phone: profileData.phone || '',
+          birthdate: profileData.birthdate || '',
+        });
+
+        // Fetch address data
+        const addressResponse = await fetch(`${API_BASE_URL}/api/users/address`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (!addressResponse.ok) throw new Error('Erro ao carregar endereço');
+        const addressData = await addressResponse.json();
+        setAddressInfo(addressData);
+
+        // Fetch prescriptions
+        const prescriptionsResponse = await fetch(`${API_BASE_URL}/api/users/prescriptions`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (!prescriptionsResponse.ok) throw new Error('Erro ao carregar prescrições');
+        const prescriptionsData = await prescriptionsResponse.json();
+        setPrescriptions(prescriptionsData);
+
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        toast.error(error.message || 'Erro ao carregar dados do usuário');
+      } finally {
+        setLoadingProfile(false);
+        setLoadingAddress(false);
+        setLoadingPrescriptions(false);
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
+  // Handle personal info change
   const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPersonalInfo(prev => ({
@@ -117,15 +158,59 @@ const ClientProfile = () => {
     }));
   };
   
-  const savePersonalInfo = () => {
-    toast.success('Informações pessoais salvas com sucesso!');
+  // Save personal information
+  const savePersonalInfo = async () => {
+    try {
+      setUpdating(true);
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(personalInfo)
+      });
+      
+      if (!response.ok) throw new Error('Erro ao atualizar perfil');
+      
+      const updatedUser = await response.json();
+      // updateUser(updatedUser);
+      toast.success('Informações pessoais salvas com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar perfil:', error);
+      toast.error(error.message || 'Erro ao atualizar perfil');
+    } finally {
+      setUpdating(false);
+    }
   };
   
-  const saveAddressInfo = () => {
-    toast.success('Endereço salvo com sucesso!');
+  // Save address information
+  const saveAddressInfo = async () => {
+    try {
+      setUpdating(true);
+      const response = await fetch(`${API_BASE_URL}/api/users/address`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(addressInfo)
+      });
+      
+      if (!response.ok) throw new Error('Erro ao atualizar endereço');
+      
+      toast.success('Endereço salvo com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar endereço:', error);
+      toast.error(error.message || 'Erro ao atualizar endereço');
+    } finally {
+      setUpdating(false);
+    }
   };
   
-  const changePassword = () => {
+  // Change password
+  const changePassword = async () => {
+    // Validate passwords
     if (passwordInfo.newPassword !== passwordInfo.confirmPassword) {
       toast.error('As senhas não conferem.');
       return;
@@ -136,20 +221,79 @@ const ClientProfile = () => {
       return;
     }
     
-    toast.success('Senha alterada com sucesso!');
-    
-    setPasswordInfo({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    });
+    try {
+      setChangingPassword(true);
+      const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          currentPassword: passwordInfo.currentPassword,
+          newPassword: passwordInfo.newPassword
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao alterar senha');
+      }
+      
+      toast.success('Senha alterada com sucesso!');
+      
+      // Clear password fields
+      setPasswordInfo({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+    } catch (error) {
+      console.error('Erro ao alterar senha:', error);
+      toast.error(error.message || 'Erro ao alterar senha');
+    } finally {
+      setChangingPassword(false);
+    }
   };
 
-  const handleDownload = (prescriptionName: string) => {
-    toast.success('Baixando prescrição...', {
-      description: `Baixando ${prescriptionName}`,
-    });
+  const handleDownload = async (prescriptionId: string, filename: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/prescriptions/${prescriptionId}/download`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Erro ao baixar prescrição');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename || 'prescricao.pdf';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success('Download iniciado...', {
+        description: `Baixando prescrição ${filename}`,
+      });
+    } catch (error) {
+      console.error('Erro ao baixar prescrição:', error);
+      toast.error(error.message || 'Erro ao baixar prescrição');
+    }
   };
+
+  if (loadingProfile || loadingAddress || loadingPrescriptions) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-bravo-blue" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -228,8 +372,13 @@ const ClientProfile = () => {
             </CardContent>
             
             <CardFooter className="border-t border-gray-100 pt-4">
-              <Button onClick={savePersonalInfo}>
-                Salvar alterações
+              <Button onClick={savePersonalInfo} disabled={updating}>
+                {updating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Salvando...
+                  </>
+                ) : 'Salvar alterações'}
               </Button>
             </CardFooter>
           </Card>
@@ -319,8 +468,13 @@ const ClientProfile = () => {
             </CardContent>
             
             <CardFooter className="border-t border-gray-100 pt-4">
-              <Button onClick={saveAddressInfo}>
-                Salvar endereço
+              <Button onClick={saveAddressInfo} disabled={updating}>
+                {updating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Salvando...
+                  </>
+                ) : 'Salvar endereço'}
               </Button>
             </CardFooter>
           </Card>
@@ -355,14 +509,16 @@ const ClientProfile = () => {
                       <div>
                         <h4 className="font-medium text-gray-900">Prescrição</h4>
                         <p className="text-sm font-medium text-gray-700">{prescription.name}</p>
-                        <p className="text-xs text-gray-500">{prescription.date}</p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(prescription.date).toLocaleDateString('pt-BR')}
+                        </p>
                       </div>
                     </div>
                     
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDownload(prescription.name)}
+                      onClick={() => handleDownload(prescription.id, prescription.name)}
                       className="text-red-500 hover:text-red-600 hover:bg-red-50"
                     >
                       <Download size={16} />
@@ -435,8 +591,13 @@ const ClientProfile = () => {
             </CardContent>
             
             <CardFooter className="border-t border-gray-100 pt-4">
-              <Button onClick={changePassword}>
-                Alterar senha
+              <Button onClick={changePassword} disabled={changingPassword}>
+                {changingPassword ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Alterando...
+                  </>
+                ) : 'Alterar senha'}
               </Button>
             </CardFooter>
           </Card>
