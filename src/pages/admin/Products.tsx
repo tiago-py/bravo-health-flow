@@ -24,6 +24,7 @@ const Products = () => {
     description: '',
     type: '',
     price: '',
+    stock: '',
     status: 'active'
   });
 
@@ -115,6 +116,7 @@ const Products = () => {
         description: formData.description,
         type: formData.type,
         price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
         status: formData.status
       };
 
@@ -139,6 +141,7 @@ const Products = () => {
       description: '',
       type: '',
       price: '',
+      stock: '',
       status: 'active'
     });
     setEditingProduct(null);
@@ -152,6 +155,7 @@ const Products = () => {
       description: product.description,
       type: product.type,
       price: product.price.toString(),
+      stock: product.stock.toString(),
       status: product.status
     });
     setIsDialogOpen(true);
@@ -281,18 +285,33 @@ const Products = () => {
                 </div>
               </div>
               
-              <div className="grid gap-2">
-                <Label htmlFor="price">Preço (R$)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  placeholder="0.00"
-                  required
-                  disabled={loading}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="price">Preço (R$)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    placeholder="0.00"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="stock">Estoque</Label>
+                  <Input
+                    id="stock"
+                    type="number"
+                    value={formData.stock}
+                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                    placeholder="0"
+                    required
+                    disabled={loading}
+                  />
+                </div>
               </div>
             </div>
             <DialogFooter>
@@ -348,6 +367,7 @@ const Products = () => {
                     <th className="text-left p-3 font-medium">Nome</th>
                     <th className="text-left p-3 font-medium">Tipo</th>
                     <th className="text-left p-3 font-medium">Preço</th>
+                    <th className="text-left p-3 font-medium">Estoque</th>
                     <th className="text-left p-3 font-medium">Status</th>
                     <th className="text-left p-3 font-medium w-[100px]">Ações</th>
                   </tr>
@@ -368,6 +388,11 @@ const Products = () => {
                       </td>
                       <td className="p-3">
                         R$ {product.price?.toFixed(2)}
+                      </td>
+                      <td className="p-3">
+                        <span className={product.stock < 10 ? 'text-red-600 font-medium' : ''}>
+                          {product.stock} unidades
+                        </span>
                       </td>
                       <td className="p-3">
                         {getStatusBadge(product.status)}
@@ -396,7 +421,7 @@ const Products = () => {
                   ))}
                   {products.length === 0 && !loading && (
                     <tr>
-                      <td colSpan={5} className="text-center py-6 text-gray-500">
+                      <td colSpan={6} className="text-center py-6 text-gray-500">
                         Nenhum produto cadastrado
                       </td>
                     </tr>

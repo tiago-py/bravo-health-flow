@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
 import { User, Calendar, Search, FileText, Download, Eye, UserCheck, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -16,8 +15,6 @@ const AllPrescriptions = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedPrescriptions, setSelectedPrescriptions] = useState<string[]>([]);
-  const [downloadingBulk, setDownloadingBulk] = useState(false);
   
   const API_BASE_URL = 'http://localhost:3000';
 
@@ -83,63 +80,6 @@ const AllPrescriptions = () => {
     
     return matchesSearch && matchesType && matchesDoctor && matchesDate;
   });
-
-  // Handle individual prescription selection
-  const togglePrescriptionSelection = (prescriptionId: string) => {
-    setSelectedPrescriptions(prev => 
-      prev.includes(prescriptionId)
-        ? prev.filter(id => id !== prescriptionId)
-        : [...prev, prescriptionId]
-    );
-  };
-
-  // Handle select all/none
-  const toggleSelectAll = () => {
-    if (selectedPrescriptions.length === filteredPrescriptions.length) {
-      setSelectedPrescriptions([]);
-    } else {
-      setSelectedPrescriptions(filteredPrescriptions.map(p => p.id));
-    }
-  };
-
-  // Bulk download prescriptions
-  const handleBulkDownload = async () => {
-    if (selectedPrescriptions.length === 0) {
-      alert('Selecione pelo menos uma prescrição para download.');
-      return;
-    }
-
-    try {
-      setDownloadingBulk(true);
-      const response = await fetch(`${API_BASE_URL}/api/prescriptions/bulk-download`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prescriptionIds: selectedPrescriptions }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erro ao baixar arquivos');
-      }
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = `prescricoes-${new Date().toISOString().split('T')[0]}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (err) {
-      console.error('Erro ao baixar arquivos:', err);
-      alert('Erro ao baixar arquivos: ' + err.message);
-    } finally {
-      setDownloadingBulk(false);
-    }
-  };
 
   // Download prescription file
   const handleDownload = async (prescriptionId, filename) => {
@@ -257,35 +197,14 @@ const AllPrescriptions = () => {
             Visualize e gerencie todas as prescrições dos médicos
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {selectedPrescriptions.length > 0 && (
-            <Button 
-              onClick={handleBulkDownload}
-              disabled={downloadingBulk}
-              className="bg-[#58819d] hover:bg-[#4a6b7a]"
-            >
-              {downloadingBulk ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                  Baixando...
-                </>
-              ) : (
-                <>
-                  <Download className="h-4 w-4 mr-1" />
-                  Download ({selectedPrescriptions.length})
-                </>
-              )}
-            </Button>
-          )}
-          <Button 
-            variant="outline" 
-            onClick={handleRetry}
-            disabled={loading}
-          >
-            <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-            Atualizar
-          </Button>
-        </div>
+        <Button 
+          variant="outline" 
+          onClick={handleRetry}
+          disabled={loading}
+        >
+          <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+          Atualizar
+        </Button>
       </div>
       
       {/* Filters */}
@@ -368,20 +287,9 @@ const AllPrescriptions = () => {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle>Prescrições</CardTitle>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">
-                {filteredPrescriptions.length} {filteredPrescriptions.length === 1 ? 'prescrição' : 'prescrições'}
-              </span>
-              {filteredPrescriptions.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={selectedPrescriptions.length === filteredPrescriptions.length}
-                    onCheckedChange={toggleSelectAll}
-                  />
-                  <span className="text-sm text-gray-600">Selecionar todos</span>
-                </div>
-              )}
-            </div>
+            <span className="text-sm text-gray-500">
+              {filteredPrescriptions.length} {filteredPrescriptions.length === 1 ? 'prescrição' : 'prescrições'}
+            </span>
           </div>
         </CardHeader>
         <CardContent>
@@ -393,12 +301,6 @@ const AllPrescriptions = () => {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="border-b border-gray-200">
-                        <th className="text-left py-3 px-4 font-medium text-gray-700 w-12">
-                          <Checkbox
-                            checked={selectedPrescriptions.length === filteredPrescriptions.length}
-                            onCheckedChange={toggleSelectAll}
-                          />
-                        </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-700">Paciente</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-700">Médico</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-700">Tipo</th>
@@ -410,12 +312,6 @@ const AllPrescriptions = () => {
                     <tbody>
                       {filteredPrescriptions.map(prescription => (
                         <tr key={prescription.id} className="border-b border-gray-100 hover:bg-gray-50">
-                          <td className="py-3 px-4">
-                            <Checkbox
-                              checked={selectedPrescriptions.includes(prescription.id)}
-                              onCheckedChange={() => togglePrescriptionSelection(prescription.id)}
-                            />
-                          </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center">
                               <User size={16} className="mr-2 text-gray-400" />
@@ -486,17 +382,11 @@ const AllPrescriptions = () => {
                     <CardContent className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between flex-wrap gap-2">
-                          <div className="flex items-center gap-3">
-                            <Checkbox
-                              checked={selectedPrescriptions.includes(prescription.id)}
-                              onCheckedChange={() => togglePrescriptionSelection(prescription.id)}
-                            />
-                            <div className="flex items-center">
-                              <User size={16} className="mr-2 text-gray-400" />
-                              <div>
-                                <div className="font-medium">{prescription.patientName}</div>
-                                <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
-                              </div>
+                          <div className="flex items-center">
+                            <User size={16} className="mr-2 text-gray-400" />
+                            <div>
+                              <div className="font-medium">{prescription.patientName}</div>
+                              <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
                             </div>
                           </div>
                           <Badge variant="outline">
