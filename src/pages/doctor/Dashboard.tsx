@@ -7,12 +7,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowRight, Clock, Calendar, User, Download, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 interface Patient {
   id: string;
   name: string;
+  cpf: string;
   age: number;
   date: string;
   type: 'queda-capilar' | 'disfuncao-eretil';
@@ -23,12 +25,14 @@ interface Patient {
 const DoctorDashboard = () => {
   const { user } = useAuth();
   const [selectedPatients, setSelectedPatients] = useState<string[]>([]);
+  const [habitFilter, setHabitFilter] = useState<string>('all');
   
   // Mock data for patients awaiting evaluation
   const pendingEvaluations: Patient[] = [
     {
       id: '1',
       name: 'João Silva',
+      cpf: '123.456.789-01',
       age: 32,
       date: '2023-03-25T14:30:00',
       type: 'queda-capilar',
@@ -38,6 +42,7 @@ const DoctorDashboard = () => {
     {
       id: '2',
       name: 'Marcos Oliveira',
+      cpf: '987.654.321-02',
       age: 45,
       date: '2023-03-25T10:15:00',
       type: 'disfuncao-eretil',
@@ -47,6 +52,7 @@ const DoctorDashboard = () => {
     {
       id: '3',
       name: 'André Costa',
+      cpf: '456.789.123-03',
       age: 28,
       date: '2023-03-24T16:45:00',
       type: 'queda-capilar',
@@ -56,6 +62,7 @@ const DoctorDashboard = () => {
     {
       id: '4',
       name: 'Ricardo Mendes',
+      cpf: '321.654.987-04',
       age: 37,
       date: '2023-03-24T09:20:00',
       type: 'disfuncao-eretil',
@@ -69,6 +76,7 @@ const DoctorDashboard = () => {
     {
       id: '5',
       name: 'Carlos Eduardo',
+      cpf: '789.123.456-05',
       age: 41,
       date: '2023-03-23T15:10:00',
       type: 'disfuncao-eretil',
@@ -77,6 +85,7 @@ const DoctorDashboard = () => {
     {
       id: '6',
       name: 'Paulo Vieira',
+      cpf: '654.321.987-06',
       age: 35,
       date: '2023-03-23T11:30:00',
       type: 'queda-capilar',
@@ -85,6 +94,7 @@ const DoctorDashboard = () => {
     {
       id: '7',
       name: 'Gustavo Martins',
+      cpf: '147.258.369-07',
       age: 29,
       date: '2023-03-22T14:45:00',
       type: 'queda-capilar',
@@ -118,6 +128,11 @@ const DoctorDashboard = () => {
     }
   };
 
+  const filterPatientsByHabit = (patients: Patient[]) => {
+    if (habitFilter === 'all') return patients;
+    return patients.filter(patient => patient.medicationHabit === habitFilter);
+  };
+
   const handleSelectPatient = (patientId: string, checked: boolean) => {
     if (checked) {
       setSelectedPatients(prev => [...prev, patientId]);
@@ -127,11 +142,12 @@ const DoctorDashboard = () => {
   };
 
   const handleSelectAll = (patients: Patient[], checked: boolean) => {
+    const filteredPatients = filterPatientsByHabit(patients);
     if (checked) {
-      const patientIds = patients.map(p => p.id);
+      const patientIds = filteredPatients.map(p => p.id);
       setSelectedPatients(prev => [...new Set([...prev, ...patientIds])]);
     } else {
-      const patientIds = patients.map(p => p.id);
+      const patientIds = filteredPatients.map(p => p.id);
       setSelectedPatients(prev => prev.filter(id => !patientIds.includes(id)));
     }
   };
@@ -144,6 +160,7 @@ const DoctorDashboard = () => {
 
     const excelData = selectedPatientsData.map(patient => ({
       'Nome': patient.name,
+      'CPF': patient.cpf,
       'Idade': patient.age,
       'Tipo de Tratamento': patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil',
       'Data': new Date(patient.date).toLocaleDateString('pt-BR'),
@@ -221,6 +238,8 @@ const DoctorDashboard = () => {
     </div>
   );
 
+  const filteredPendingEvaluations = filterPatientsByHabit(pendingEvaluations);
+
   return (
     <div>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
@@ -282,12 +301,28 @@ const DoctorDashboard = () => {
                   Pacientes aguardando avaliação médica
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  checked={pendingEvaluations.every(p => selectedPatients.includes(p.id))}
-                  onCheckedChange={(checked) => handleSelectAll(pendingEvaluations, checked as boolean)}
-                />
-                <span className="text-sm text-gray-600">Selecionar todos</span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Filtrar por hábito:</span>
+                  <Select value={habitFilter} onValueChange={setHabitFilter}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Selecione o hábito" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      <SelectItem value="habitual">Hábito</SelectItem>
+                      <SelectItem value="needs-attention">Precisa Atenção</SelectItem>
+                      <SelectItem value="not-habitual">Inábito</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={filteredPendingEvaluations.every(p => selectedPatients.includes(p.id))}
+                    onCheckedChange={(checked) => handleSelectAll(pendingEvaluations, checked as boolean)}
+                  />
+                  <span className="text-sm text-gray-600">Selecionar todos</span>
+                </div>
               </div>
             </div>
           </CardHeader>
@@ -301,13 +336,13 @@ const DoctorDashboard = () => {
               
               <TabsContent value="all">
                 <div className="space-y-4">
-                  {pendingEvaluations.map((patient) => renderPatientCard(patient))}
+                  {filteredPendingEvaluations.map((patient) => renderPatientCard(patient))}
                 </div>
               </TabsContent>
               
               <TabsContent value="hair">
                 <div className="space-y-4">
-                  {pendingEvaluations
+                  {filteredPendingEvaluations
                     .filter(p => p.type === 'queda-capilar')
                     .map((patient) => renderPatientCard(patient))}
                 </div>
@@ -315,7 +350,7 @@ const DoctorDashboard = () => {
               
               <TabsContent value="ed">
                 <div className="space-y-4">
-                  {pendingEvaluations
+                  {filteredPendingEvaluations
                     .filter(p => p.type === 'disfuncao-eretil')
                     .map((patient) => renderPatientCard(patient))}
                 </div>
