@@ -4,7 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Download, ArrowUp, ArrowDown, DollarSign, TrendingUp, CreditCard, Users, Loader2 } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Search, Download, ArrowUp, ArrowDown, DollarSign, TrendingUp, CreditCard, Users, Loader2, AlertCircle, Calendar } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -39,6 +40,8 @@ const AdminFinancial = () => {
   const [periodFilter, setPeriodFilter] = useState('month');
   const [yearFilter, setYearFilter] = useState(new Date().getFullYear().toString());
   const [searchTransaction, setSearchTransaction] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [financialSummary, setFinancialSummary] = useState<FinancialSummary[]>([]);
@@ -54,11 +57,15 @@ const AdminFinancial = () => {
         setLoading(true);
         setError(null);
         
+        let queryParams = `?year=${yearFilter}`;
+        if (startDate) queryParams += `&startDate=${startDate}`;
+        if (endDate) queryParams += `&endDate=${endDate}`;
+        
         const [summaryRes, revenueRes, usersRes, transactionsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/financial/summary`),
-          fetch(`${API_BASE_URL}/api/financial/revenue?year=${yearFilter}`),
-          fetch(`${API_BASE_URL}/api/financial/users`),
-          fetch(`${API_BASE_URL}/api/financial/transactions`)
+          fetch(`${API_BASE_URL}/api/financial/summary${queryParams}`),
+          fetch(`${API_BASE_URL}/api/financial/revenue${queryParams}`),
+          fetch(`${API_BASE_URL}/api/financial/users${queryParams}`),
+          fetch(`${API_BASE_URL}/api/financial/transactions${queryParams}`)
         ]);
 
         if (!summaryRes.ok || !revenueRes.ok || !usersRes.ok || !transactionsRes.ok) {
@@ -86,14 +93,28 @@ const AdminFinancial = () => {
     };
 
     fetchFinancialData();
-  }, [yearFilter]);
+  }, [yearFilter, startDate, endDate]);
 
-  // Filter transactions based on search
-  const filteredTransactions = transactions.filter(transaction =>
-    transaction.customer.toLowerCase().includes(searchTransaction.toLowerCase()) ||
-    transaction.plan.toLowerCase().includes(searchTransaction.toLowerCase()) ||
-    transaction.id.toLowerCase().includes(searchTransaction.toLowerCase())
-  );
+  // Filter transactions based on search and date range
+  const filteredTransactions = transactions.filter(transaction => {
+    const matchesSearch = 
+      transaction.customer.toLowerCase().includes(searchTransaction.toLowerCase()) ||
+      transaction.plan.toLowerCase().includes(searchTransaction.toLowerCase()) ||
+      transaction.id.toLowerCase().includes(searchTransaction.toLowerCase());
+    
+    let matchesDateRange = true;
+    if (startDate || endDate) {
+      const transactionDate = new Date(transaction.date);
+      if (startDate) {
+        matchesDateRange = matchesDateRange && transactionDate >= new Date(startDate);
+      }
+      if (endDate) {
+        matchesDateRange = matchesDateRange && transactionDate <= new Date(endDate);
+      }
+    }
+    
+    return matchesSearch && matchesDateRange;
+  });
 
   // Helper function to format currency
   const formatCurrency = (value: number) => {
@@ -132,6 +153,11 @@ const AdminFinancial = () => {
     }
   };
 
+  const clearDateFilters = () => {
+    setStartDate('');
+    setEndDate('');
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -164,6 +190,66 @@ const AdminFinancial = () => {
           Gerenciamento financeiro e análise de receitas
         </p>
       </div>
+
+      {/* Date Filters */}
+      <Card className="mb-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center">
+            <Calendar className="h-5 w-5 mr-2" />
+            Filtros por Data
+          </CardTitle>
+          <CardDescription>
+            Filtre os dados financeiros por período específico
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="grid gap-2">
+              <Label htmlFor="startDate">Data Início</Label>
+              <Input
+                id="startDate"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="endDate">Data Fim</Label>
+              <Input
+                id="endDate"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="yearFilter">Ano</Label>
+              <Select
+                value={yearFilter}
+                onValueChange={setYearFilter}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Ano" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({length: 5}, (_, i) => new Date().getFullYear() - i).map(year => (
+                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Button 
+                variant="outline" 
+                onClick={clearDateFilters}
+                disabled={!startDate && !endDate}
+              >
+                Limpar Filtros
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       
       {/* Financial Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -196,24 +282,9 @@ const AdminFinancial = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Receita Anual</CardTitle>
-              <Select
-                value={yearFilter}
-                onValueChange={setYearFilter}
-              >
-                <SelectTrigger className="w-[100px]">
-                  <SelectValue placeholder="Ano" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({length: 5}, (_, i) => new Date().getFullYear() - i).map(year => (
-                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <CardTitle>Receita por Período</CardTitle>
             <CardDescription>
-              Visão geral da receita por mês
+              Visão geral da receita {startDate || endDate ? 'no período selecionado' : 'por mês'}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
@@ -245,7 +316,7 @@ const AdminFinancial = () => {
           <CardHeader>
             <CardTitle>Crescimento de Assinantes</CardTitle>
             <CardDescription>
-              Total de usuários ativos por mês
+              Total de usuários ativos {startDate || endDate ? 'no período selecionado' : 'por mês'}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
@@ -274,7 +345,7 @@ const AdminFinancial = () => {
             <div>
               <CardTitle>Histórico de Transações</CardTitle>
               <CardDescription>
-                Visualize e filtre as últimas transações
+                Visualize e filtre as transações {startDate || endDate ? 'no período selecionado' : 'mais recentes'}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
