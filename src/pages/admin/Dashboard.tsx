@@ -1,143 +1,214 @@
-// components/HistoryItemForm.tsx
+
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowRight, Clock, User, Users, FileText, DollarSign } from 'lucide-react';
 
-interface HistoryItemFormProps {
-  onSubmit: (data: any) => Promise<void>;
-  onCancel: () => void;
-  initialData?: any;
-}
+const AdminDashboard = () => {
+  const { user } = useAuth();
 
-export const HistoryItemForm = ({ onSubmit, onCancel, initialData }: HistoryItemFormProps) => {
-  const [formData, setFormData] = useState({
-    type: initialData?.type || 'anamnese',
-    title: initialData?.title || '',
-    date: initialData?.date || new Date().toISOString().split('T')[0],
-    status: initialData?.status || 'completed',
-    details: initialData?.details || {}
-  });
+  // Mock data for dashboard stats
+  const stats = [
+    {
+      title: 'Total de Usuários',
+      value: 1247,
+      change: '+12% este mês',
+      changeType: 'increase' as const,
+      icon: <Users size={24} />
+    },
+    {
+      title: 'Prescrições Ativas',
+      value: 89,
+      change: '+5 hoje',
+      changeType: 'increase' as const,
+      icon: <FileText size={24} />
+    },
+    {
+      title: 'Receita Mensal',
+      value: 'R$ 45.230',
+      change: '+8% este mês',
+      changeType: 'increase' as const,
+      icon: <DollarSign size={24} />
+    }
+  ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onSubmit(formData);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleDetailsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      details: {
-        ...prev.details,
-        [name]: value
-      }
-    }));
-  };
+  // Mock data for recent activities
+  const recentActivities = [
+    {
+      id: '1',
+      type: 'user_registration',
+      message: 'Novo usuário cadastrado: João Silva',
+      time: '2 minutos atrás'
+    },
+    {
+      id: '2',
+      type: 'prescription_created',
+      message: 'Nova prescrição criada para paciente #1234',
+      time: '15 minutos atrás'
+    },
+    {
+      id: '3',
+      type: 'doctor_approved',
+      message: 'Médico Dr. Maria Santos aprovado',
+      time: '1 hora atrás'
+    },
+    {
+      id: '4',
+      type: 'payment_received',
+      message: 'Pagamento recebido: R$ 250,00',
+      time: '2 horas atrás'
+    }
+  ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label>Tipo</Label>
-        <Select
-          value={formData.type}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Selecione o tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="anamnese">Anamnese</SelectItem>
-            <SelectItem value="prescription">Prescrição</SelectItem>
-            <SelectItem value="shipment">Entrega</SelectItem>
-            <SelectItem value="follow-up">Acompanhamento</SelectItem>
-          </SelectContent>
-        </Select>
+    <div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <h1 className="text-2xl font-bold text-bravo-blue">
+          Painel Administrativo
+        </h1>
+        <div className="mt-4 md:mt-0 flex gap-2">
+          <Button variant="outline" asChild>
+            <Link to="/admin/configuracoes">
+              Configurações
+              <ArrowRight className="ml-2" size={16} />
+            </Link>
+          </Button>
+        </div>
       </div>
 
-      <div>
-        <Label>Título</Label>
-        <Input
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-        />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {stats.map((stat, index) => (
+          <Card key={index}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-gray-500">
+                    {stat.title}
+                  </span>
+                  <div className="flex items-baseline mt-1">
+                    <span className="text-2xl font-bold text-gray-900">
+                      {stat.value}
+                    </span>
+                  </div>
+                  <span className={`text-sm mt-1 ${
+                    stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {stat.change}
+                  </span>
+                </div>
+                <div className="bg-bravo-beige bg-opacity-30 p-3 rounded-full">
+                  {stat.icon}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <div>
-        <Label>Data</Label>
-        <Input
-          type="date"
-          name="date"
-          value={formData.date}
-          onChange={handleChange}
-          required
-        />
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Usuários</CardTitle>
+            <CardDescription>
+              Gerenciar usuários do sistema
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link to="/admin/usuarios">
+                Ver Usuários
+                <ArrowRight className="ml-2" size={16} />
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Médicos</CardTitle>
+            <CardDescription>
+              Aprovar e gerenciar médicos
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link to="/admin/medicos">
+                Ver Médicos
+                <ArrowRight className="ml-2" size={16} />
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Prescrições</CardTitle>
+            <CardDescription>
+              Visualizar todas as prescrições
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link to="/admin/prescricoes">
+                Ver Prescrições
+                <ArrowRight className="ml-2" size={16} />
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Financeiro</CardTitle>
+            <CardDescription>
+              Relatórios e análises financeiras
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link to="/admin/financeiro">
+                Ver Relatórios
+                <ArrowRight className="ml-2" size={16} />
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
 
-      <div>
-        <Label>Status</Label>
-        <Select
-          value={formData.status}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as 'completed' | 'scheduled' }))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Selecione o status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="completed">Completo</SelectItem>
-            <SelectItem value="scheduled">Agendado</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {formData.type === 'anamnese' && (
-        <>
-          <div>
-            <Label>Médico</Label>
-            <Input
-              name="doctor"
-              value={formData.details.doctor || ''}
-              onChange={handleDetailsChange}
-            />
+      {/* Recent Activities */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Atividades Recentes</CardTitle>
+          <CardDescription>
+            Últimas ações realizadas no sistema
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {recentActivities.map((activity) => (
+              <div key={activity.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+                <div className="bg-bravo-blue bg-opacity-10 p-2 rounded-full">
+                  <Clock size={16} className="text-bravo-blue" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">
+                    {activity.message}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {activity.time}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-          <div>
-            <Label>Observações</Label>
-            <Textarea
-              name="observations"
-              value={formData.details.observations || ''}
-              onChange={handleDetailsChange}
-            />
-          </div>
-        </>
-      )}
-
-      {/* Adicione campos específicos para outros tipos conforme necessário */}
-
-      <div className="flex justify-end gap-2 pt-4">
-        <Button variant="outline" type="button" onClick={onCancel}>
-          Cancelar
-        </Button>
-        <Button type="submit">
-          Salvar
-        </Button>
-      </div>
-    </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
+
+export default AdminDashboard;
