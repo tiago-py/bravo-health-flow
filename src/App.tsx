@@ -104,7 +104,7 @@ const App = () => (
             path="/doctor" 
             
             element={
-              <RequireAuth role="medico">
+              <RequireAuth role="doctor">
                 <DoctorLayout />
                 </RequireAuth>
               
