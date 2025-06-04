@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +14,6 @@ const AllPrescriptions = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [doctorFilter, setDoctorFilter] = useState('all');
   const [selectedPrescriptions, setSelectedPrescriptions] = useState<string[]>([]);
   
   // Mock prescriptions data with doctor info
@@ -81,9 +79,6 @@ const AllPrescriptions = () => {
       prescriptionFile: 'prescricao_paulo_vieira_22032023.pdf'
     },
   ];
-
-  // Get unique doctors for filter
-  const uniqueDoctors = Array.from(new Set(allPrescriptions.map(p => p.doctorName)));
   
   // Filter prescriptions based on search query and filters
   const filteredPrescriptions = allPrescriptions.filter(prescription => {
@@ -94,9 +89,6 @@ const AllPrescriptions = () => {
     
     // Type filter
     const matchesType = typeFilter === 'all' || prescription.type === typeFilter;
-    
-    // Doctor filter
-    const matchesDoctor = doctorFilter === 'all' || prescription.doctorName === doctorFilter;
     
     // Date range filter (based on upload date)
     let matchesDateRange = true;
@@ -113,7 +105,7 @@ const AllPrescriptions = () => {
       matchesDateRange = matchesDateRange && uploadDate <= end;
     }
     
-    return matchesSearch && matchesType && matchesDoctor && matchesDateRange;
+    return matchesSearch && matchesType && matchesDateRange;
   });
 
   const handleDownload = (filename: string) => {
@@ -168,11 +160,11 @@ const AllPrescriptions = () => {
         <CardHeader className="pb-3">
           <CardTitle>Filtros</CardTitle>
           <CardDescription>
-            Filtre por paciente, médico, tipo de tratamento ou período
+            Filtre por paciente, tipo de tratamento ou período
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="sm:col-span-2">
               <div className="relative">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -205,24 +197,6 @@ const AllPrescriptions = () => {
                 onChange={(e) => setEndDate(e.target.value)}
                 className="mt-1"
               />
-            </div>
-            
-            <div>
-              <Label className="text-sm font-medium">Médico</Label>
-              <Select
-                value={doctorFilter}
-                onValueChange={setDoctorFilter}
-              >
-                <SelectTrigger className="w-full mt-1">
-                  <SelectValue placeholder="Médico" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os médicos</SelectItem>
-                  {uniqueDoctors.map(doctor => (
-                    <SelectItem key={doctor} value={doctor}>{doctor}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
             
             <div>
