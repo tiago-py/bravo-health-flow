@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { User, Calendar, Search, FileText, Download, Eye, UserCheck, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -98,6 +98,8 @@ const AllPrescriptions = () => {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedPrescriptions, setSelectedPrescriptions] = useState<string[]>([]);
+  const [downloadingMass, setDownloadingMass] = useState(false);
 
   // Fetch prescriptions (mock data)
   const fetchPrescriptions = async () => {
@@ -157,6 +159,54 @@ const AllPrescriptions = () => {
     
     return matchesSearch && matchesType && matchesDoctor && matchesDate;
   });
+
+  // Handle individual prescription selection
+  const handleSelectPrescription = (prescriptionId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedPrescriptions(prev => [...prev, prescriptionId]);
+    } else {
+      setSelectedPrescriptions(prev => prev.filter(id => id !== prescriptionId));
+    }
+  };
+
+  // Handle select all toggle
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedPrescriptions(filteredPrescriptions.map(p => p.id));
+    } else {
+      setSelectedPrescriptions([]);
+    }
+  };
+
+  // Handle mass download
+  const handleMassDownload = async () => {
+    if (selectedPrescriptions.length === 0) {
+      alert('Selecione pelo menos uma prescrição para download');
+      return;
+    }
+
+    try {
+      setDownloadingMass(true);
+      
+      // Simulate mass download
+      const selectedFiles = prescriptions
+        .filter(p => selectedPrescriptions.includes(p.id))
+        .map(p => p.prescriptionFile);
+      
+      console.log('Downloading files:', selectedFiles);
+      
+      // Mock download delay
+      setTimeout(() => {
+        alert(`Download iniciado para ${selectedPrescriptions.length} prescrições`);
+        setSelectedPrescriptions([]);
+        setDownloadingMass(false);
+      }, 1000);
+    } catch (err) {
+      console.error('Erro no download em massa:', err);
+      alert('Erro ao fazer download em massa');
+      setDownloadingMass(false);
+    }
+  };
 
   // Download prescription file (mock)
   const handleDownload = async (prescriptionId: string, filename: string) => {
@@ -255,14 +305,30 @@ const AllPrescriptions = () => {
             Visualize e gerencie todas as prescrições dos médicos
           </p>
         </div>
-        <Button 
-          variant="outline" 
-          onClick={handleRetry}
-          disabled={loading}
-        >
-          <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-          Atualizar
-        </Button>
+        <div className="flex items-center gap-2">
+          {selectedPrescriptions.length > 0 && (
+            <Button 
+              onClick={handleMassDownload}
+              disabled={downloadingMass}
+              className="bg-[#58819d] hover:bg-[#4a6d84]"
+            >
+              {downloadingMass ? (
+                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4 mr-1" />
+              )}
+              Download ({selectedPrescriptions.length})
+            </Button>
+          )}
+          <Button 
+            variant="outline" 
+            onClick={handleRetry}
+            disabled={loading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+            Atualizar
+          </Button>
+        </div>
       </div>
       
       {/* Filters */}
@@ -345,9 +411,23 @@ const AllPrescriptions = () => {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle>Prescrições</CardTitle>
-            <span className="text-sm text-gray-500">
-              {filteredPrescriptions.length} {filteredPrescriptions.length === 1 ? 'prescrição' : 'prescrições'}
-            </span>
+            <div className="flex items-center gap-4">
+              {filteredPrescriptions.length > 0 && (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="select-all"
+                    checked={selectedPrescriptions.length === filteredPrescriptions.length}
+                    onCheckedChange={handleSelectAll}
+                  />
+                  <label htmlFor="select-all" className="text-sm font-medium">
+                    Selecionar todos
+                  </label>
+                </div>
+              )}
+              <span className="text-sm text-gray-500">
+                {filteredPrescriptions.length} {filteredPrescriptions.length === 1 ? 'prescrição' : 'prescrições'}
+              </span>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -359,6 +439,12 @@ const AllPrescriptions = () => {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="border-b border-gray-200">
+                        <th className="text-left py-3 px-4 font-medium text-gray-700 w-10">
+                          <Checkbox
+                            checked={selectedPrescriptions.length === filteredPrescriptions.length}
+                            onCheckedChange={handleSelectAll}
+                          />
+                        </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-700">Paciente</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-700">Médico</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-700">Tipo</th>
@@ -370,6 +456,12 @@ const AllPrescriptions = () => {
                     <tbody>
                       {filteredPrescriptions.map(prescription => (
                         <tr key={prescription.id} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <Checkbox
+                              checked={selectedPrescriptions.includes(prescription.id)}
+                              onCheckedChange={(checked) => handleSelectPrescription(prescription.id, !!checked)}
+                            />
+                          </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center">
                               <User size={16} className="mr-2 text-gray-400" />
@@ -436,15 +528,21 @@ const AllPrescriptions = () => {
               {/* Mobile/Tablet Cards */}
               <div className="xl:hidden space-y-4">
                 {filteredPrescriptions.map(prescription => (
-                  <Card key={prescription.id}>
+                  <Card key={prescription.id} className={selectedPrescriptions.includes(prescription.id) ? 'ring-2 ring-[#58819d]' : ''}>
                     <CardContent className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between flex-wrap gap-2">
-                          <div className="flex items-center">
-                            <User size={16} className="mr-2 text-gray-400" />
-                            <div>
-                              <div className="font-medium">{prescription.patientName}</div>
-                              <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              checked={selectedPrescriptions.includes(prescription.id)}
+                              onCheckedChange={(checked) => handleSelectPrescription(prescription.id, !!checked)}
+                            />
+                            <div className="flex items-center">
+                              <User size={16} className="mr-2 text-gray-400" />
+                              <div>
+                                <div className="font-medium">{prescription.patientName}</div>
+                                <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
+                              </div>
                             </div>
                           </div>
                           <Badge variant="outline">
