@@ -29,12 +29,12 @@ const ClientLayout = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200">
+      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 fixed h-full">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
           <span className="text-xl font-montserrat font-bold text-bravo-blue">Bravo Homem</span>
         </div>
         
-        <div className="flex-1 py-6 flex flex-col px-4 space-y-1">
+        <div className="flex-1 py-6 flex flex-col px-4 space-y-1 overflow-y-auto">
           {navigations.map((item) => (
             <NavLink
               key={item.path}
@@ -130,8 +130,10 @@ const ClientLayout = () => {
       )}
       
       {/* Main Content */}
-      <div className="flex-1 md:ml-64 mt-16 md:mt-0">
-        <Outlet />
+      <div className="flex-1 md:pl-64">
+        <div className="pt-16 md:pt-0">
+          <Outlet />
+        </div>
       </div>
     </div>
   );
