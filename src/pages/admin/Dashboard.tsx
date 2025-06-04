@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowRight, Clock, Calendar, User, Users, FileText, DollarSign } from 'lucide-react';
-import { HistoryItemForm } from './HistoryItemForm';
+import { HistoryItemForm } from '@/components/admin/HistoryItemForm';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
