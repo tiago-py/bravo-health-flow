@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -35,6 +36,139 @@ interface Transaction {
   paymentMethod: 'credit_card' | 'pix';
 }
 
+// Mock data
+const mockFinancialSummary: FinancialSummary[] = [
+  {
+    title: 'Receita Total',
+    value: 'R$ 125.450',
+    change: '+12.3% vs mês anterior',
+    changeType: 'increase'
+  },
+  {
+    title: 'Total de Assinantes',
+    value: '2.847',
+    change: '+8.2% vs mês anterior',
+    changeType: 'increase'
+  },
+  {
+    title: 'Valor Médio',
+    value: 'R$ 89,50',
+    change: '+2.1% vs mês anterior',
+    changeType: 'increase'
+  },
+  {
+    title: 'Taxa de Conversão',
+    value: '4.2%',
+    change: '-0.5% vs mês anterior',
+    changeType: 'decrease'
+  }
+];
+
+const mockRevenueData = [
+  { month: 'Jan', revenue: 95000 },
+  { month: 'Fev', revenue: 102000 },
+  { month: 'Mar', revenue: 108000 },
+  { month: 'Abr', revenue: 98000 },
+  { month: 'Mai', revenue: 115000 },
+  { month: 'Jun', revenue: 125450 },
+  { month: 'Jul', revenue: 130000 },
+  { month: 'Ago', revenue: 128000 },
+  { month: 'Set', revenue: 135000 },
+  { month: 'Out', revenue: 142000 },
+  { month: 'Nov', revenue: 138000 },
+  { month: 'Dez', revenue: 145000 }
+];
+
+const mockUserGrowthData = [
+  { month: 'Jan', users: 1850 },
+  { month: 'Fev', users: 1920 },
+  { month: 'Mar', users: 2100 },
+  { month: 'Abr', users: 2050 },
+  { month: 'Mai', users: 2300 },
+  { month: 'Jun', users: 2450 },
+  { month: 'Jul', users: 2580 },
+  { month: 'Ago', users: 2650 },
+  { month: 'Set', users: 2720 },
+  { month: 'Out', users: 2800 },
+  { month: 'Nov', users: 2847 },
+  { month: 'Dez', users: 2900 }
+];
+
+const mockTransactions: Transaction[] = [
+  {
+    id: 'TXN001',
+    date: '2024-06-04',
+    customer: 'João Silva Santos',
+    plan: 'Tratamento Capilar Premium - 3 meses',
+    amount: 285.00,
+    status: 'succeeded',
+    paymentMethod: 'credit_card'
+  },
+  {
+    id: 'TXN002',
+    date: '2024-06-04',
+    customer: 'Maria Oliveira Costa',
+    plan: 'Tratamento Disfunção Erétil - 1 mês',
+    amount: 95.00,
+    status: 'succeeded',
+    paymentMethod: 'pix'
+  },
+  {
+    id: 'TXN003',
+    date: '2024-06-03',
+    customer: 'Carlos Eduardo Lima',
+    plan: 'Tratamento Capilar Básico - 1 mês',
+    amount: 125.00,
+    status: 'failed',
+    paymentMethod: 'credit_card'
+  },
+  {
+    id: 'TXN004',
+    date: '2024-06-03',
+    customer: 'Ana Paula Ferreira',
+    plan: 'Consulta + Medicamentos - 2 meses',
+    amount: 190.00,
+    status: 'succeeded',
+    paymentMethod: 'pix'
+  },
+  {
+    id: 'TXN005',
+    date: '2024-06-02',
+    customer: 'Roberto Almeida',
+    plan: 'Tratamento Completo - 6 meses',
+    amount: 450.00,
+    status: 'refunded',
+    paymentMethod: 'credit_card'
+  },
+  {
+    id: 'TXN006',
+    date: '2024-06-02',
+    customer: 'Fernanda Ribeiro',
+    plan: 'Tratamento Capilar Premium - 3 meses',
+    amount: 285.00,
+    status: 'succeeded',
+    paymentMethod: 'credit_card'
+  },
+  {
+    id: 'TXN007',
+    date: '2024-06-01',
+    customer: 'Pedro Henrique Silva',
+    plan: 'Medicamentos Básicos - 1 mês',
+    amount: 75.00,
+    status: 'succeeded',
+    paymentMethod: 'pix'
+  },
+  {
+    id: 'TXN008',
+    date: '2024-06-01',
+    customer: 'Juliana Martins',
+    plan: 'Tratamento Hormonal - 2 meses',
+    amount: 320.00,
+    status: 'succeeded',
+    paymentMethod: 'credit_card'
+  }
+];
+
 const AdminFinancial = () => {
   const [periodFilter, setPeriodFilter] = useState('month');
   const [yearFilter, setYearFilter] = useState(new Date().getFullYear().toString());
@@ -45,47 +179,24 @@ const AdminFinancial = () => {
   const [revenueData, setRevenueData] = useState<{ month: string; revenue: number }[]>([]);
   const [userGrowthData, setUserGrowthData] = useState<{ month: string; users: number }[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
-  // Fetch financial data
+  // Load mock data
   useEffect(() => {
-    const fetchFinancialData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const [summaryRes, revenueRes, usersRes, transactionsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/financial/summary`),
-          fetch(`${API_BASE_URL}/api/financial/revenue?year=${yearFilter}`),
-          fetch(`${API_BASE_URL}/api/financial/users`),
-          fetch(`${API_BASE_URL}/api/financial/transactions`)
-        ]);
-
-        if (!summaryRes.ok || !revenueRes.ok || !usersRes.ok || !transactionsRes.ok) {
-          throw new Error('Failed to fetch financial data');
-        }
-
-        const [summaryData, revenueData, usersData, transactionsData] = await Promise.all([
-          summaryRes.json(),
-          revenueRes.json(),
-          usersRes.json(),
-          transactionsRes.json()
-        ]);
-
-        setFinancialSummary(summaryData);
-        setRevenueData(revenueData);
-        setUserGrowthData(usersData);
-        setTransactions(transactionsData);
-      } catch (err) {
-        console.error('Error fetching financial data:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load financial data');
-        toast.error('Failed to load financial data');
-      } finally {
+    const loadMockData = () => {
+      setLoading(true);
+      setError(null);
+      
+      // Simulate loading delay
+      setTimeout(() => {
+        setFinancialSummary(mockFinancialSummary);
+        setRevenueData(mockRevenueData);
+        setUserGrowthData(mockUserGrowthData);
+        setTransactions(mockTransactions);
         setLoading(false);
-      }
+      }, 1000);
     };
 
-    fetchFinancialData();
+    loadMockData();
   }, [yearFilter]);
 
   // Filter transactions based on search
@@ -105,27 +216,8 @@ const AdminFinancial = () => {
 
   const handleExport = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/financial/export`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to export data');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `financial-report-${new Date().toISOString().split('T')[0]}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      toast.success('Export completed successfully');
+      // Mock export functionality
+      toast.success('Export completed successfully (mock data)');
     } catch (error) {
       console.error('Error exporting data:', error);
       toast.error('Failed to export financial data');
