@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,58 +17,89 @@ const DoctorEvaluations = () => {
       name: 'João Silva',
       age: 32,
       date: '2023-03-25T14:30:00',
-      type: 'queda-capilar'
+      type: 'queda-capilar',
+      medicationStatus: 'habito' as const
     },
     {
       id: '2',
       name: 'Marcos Oliveira',
       age: 45,
       date: '2023-03-25T10:15:00',
-      type: 'disfuncao-eretil'
+      type: 'disfuncao-eretil',
+      medicationStatus: 'inabito' as const
     },
     {
       id: '3',
       name: 'André Costa',
       age: 28,
       date: '2023-03-24T16:45:00',
-      type: 'queda-capilar'
+      type: 'queda-capilar',
+      medicationStatus: 'atencao' as const
     },
     {
       id: '4',
       name: 'Ricardo Mendes',
       age: 37,
       date: '2023-03-24T09:20:00',
-      type: 'disfuncao-eretil'
+      type: 'disfuncao-eretil',
+      medicationStatus: 'habito' as const
     },
     {
       id: '8',
       name: 'Fernando Santos',
       age: 39,
       date: '2023-03-23T13:45:00',
-      type: 'queda-capilar'
+      type: 'queda-capilar',
+      medicationStatus: 'habito' as const
     },
     {
       id: '9',
       name: 'Gabriel Lima',
       age: 26,
       date: '2023-03-23T08:30:00',
-      type: 'disfuncao-eretil'
+      type: 'disfuncao-eretil',
+      medicationStatus: 'atencao' as const
     },
     {
       id: '10',
       name: 'Thiago Alves',
       age: 34,
       date: '2023-03-22T17:20:00',
-      type: 'queda-capilar'
+      type: 'queda-capilar',
+      medicationStatus: 'inabito' as const
     },
     {
       id: '11',
       name: 'Rafael Pereira',
       age: 31,
       date: '2023-03-22T11:15:00',
-      type: 'disfuncao-eretil'
+      type: 'disfuncao-eretil',
+      medicationStatus: 'habito' as const
     },
   ];
+
+  const getMedicationStatusBadge = (status: 'habito' | 'inabito' | 'atencao') => {
+    switch (status) {
+      case 'habito':
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+            Hábito
+          </Badge>
+        );
+      case 'inabito':
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
+            Inábito
+          </Badge>
+        );
+      case 'atencao':
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+            Atenção
+          </Badge>
+        );
+    }
+  };
 
   const handlePatientSelection = (patientId: string, checked: boolean) => {
     if (checked) {
@@ -95,12 +125,14 @@ const DoctorEvaluations = () => {
     
     // Create Excel-compatible content (tab-separated values)
     const excelContent = [
-      ['Nome', 'Idade', 'Data', 'Tipo'].join('\t'),
+      ['Nome', 'Idade', 'Data', 'Tipo', 'Status Medicação'].join('\t'),
       ...selectedPatientsData.map(patient => [
         patient.name,
         patient.age.toString(),
         new Date(patient.date).toLocaleString('pt-BR'),
-        patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'
+        patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil',
+        patient.medicationStatus === 'habito' ? 'Hábito' : 
+        patient.medicationStatus === 'inabito' ? 'Inábito' : 'Atenção'
       ].join('\t'))
     ].join('\n');
 
@@ -154,6 +186,7 @@ const DoctorEvaluations = () => {
               <div className="flex items-center">
                 <h3 className="font-medium">{patient.name}</h3>
                 <span className="text-sm text-gray-500 ml-2">{patient.age} anos</span>
+                {getMedicationStatusBadge(patient.medicationStatus)}
                 {showTypeFilter && (
                   <Badge className="ml-2" variant="outline">
                     {patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
