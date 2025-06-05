@@ -239,6 +239,9 @@ const DoctorEvaluations = () => {
               <TabsTrigger value="ed">
                 Disfunção Erétil ({pendingEvaluations.filter(p => p.type === 'disfuncao-eretil').length})
               </TabsTrigger>
+              <TabsTrigger value="habitos">
+                Hábitos ({pendingEvaluations.filter(p => p.medicationStatus === 'habito').length})
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="all">
@@ -251,6 +254,10 @@ const DoctorEvaluations = () => {
             
             <TabsContent value="ed">
               {renderPatientList(pendingEvaluations.filter(p => p.type === 'disfuncao-eretil'))}
+            </TabsContent>
+            
+            <TabsContent value="habitos">
+              {renderPatientList(pendingEvaluations.filter(p => p.medicationStatus === 'habito'))}
             </TabsContent>
           </Tabs>
         </CardContent>
