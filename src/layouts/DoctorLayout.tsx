@@ -10,7 +10,8 @@ import {
   User, 
   LogOut, 
   Menu, 
-  X 
+  X,
+  Clock
 } from 'lucide-react';
 
 interface Navigation {
@@ -25,6 +26,7 @@ const DoctorLayout = () => {
   
   const navigations = [
     { name: 'Dashboard', path: '/medico/dashboard', icon: <Home size={20} /> },
+    { name: 'Fila de Avaliação', path: '/medico/avaliacao', icon: <Clock size={20} /> },
     { name: 'Prescrições', path: '/medico/prescricoes', icon: <ClipboardList size={20} /> },
     { name: 'Histórico', path: '/medico/historico', icon: <Users size={20} /> },
     { name: 'Meu Perfil', path: '/medico/perfil', icon: <User size={20} /> },

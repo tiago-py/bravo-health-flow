@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -37,6 +36,7 @@ import DoctorPatientDetail from "./pages/doctor/PatientDetail";
 import DoctorPrescriptions from "./pages/doctor/Prescriptions";
 import DoctorHistory from "./pages/doctor/History";
 import DoctorProfile from "./pages/doctor/Profile";
+import DoctorEvaluations from "./pages/doctor/Evaluations";
 
 // Admin Pages
 import AdminLayout from "./layouts/AdminLayout";
@@ -114,6 +114,7 @@ const App = () => (
             
           >
             <Route path="dashboard" element={<DoctorDashboard />} />
+            <Route path="avaliacao" element={<DoctorEvaluations />} />
             <Route path="paciente/:id" element={<DoctorPatientDetail />} />
             <Route path="prescricoes" element={<DoctorPrescriptions />} />
             <Route path="historico" element={<DoctorHistory />} />
