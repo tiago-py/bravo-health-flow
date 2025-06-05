@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,7 +5,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Search, Download, ArrowUp, ArrowDown, DollarSign, TrendingUp, CreditCard, Users, Loader2, AlertCircle, Calendar } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Search, Download, ArrowUp, ArrowDown, DollarSign, TrendingUp, CreditCard, Users, Loader2, AlertCircle, CalendarIcon } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -19,6 +20,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { toast } from '@/components/ui/sonner';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface FinancialSummary {
   title: string;
@@ -171,11 +174,9 @@ const mockTransactions: Transaction[] = [
 ];
 
 const AdminFinancial = () => {
-  const [periodFilter, setPeriodFilter] = useState('month');
-  const [yearFilter, setYearFilter] = useState(new Date().getFullYear().toString());
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
   const [searchTransaction, setSearchTransaction] = useState('');
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [financialSummary, setFinancialSummary] = useState<FinancialSummary[]>([]);
@@ -200,7 +201,7 @@ const AdminFinancial = () => {
     };
 
     loadMockData();
-  }, [yearFilter, startDate, endDate]);
+  }, [startDate, endDate]);
 
   // Filter transactions based on search and date range
   const filteredTransactions = transactions.filter(transaction => {
@@ -210,15 +211,15 @@ const AdminFinancial = () => {
     
     // Date range filter
     let matchesDateRange = true;
-    if (startDate || endDate) {
+    if (transaction.date && (startDate || endDate)) {
       const transactionDate = new Date(transaction.date);
-      if (startDate) {
-        const start = new Date(startDate);
-        matchesDateRange = matchesDateRange && transactionDate >= start;
-      }
-      if (endDate) {
-        const end = new Date(endDate);
-        matchesDateRange = matchesDateRange && transactionDate <= end;
+      
+      if (startDate && endDate) {
+        matchesDateRange = transactionDate >= startDate && transactionDate <= endDate;
+      } else if (startDate) {
+        matchesDateRange = transactionDate >= startDate;
+      } else if (endDate) {
+        matchesDateRange = transactionDate <= endDate;
       }
     }
     
@@ -237,18 +238,13 @@ const AdminFinancial = () => {
     try {
       // Mock export functionality
       const dateRangeText = startDate && endDate 
-        ? ` (${new Date(startDate).toLocaleDateString('pt-BR')} - ${new Date(endDate).toLocaleDateString('pt-BR')})`
+        ? ` (${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")})`
         : '';
       toast.success(`Export completed successfully${dateRangeText} (mock data)`);
     } catch (error) {
       console.error('Error exporting data:', error);
       toast.error('Failed to export financial data');
     }
-  };
-
-  const clearDateFilters = () => {
-    setStartDate('');
-    setEndDate('');
   };
 
   if (loading) {
@@ -276,80 +272,117 @@ const AdminFinancial = () => {
   }
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-bravo-blue mb-2">Financeiro</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-[#58819d] mb-2">Financeiro</h1>
         <p className="text-gray-600">
           Gerenciamento financeiro e análise de receitas
         </p>
       </div>
 
-      {/* Date Filters */}
-      <Card className="mb-8">
+      {/* Filters */}
+      <Card>
         <CardHeader className="pb-3">
-          <CardTitle>Filtros de Período</CardTitle>
+          <CardTitle>Filtros</CardTitle>
           <CardDescription>
-            Filtre os dados financeiros por período específico
+            Filtre por cliente, plano ou período de transação
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div className="space-y-2">
-              <Label htmlFor="start-date">Data Inicial</Label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="sm:col-span-2">
               <div className="relative">
-                <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  id="start-date"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  placeholder="Buscar por cliente, plano ou ID..."
+                  value={searchTransaction}
+                  onChange={(e) => setSearchTransaction(e.target.value)}
                   className="pl-8"
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="end-date">Data Final</Label>
-              <div className="relative">
-                <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                <Input
-                  id="end-date"
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="pl-8"
-                />
-              </div>
+            
+            <div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "dd/MM/yyyy") : "Data início"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    className="pointer-events-auto"
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                onClick={clearDateFilters}
-                disabled={!startDate && !endDate}
-              >
-                Limpar Filtros
-              </Button>
-              <Button onClick={handleExport}>
-                <Download className="h-4 w-4 mr-2" />
-                Exportar
-              </Button>
+            
+            <div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "dd/MM/yyyy") : "Data fim"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    className="pointer-events-auto"
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
+          
           {(startDate || endDate) && (
-            <div className="mt-3 text-sm text-gray-600">
-              <span className="font-medium">Período selecionado:</span>
-              {' '}
-              {startDate && new Date(startDate).toLocaleDateString('pt-BR')}
-              {startDate && endDate && ' até '}
-              {endDate && new Date(endDate).toLocaleDateString('pt-BR')}
-              {' '}
-              ({filteredTransactions.length} transações encontradas)
+            <div className="mt-4 flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                {startDate && endDate ? (
+                  `Período: ${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")}`
+                ) : startDate ? (
+                  `A partir de: ${format(startDate, "dd/MM/yyyy")}`
+                ) : (
+                  `Até: ${format(endDate!, "dd/MM/yyyy")}`
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setStartDate(undefined);
+                  setEndDate(undefined);
+                }}
+              >
+                Limpar datas
+              </Button>
             </div>
           )}
         </CardContent>
       </Card>
       
       {/* Financial Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {financialSummary.map((stat, i) => (
           <Card key={i}>
             <CardContent className="p-6">
@@ -363,11 +396,11 @@ const AdminFinancial = () => {
                     {stat.change}
                   </p>
                 </div>
-                <div className="bg-bravo-beige bg-opacity-30 p-3 rounded-full">
-                  {stat.title === 'Receita Total' && <DollarSign className="h-8 w-8 text-bravo-blue opacity-80" />}
-                  {stat.title === 'Total de Assinantes' && <Users className="h-8 w-8 text-bravo-blue opacity-80" />}
-                  {stat.title === 'Valor Médio' && <TrendingUp className="h-8 w-8 text-bravo-blue opacity-80" />}
-                  {stat.title === 'Taxa de Conversão' && <CreditCard className="h-8 w-8 text-bravo-blue opacity-80" />}
+                <div className="bg-[#F5F2E8] bg-opacity-30 p-3 rounded-full">
+                  {stat.title === 'Receita Total' && <DollarSign className="h-8 w-8 text-[#58819d] opacity-80" />}
+                  {stat.title === 'Total de Assinantes' && <Users className="h-8 w-8 text-[#58819d] opacity-80" />}
+                  {stat.title === 'Valor Médio' && <TrendingUp className="h-8 w-8 text-[#58819d] opacity-80" />}
+                  {stat.title === 'Taxa de Conversão' && <CreditCard className="h-8 w-8 text-[#58819d] opacity-80" />}
                 </div>
               </div>
             </CardContent>
@@ -376,25 +409,10 @@ const AdminFinancial = () => {
       </div>
       
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Receita Anual</CardTitle>
-              <Select
-                value={yearFilter}
-                onValueChange={setYearFilter}
-              >
-                <SelectTrigger className="w-[100px]">
-                  <SelectValue placeholder="Ano" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({length: 5}, (_, i) => new Date().getFullYear() - i).map(year => (
-                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <CardTitle>Receita Anual</CardTitle>
             <CardDescription>
               Visão geral da receita por mês
             </CardDescription>
@@ -413,7 +431,7 @@ const AdminFinancial = () => {
                   <Line
                     type="monotone"
                     dataKey="revenue"
-                    stroke="#5D7C8A"
+                    stroke="#58819d"
                     strokeWidth={3}
                     dot={{ r: 4 }}
                     activeDot={{ r: 6 }}
@@ -442,7 +460,7 @@ const AdminFinancial = () => {
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip formatter={(value) => [`${value} usuários`, 'Assinantes']} />
-                  <Bar dataKey="users" fill="#5D7C8A" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="users" fill="#58819d" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -460,17 +478,10 @@ const AdminFinancial = () => {
                 Visualize e filtre as últimas transações
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="relative w-full md:w-auto">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                <Input
-                  placeholder="Buscar..."
-                  value={searchTransaction}
-                  onChange={(e) => setSearchTransaction(e.target.value)}
-                  className="pl-8 w-full md:w-[200px]"
-                />
-              </div>
-            </div>
+            <Button onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" />
+              Exportar
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
