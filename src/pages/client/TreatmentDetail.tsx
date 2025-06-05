@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Camera, TrendingUp, Clock, FileText, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Camera, TrendingUp, Clock, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
+import { Calendar, FileText } from 'lucide-react';
 
 interface TreatmentEvolution {
   id: string;
@@ -324,43 +324,6 @@ const TreatmentDetail = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Ações Rápidas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Ver Prescrições</CardTitle>
-            <CardDescription>
-              Consulte suas prescrições médicas e medicamentos
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className="w-full" asChild>
-              <Link to="/cliente/prescricoes">
-                <FileText className="h-4 w-4 mr-2" />
-                Ver Prescrições
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Histórico Completo</CardTitle>
-            <CardDescription>
-              Veja todo o histórico de consultas e avaliações
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full" asChild>
-              <Link to="/cliente/historico">
-                <Calendar className="h-4 w-4 mr-2" />
-                Ver Histórico
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };
