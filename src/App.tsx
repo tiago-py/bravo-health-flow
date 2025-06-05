@@ -24,7 +24,8 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 // Client Pages
 import ClientLayout from "./layouts/ClientLayout";
 import ClientDashboard from "./pages/client/Dashboard";
-import ClientTreatments from "./pages/client/Treatments";
+import TreatmentsList from "./pages/client/TreatmentsList";
+import TreatmentDetail from "./pages/client/TreatmentDetail";
 import ClientPrescriptions from "./pages/client/Prescriptions";
 import ClientHistory from "./pages/client/History";
 import ClientProfile from "./pages/client/Profile";
@@ -84,18 +85,15 @@ const App = () => (
           {/* Client Routes - Protected */}
           <Route 
             path="/cliente" 
-         
             element={
               <RequireAuth role="client">
                 <ClientLayout />
-                </RequireAuth>
-              
-              
+              </RequireAuth>
             }
-            
           >
             <Route path="dashboard" element={<ClientDashboard />} />
-            <Route path="tratamentos" element={<ClientTreatments />} />
+            <Route path="tratamentos" element={<TreatmentsList />} />
+            <Route path="tratamentos/:id" element={<TreatmentDetail />} />
             <Route path="prescricoes" element={<ClientPrescriptions />} />
             <Route path="historico" element={<ClientHistory />} />
             <Route path="perfil" element={<ClientProfile />} />
@@ -105,15 +103,11 @@ const App = () => (
           {/* Doctor Routes - Protected */}
           <Route 
             path="/medico" 
-            
             element={
               <RequireAuth role="doctor">
                 <DoctorLayout />
-                </RequireAuth>
-              
-              
+              </RequireAuth>
             }
-            
           >
             <Route path="dashboard" element={<DoctorDashboard />} />
             <Route path="avaliacao" element={<DoctorEvaluations />} />
@@ -126,15 +120,11 @@ const App = () => (
           {/* Admin Routes - Protected */}
           <Route 
             path="/admin" 
-           
             element={
               <RequireAuth role="admin">
                 <AdminLayout />
-                </RequireAuth>
-              
-              
+              </RequireAuth>
             }
-            
           >
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="anamnese/editar/:id" element={<AdminAnamneseEdit />} />
