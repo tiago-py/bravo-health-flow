@@ -13,26 +13,30 @@ const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_BASE_URL = 'http://localhost:3000';
+  // Mock data
+  const mockProfileData = {
+    name: 'João Silva Santos',
+    email: 'joao.silva@email.com',
+    phone: '(11) 99999-9999',
+    address: {
+      street: 'Rua das Flores, 123',
+      city: 'São Paulo',
+      state: 'SP',
+      zipCode: '01234-567'
+    }
+  };
 
-  const fetchAPI = async (endpoint) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', 
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error(`Error fetching ${endpoint}:`, error);
-      throw error;
+  const mockTreatmentData = {
+    current: {
+      id: '1',
+      type: 'Tratamento Capilar Premium',
+      plan: 'Plano Intensivo',
+      status: 'active',
+      progress: 65,
+      lastEvaluation: '2024-05-15T10:30:00Z',
+      nextShipment: '2024-06-10T00:00:00Z',
+      startDate: '2024-03-01T00:00:00Z',
+      duration: '6 meses'
     }
   };
 
@@ -42,13 +46,12 @@ const ClientDashboard = () => {
         setLoading(true);
         setError(null);
 
-        const [profile, treatments] = await Promise.all([
-          fetchAPI('/api/auth/profile'),
-          fetchAPI('/api/clients/treatments')
-        ]);
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        setProfileData(profile);
-        setTreatmentData(treatments);
+        // Use mock data instead of real API calls
+        setProfileData(mockProfileData);
+        setTreatmentData(mockTreatmentData);
       } catch (err) {
         setError(err.message);
         console.error('Error loading dashboard data:', err);
