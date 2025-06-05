@@ -18,64 +18,56 @@ const DoctorEvaluations = () => {
       name: 'João Silva',
       age: 32,
       date: '2023-03-25T14:30:00',
-      type: 'queda-capilar',
-      priority: 'normal'
+      type: 'queda-capilar'
     },
     {
       id: '2',
       name: 'Marcos Oliveira',
       age: 45,
       date: '2023-03-25T10:15:00',
-      type: 'disfuncao-eretil',
-      priority: 'high'
+      type: 'disfuncao-eretil'
     },
     {
       id: '3',
       name: 'André Costa',
       age: 28,
       date: '2023-03-24T16:45:00',
-      type: 'queda-capilar',
-      priority: 'normal'
+      type: 'queda-capilar'
     },
     {
       id: '4',
       name: 'Ricardo Mendes',
       age: 37,
       date: '2023-03-24T09:20:00',
-      type: 'disfuncao-eretil',
-      priority: 'normal'
+      type: 'disfuncao-eretil'
     },
     {
       id: '8',
       name: 'Fernando Santos',
       age: 39,
       date: '2023-03-23T13:45:00',
-      type: 'queda-capilar',
-      priority: 'normal'
+      type: 'queda-capilar'
     },
     {
       id: '9',
       name: 'Gabriel Lima',
       age: 26,
       date: '2023-03-23T08:30:00',
-      type: 'disfuncao-eretil',
-      priority: 'high'
+      type: 'disfuncao-eretil'
     },
     {
       id: '10',
       name: 'Thiago Alves',
       age: 34,
       date: '2023-03-22T17:20:00',
-      type: 'queda-capilar',
-      priority: 'normal'
+      type: 'queda-capilar'
     },
     {
       id: '11',
       name: 'Rafael Pereira',
       age: 31,
       date: '2023-03-22T11:15:00',
-      type: 'disfuncao-eretil',
-      priority: 'normal'
+      type: 'disfuncao-eretil'
     },
   ];
 
@@ -101,24 +93,23 @@ const DoctorEvaluations = () => {
     // Mock function to simulate Excel download
     const selectedPatientsData = pendingEvaluations.filter(p => selectedPatients.includes(p.id));
     
-    // Create CSV content
-    const csvContent = [
-      ['Nome', 'Idade', 'Data', 'Tipo', 'Prioridade'],
+    // Create Excel-compatible content (tab-separated values)
+    const excelContent = [
+      ['Nome', 'Idade', 'Data', 'Tipo'].join('\t'),
       ...selectedPatientsData.map(patient => [
         patient.name,
         patient.age.toString(),
         new Date(patient.date).toLocaleString('pt-BR'),
-        patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil',
-        patient.priority === 'high' ? 'Alta' : 'Normal'
-      ])
-    ].map(row => row.join(',')).join('\n');
+        patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'
+      ].join('\t'))
+    ].join('\n');
 
-    // Create and download file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    // Create and download file as Excel (.xls)
+    const blob = new Blob([excelContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `pacientes_selecionados_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `pacientes_selecionados_${new Date().toISOString().split('T')[0]}.xls`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -163,9 +154,6 @@ const DoctorEvaluations = () => {
               <div className="flex items-center">
                 <h3 className="font-medium">{patient.name}</h3>
                 <span className="text-sm text-gray-500 ml-2">{patient.age} anos</span>
-                {patient.priority === 'high' && (
-                  <Badge className="ml-2 bg-red-100 text-red-800 hover:bg-red-200">Urgente</Badge>
-                )}
                 {showTypeFilter && (
                   <Badge className="ml-2" variant="outline">
                     {patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
@@ -218,9 +206,6 @@ const DoctorEvaluations = () => {
               <TabsTrigger value="ed">
                 Disfunção Erétil ({pendingEvaluations.filter(p => p.type === 'disfuncao-eretil').length})
               </TabsTrigger>
-              <TabsTrigger value="urgent">
-                Urgentes ({pendingEvaluations.filter(p => p.priority === 'high').length})
-              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="all">
@@ -233,10 +218,6 @@ const DoctorEvaluations = () => {
             
             <TabsContent value="ed">
               {renderPatientList(pendingEvaluations.filter(p => p.type === 'disfuncao-eretil'))}
-            </TabsContent>
-
-            <TabsContent value="urgent">
-              {renderPatientList(pendingEvaluations.filter(p => p.priority === 'high'), true)}
             </TabsContent>
           </Tabs>
         </CardContent>
