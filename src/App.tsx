@@ -24,6 +24,7 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 // Client Pages
 import ClientLayout from "./layouts/ClientLayout";
 import ClientDashboard from "./pages/client/Dashboard";
+import ClientTreatments from "./pages/client/Treatments";
 import ClientPrescriptions from "./pages/client/Prescriptions";
 import ClientHistory from "./pages/client/History";
 import ClientProfile from "./pages/client/Profile";
@@ -94,7 +95,8 @@ const App = () => (
             
           >
             <Route path="dashboard" element={<ClientDashboard />} />
-            <Route path="tratamentos" element={<ClientPrescriptions />} />
+            <Route path="tratamentos" element={<ClientTreatments />} />
+            <Route path="prescricoes" element={<ClientPrescriptions />} />
             <Route path="historico" element={<ClientHistory />} />
             <Route path="perfil" element={<ClientProfile />} />
             <Route path="suporte" element={<ClientSupport />} />

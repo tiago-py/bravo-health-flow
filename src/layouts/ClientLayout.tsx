@@ -11,7 +11,8 @@ import {
   Phone, 
   LogOut, 
   Menu, 
-  X 
+  X,
+  TrendingUp
 } from 'lucide-react';
 
 const ClientLayout = () => {
@@ -20,7 +21,8 @@ const ClientLayout = () => {
   
   const navigations = [
     { name: 'Dashboard', path: '/cliente/dashboard', icon: <Home size={20} /> },
-    { name: 'Tratamentos', path: '/cliente/tratamentos', icon: <FileText size={20} /> },
+    { name: 'Evolução', path: '/cliente/tratamentos', icon: <TrendingUp size={20} /> },
+    { name: 'Prescrições', path: '/cliente/prescricoes', icon: <FileText size={20} /> },
     { name: 'Histórico', path: '/cliente/historico', icon: <ClipboardList size={20} /> },
     { name: 'Meu Perfil', path: '/cliente/perfil', icon: <User size={20} /> },
     { name: 'Suporte', path: '/cliente/suporte', icon: <Phone size={20} /> },
