@@ -4,9 +4,12 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { User, Calendar, Search, FileText, Download, Eye, UserCheck, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { User, CalendarIcon, Search, FileText, Download, Eye, UserCheck, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface Prescription {
   id: string;
@@ -92,9 +95,8 @@ const mockPrescriptions: Prescription[] = [
 
 const AllPrescriptions = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('all');
-  const [doctorFilter, setDoctorFilter] = useState('all');
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,42 +125,6 @@ const AllPrescriptions = () => {
   useEffect(() => {
     fetchPrescriptions();
   }, []);
-
-  // Get unique doctors for filter
-  const uniqueDoctors = Array.from(new Set(prescriptions.map(p => p.doctorName)));
-  
-  // Filter prescriptions based on search query and filters
-  const filteredPrescriptions = prescriptions.filter(prescription => {
-    // Search filter (patient name or doctor name)
-    const matchesSearch = 
-      prescription.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prescription.doctorName?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Type filter
-    const matchesType = typeFilter === 'all' || prescription.type === typeFilter;
-    
-    // Doctor filter
-    const matchesDoctor = doctorFilter === 'all' || prescription.doctorName === doctorFilter;
-    
-    // Date filter (based on upload date)
-    let matchesDate = true;
-    if (prescription.uploadDate && dateFilter !== 'all') {
-      const uploadDate = new Date(prescription.uploadDate);
-      const today = new Date();
-      const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-      
-      if (dateFilter === 'today') {
-        matchesDate = uploadDate.toDateString() === today.toDateString();
-      } else if (dateFilter === 'week') {
-        matchesDate = uploadDate >= lastWeek;
-      } else if (dateFilter === 'month') {
-        matchesDate = uploadDate >= lastMonth;
-      }
-    }
-    
-    return matchesSearch && matchesType && matchesDoctor && matchesDate;
-  });
 
   // Handle individual prescription selection
   const handleSelectPrescription = (prescriptionId: string, checked: boolean) => {
@@ -236,6 +202,30 @@ const AllPrescriptions = () => {
   const handleRetry = () => {
     fetchPrescriptions();
   };
+  
+  // Filter prescriptions based on search query and date range
+  const filteredPrescriptions = prescriptions.filter(prescription => {
+    // Search filter (patient name or doctor name)
+    const matchesSearch = 
+      prescription.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      prescription.doctorName?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Date range filter (based on upload date)
+    let matchesDateRange = true;
+    if (prescription.uploadDate && (startDate || endDate)) {
+      const uploadDate = new Date(prescription.uploadDate);
+      
+      if (startDate && endDate) {
+        matchesDateRange = uploadDate >= startDate && uploadDate <= endDate;
+      } else if (startDate) {
+        matchesDateRange = uploadDate >= startDate;
+      } else if (endDate) {
+        matchesDateRange = uploadDate <= endDate;
+      }
+    }
+    
+    return matchesSearch && matchesDateRange;
+  });
 
   if (loading) {
     return (
@@ -336,11 +326,11 @@ const AllPrescriptions = () => {
         <CardHeader className="pb-3">
           <CardTitle>Filtros</CardTitle>
           <CardDescription>
-            Filtre por paciente, médico, tipo de tratamento ou data de upload
+            Filtre por paciente, médico ou período de upload
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="sm:col-span-2">
               <div className="relative">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -354,55 +344,81 @@ const AllPrescriptions = () => {
             </div>
             
             <div>
-              <Select
-                value={doctorFilter}
-                onValueChange={setDoctorFilter}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Médico" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os médicos</SelectItem>
-                  {uniqueDoctors.map(doctor => (
-                    <SelectItem key={doctor} value={doctor}>{doctor}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "dd/MM/yyyy") : "Data início"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    className="pointer-events-auto"
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             
             <div>
-              <Select
-                value={typeFilter}
-                onValueChange={setTypeFilter}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os tipos</SelectItem>
-                  <SelectItem value="queda-capilar">Queda Capilar</SelectItem>
-                  <SelectItem value="disfuncao-eretil">Disfunção Erétil</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Select
-                value={dateFilter}
-                onValueChange={setDateFilter}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Data upload" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as datas</SelectItem>
-                  <SelectItem value="today">Hoje</SelectItem>
-                  <SelectItem value="week">Última semana</SelectItem>
-                  <SelectItem value="month">Último mês</SelectItem>
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "dd/MM/yyyy") : "Data fim"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    className="pointer-events-auto"
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
+          
+          {(startDate || endDate) && (
+            <div className="mt-4 flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                {startDate && endDate ? (
+                  `Período: ${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")}`
+                ) : startDate ? (
+                  `A partir de: ${format(startDate, "dd/MM/yyyy")}`
+                ) : (
+                  `Até: ${format(endDate!, "dd/MM/yyyy")}`
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setStartDate(undefined);
+                  setEndDate(undefined);
+                }}
+              >
+                Limpar datas
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
       
@@ -487,7 +503,7 @@ const AllPrescriptions = () => {
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center text-sm">
-                              <Calendar size={14} className="mr-1 text-gray-400" />
+                              <CalendarIcon size={14} className="mr-1 text-gray-400" />
                               {prescription.uploadDate ? new Date(prescription.uploadDate).toLocaleDateString('pt-BR') : 'N/A'}
                             </div>
                           </td>
@@ -559,7 +575,7 @@ const AllPrescriptions = () => {
                         </div>
                         
                         <div className="flex items-center text-sm text-gray-600">
-                          <Calendar size={14} className="mr-1 text-gray-400" />
+                          <CalendarIcon size={14} className="mr-1 text-gray-400" />
                           Upload: {prescription.uploadDate ? new Date(prescription.uploadDate).toLocaleDateString('pt-BR') : 'N/A'}
                         </div>
                         
