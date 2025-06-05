@@ -1,11 +1,9 @@
-
 import { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { 
   Home, 
-  FileText, 
   ClipboardList, 
   User, 
   Phone, 
@@ -21,8 +19,7 @@ const ClientLayout = () => {
   
   const navigations = [
     { name: 'Dashboard', path: '/cliente/dashboard', icon: <Home size={20} /> },
-    { name: 'Evolução', path: '/cliente/tratamentos', icon: <TrendingUp size={20} /> },
-    { name: 'Prescrições', path: '/cliente/prescricoes', icon: <FileText size={20} /> },
+    { name: 'Tratamentos', path: '/cliente/tratamentos', icon: <TrendingUp size={20} /> },
     { name: 'Histórico', path: '/cliente/historico', icon: <ClipboardList size={20} /> },
     { name: 'Meu Perfil', path: '/cliente/perfil', icon: <User size={20} /> },
     { name: 'Suporte', path: '/cliente/suporte', icon: <Phone size={20} /> },

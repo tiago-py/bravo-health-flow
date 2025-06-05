@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -26,7 +27,6 @@ import ClientLayout from "./layouts/ClientLayout";
 import ClientDashboard from "./pages/client/Dashboard";
 import TreatmentsList from "./pages/client/TreatmentsList";
 import TreatmentDetail from "./pages/client/TreatmentDetail";
-import ClientPrescriptions from "./pages/client/Prescriptions";
 import ClientHistory from "./pages/client/History";
 import ClientProfile from "./pages/client/Profile";
 import ClientSupport from "./pages/client/Support";
@@ -94,7 +94,6 @@ const App = () => (
             <Route path="dashboard" element={<ClientDashboard />} />
             <Route path="tratamentos" element={<TreatmentsList />} />
             <Route path="tratamentos/:id" element={<TreatmentDetail />} />
-            <Route path="prescricoes" element={<ClientPrescriptions />} />
             <Route path="historico" element={<ClientHistory />} />
             <Route path="perfil" element={<ClientProfile />} />
             <Route path="suporte" element={<ClientSupport />} />
