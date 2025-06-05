@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Download, ArrowUp, ArrowDown, DollarSign, TrendingUp, CreditCard, Users, Loader2, AlertCircle } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Search, Download, ArrowUp, ArrowDown, DollarSign, TrendingUp, CreditCard, Users, Loader2, AlertCircle, Calendar } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -172,6 +173,8 @@ const mockTransactions: Transaction[] = [
 const AdminFinancial = () => {
   const [periodFilter, setPeriodFilter] = useState('month');
   const [yearFilter, setYearFilter] = useState(new Date().getFullYear().toString());
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [searchTransaction, setSearchTransaction] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -197,14 +200,30 @@ const AdminFinancial = () => {
     };
 
     loadMockData();
-  }, [yearFilter]);
+  }, [yearFilter, startDate, endDate]);
 
-  // Filter transactions based on search
-  const filteredTransactions = transactions.filter(transaction =>
-    transaction.customer.toLowerCase().includes(searchTransaction.toLowerCase()) ||
-    transaction.plan.toLowerCase().includes(searchTransaction.toLowerCase()) ||
-    transaction.id.toLowerCase().includes(searchTransaction.toLowerCase())
-  );
+  // Filter transactions based on search and date range
+  const filteredTransactions = transactions.filter(transaction => {
+    const matchesSearch = transaction.customer.toLowerCase().includes(searchTransaction.toLowerCase()) ||
+      transaction.plan.toLowerCase().includes(searchTransaction.toLowerCase()) ||
+      transaction.id.toLowerCase().includes(searchTransaction.toLowerCase());
+    
+    // Date range filter
+    let matchesDateRange = true;
+    if (startDate || endDate) {
+      const transactionDate = new Date(transaction.date);
+      if (startDate) {
+        const start = new Date(startDate);
+        matchesDateRange = matchesDateRange && transactionDate >= start;
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        matchesDateRange = matchesDateRange && transactionDate <= end;
+      }
+    }
+    
+    return matchesSearch && matchesDateRange;
+  });
 
   // Helper function to format currency
   const formatCurrency = (value: number) => {
@@ -217,11 +236,19 @@ const AdminFinancial = () => {
   const handleExport = async () => {
     try {
       // Mock export functionality
-      toast.success('Export completed successfully (mock data)');
+      const dateRangeText = startDate && endDate 
+        ? ` (${new Date(startDate).toLocaleDateString('pt-BR')} - ${new Date(endDate).toLocaleDateString('pt-BR')})`
+        : '';
+      toast.success(`Export completed successfully${dateRangeText} (mock data)`);
     } catch (error) {
       console.error('Error exporting data:', error);
       toast.error('Failed to export financial data');
     }
+  };
+
+  const clearDateFilters = () => {
+    setStartDate('');
+    setEndDate('');
   };
 
   if (loading) {
@@ -256,6 +283,70 @@ const AdminFinancial = () => {
           Gerenciamento financeiro e análise de receitas
         </p>
       </div>
+
+      {/* Date Filters */}
+      <Card className="mb-8">
+        <CardHeader className="pb-3">
+          <CardTitle>Filtros de Período</CardTitle>
+          <CardDescription>
+            Filtre os dados financeiros por período específico
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="space-y-2">
+              <Label htmlFor="start-date">Data Inicial</Label>
+              <div className="relative">
+                <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                <Input
+                  id="start-date"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="end-date">Data Final</Label>
+              <div className="relative">
+                <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                <Input
+                  id="end-date"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={clearDateFilters}
+                disabled={!startDate && !endDate}
+              >
+                Limpar Filtros
+              </Button>
+              <Button onClick={handleExport}>
+                <Download className="h-4 w-4 mr-2" />
+                Exportar
+              </Button>
+            </div>
+          </div>
+          {(startDate || endDate) && (
+            <div className="mt-3 text-sm text-gray-600">
+              <span className="font-medium">Período selecionado:</span>
+              {' '}
+              {startDate && new Date(startDate).toLocaleDateString('pt-BR')}
+              {startDate && endDate && ' até '}
+              {endDate && new Date(endDate).toLocaleDateString('pt-BR')}
+              {' '}
+              ({filteredTransactions.length} transações encontradas)
+            </div>
+          )}
+        </CardContent>
+      </Card>
       
       {/* Financial Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -379,10 +470,6 @@ const AdminFinancial = () => {
                   className="pl-8 w-full md:w-[200px]"
                 />
               </div>
-              <Button variant="outline" onClick={handleExport}>
-                <Download className="h-4 w-4 mr-2" />
-                Exportar
-              </Button>
             </div>
           </div>
         </CardHeader>
