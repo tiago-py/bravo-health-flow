@@ -102,7 +102,7 @@ const App = () => (
           
           {/* Doctor Routes - Protected */}
           <Route 
-            path="/doctor" 
+            path="/medico" 
             
             element={
               <RequireAuth role="doctor">
