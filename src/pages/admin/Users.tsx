@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Mail, Phone, AlertTriangle, FileText, MoreVertical, Loader2, RefreshCw } from 'lucide-react';
+import { Search, Phone, AlertTriangle, FileText, MoreVertical, Loader2, RefreshCw } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -199,22 +199,6 @@ const AdminUsers = () => {
     }
   };
   
-  const sendEmail = async (userId: string) => {
-    try {
-      setActionLoading(userId);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setActionLoading(null);
-        toast.success('E-mail enviado com sucesso.');
-      }, 1000);
-    } catch (error) {
-      toast.error('Erro ao enviar e-mail.');
-      console.error('Error sending email:', error);
-      setActionLoading(null);
-    }
-  };
-  
   const viewAnamneseHistory = (userId: string) => {
     window.location.href = `/admin/users/${userId}/anamnese`;
   };
@@ -341,7 +325,7 @@ const AdminUsers = () => {
                   
                   <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 text-sm text-gray-500">
                     <div className="flex items-center">
-                      <Mail size={14} className="mr-1" />
+                      <span className="mr-1">📧</span>
                       {user.email}
                     </div>
                     <div className="flex items-center">
@@ -382,20 +366,6 @@ const AdminUsers = () => {
                   >
                     <FileText size={16} className="mr-2" />
                     Anamnese
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => sendEmail(user.id)}
-                    disabled={actionLoading === user.id}
-                  >
-                    {actionLoading === user.id ? (
-                      <Loader2 size={16} className="mr-2 animate-spin" />
-                    ) : (
-                      <Mail size={16} className="mr-2" />
-                    )}
-                    Enviar e-mail
                   </Button>
                   
                   <DropdownMenu>

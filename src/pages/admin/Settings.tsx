@@ -26,6 +26,18 @@ interface Settings {
   };
 }
 
+// Mock settings data
+const mockSettings = {
+  general: {
+    companyName: 'Bravo Homem',
+    siteUrl: 'https://bravohomem.com.br',
+    contactEmail: 'contato@bravohomem.com.br',
+    supportPhone: '(11) 99999-0000',
+    timezone: 'America/Sao_Paulo',
+    maintenanceMode: false,
+  },
+};
+
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState('general');
   const [settings, setSettings] = useState<Settings>({
@@ -46,27 +58,19 @@ const AdminSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
-  const API_BASE_URL = 'http://localhost:3000';
 
-  // Fetch settings on component mount
+  // Mock fetch settings on component mount
   useEffect(() => {
     const fetchSettings = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/api/admin/settings`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch settings');
-        }
-
-        const data = await response.json();
+        
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         setSettings(prev => ({
           ...prev,
-          general: data.general || prev.general
+          general: mockSettings.general
         }));
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -90,22 +94,13 @@ const AdminSettings = () => {
     }));
   };
 
-  // Save general settings
+  // Mock save general settings
   const saveSettings = async () => {
     try {
       setSaving(true);
-      const response = await fetch(`${API_BASE_URL}/api/admin/settings`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ general: settings.general })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save settings');
-      }
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast.success('Settings saved successfully!');
     } catch (error) {
@@ -116,7 +111,7 @@ const AdminSettings = () => {
     }
   };
 
-  // Change password
+  // Mock change password
   const changePassword = async () => {
     if (settings.security.newPassword !== settings.security.confirmPassword) {
       toast.error('As senhas não coincidem');
@@ -130,21 +125,9 @@ const AdminSettings = () => {
 
     try {
       setChangingPassword(true);
-      const response = await fetch(`${API_BASE_URL}/api/admin/change-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          currentPassword: settings.security.currentPassword,
-          newPassword: settings.security.newPassword
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to change password');
-      }
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast.success('Senha alterada com sucesso!');
       

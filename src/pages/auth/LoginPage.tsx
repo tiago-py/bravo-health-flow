@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,12 +15,24 @@ Admin:
 Email: admin@bravohomem.com.br
 Senha: admin123
 
-Médico:
+Médicos:
 Email: dr.silva@bravohomem.com.br
 Senha: medico123
 
-Cliente:
+Email: dr.maria@bravohomem.com.br
+Senha: medico123
+
+Email: dr.carlos@bravohomem.com.br
+Senha: medico123
+
+Clientes:
 Email: joao.cliente@gmail.com
+Senha: cliente123
+
+Email: maria.cliente@gmail.com
+Senha: cliente123
+
+Email: pedro.cliente@gmail.com
 Senha: cliente123
 */
 
@@ -40,28 +53,7 @@ const LoginPage = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erro ao fazer login');
-      }
-
-      
-      if (data.token) {
-        localStorage.setItem('authToken', data.token);
-      }
-
+      await login(email, password);
       
       toast({
         title: 'Login realizado com sucesso',
@@ -69,15 +61,18 @@ const LoginPage = () => {
         duration: 3000,
       });
       
-      if (data.user && data.user.role) {
-        switch (data.user.role) {
+      // Get user from context after login
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        switch (userData.role) {
           case 'admin':
             navigate('/admin/dashboard');
             break;
-          case 'medico':
+          case 'doctor':
             navigate('/medico/dashboard');
             break;
-          case 'cliente':
+          case 'client':
             navigate('/cliente/dashboard');
             break;
           default:
@@ -129,8 +124,8 @@ const LoginPage = () => {
                 <p className="font-medium text-blue-800 mb-2">Credenciais para teste:</p>
                 <div className="space-y-1 text-blue-700">
                   <p><strong>Admin:</strong> admin@bravohomem.com.br / admin123</p>
-                  <p><strong>Médico:</strong> dr.silva@bravohomem.com.br / medico123</p>
-                  <p><strong>Cliente:</strong> joao.cliente@gmail.com / cliente123</p>
+                  <p><strong>Médicos:</strong> dr.silva@bravohomem.com.br / medico123</p>
+                  <p><strong>Clientes:</strong> joao.cliente@gmail.com / cliente123</p>
                 </div>
               </div>
               

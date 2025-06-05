@@ -23,6 +23,17 @@ export interface AuthContextType {
   forgotPassword: (email: string) => Promise<void>;
 }
 
+// Mock users database
+const mockUsers = [
+  { id: '1', name: 'Admin Sistema', email: 'admin@bravohomem.com.br', password: 'admin123', role: 'admin' as UserRole },
+  { id: '2', name: 'Dr. João Silva', email: 'dr.silva@bravohomem.com.br', password: 'medico123', role: 'doctor' as UserRole },
+  { id: '3', name: 'Dr. Maria Santos', email: 'dr.maria@bravohomem.com.br', password: 'medico123', role: 'doctor' as UserRole },
+  { id: '4', name: 'Dr. Carlos Lima', email: 'dr.carlos@bravohomem.com.br', password: 'medico123', role: 'doctor' as UserRole },
+  { id: '5', name: 'João Cliente', email: 'joao.cliente@gmail.com', password: 'cliente123', role: 'client' as UserRole },
+  { id: '6', name: 'Maria Cliente', email: 'maria.cliente@gmail.com', password: 'cliente123', role: 'client' as UserRole },
+  { id: '7', name: 'Pedro Cliente', email: 'pedro.cliente@gmail.com', password: 'cliente123', role: 'client' as UserRole },
+];
+
 // Create context with default values
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -64,7 +75,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuth();
   }, []);
 
-  // Login function
+  // Login function with mock authentication
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
@@ -72,23 +83,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock users with specific credentials
-      let mockUser: User;
+      // Find user in mock database
+      const foundUser = mockUsers.find(u => u.email === email && u.password === password);
       
-      if (email === 'admin@bravohomem.com.br' && password === 'admin123') {
-        mockUser = { id: '1', name: 'Admin Sistema', email, role: 'admin' };
-      } else if (email === 'dr.silva@bravohomem.com.br' && password === 'medico123') {
-        mockUser = { id: '2', name: 'Dr. João Silva', email, role: 'doctor' };
-      } else if (email === 'joao.cliente@gmail.com' && password === 'cliente123') {
-        mockUser = { id: '3', name: 'João Cliente', email, role: 'client' };
-      } else {
-        // For any other email, create a client user (backward compatibility)
-        mockUser = { id: Math.random().toString(36).substring(2, 15), name: 'Usuário Teste', email, role: 'client' };
+      if (!foundUser) {
+        throw new Error('Email ou senha incorretos');
       }
       
+      // Create user object without password
+      const authenticatedUser: User = {
+        id: foundUser.id,
+        name: foundUser.name,
+        email: foundUser.email,
+        role: foundUser.role
+      };
+      
       // Save user to local storage
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      setUser(mockUser);
+      localStorage.setItem('user', JSON.stringify(authenticatedUser));
+      setUser(authenticatedUser);
       
     } catch (error) {
       console.error('Login error:', error);
@@ -106,6 +118,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Check if user already exists
+      const existingUser = mockUsers.find(u => u.email === email);
+      if (existingUser) {
+        throw new Error('Usuário já existe com este email');
+      }
       
       // Create a new user (always a client for new registrations)
       const newUser: User = {
@@ -141,6 +159,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Check if user exists
+      const foundUser = mockUsers.find(u => u.email === email);
+      if (!foundUser) {
+        throw new Error('Usuário não encontrado com este email');
+      }
       
       // For demo purposes, we'll just console log
       console.log(`Password reset email sent to ${email}`);
