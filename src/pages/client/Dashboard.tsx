@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -242,7 +243,7 @@ const ClientDashboard = () => {
                 </p>
                 <Button variant="outline" asChild>
                   <Link to="/cliente/tratamentos">
-                    Ver prescrições
+                    Ver tratamentos
                     <ArrowRight size={16} className="ml-2" />
                   </Link>
                 </Button>
@@ -253,18 +254,18 @@ const ClientDashboard = () => {
         
         {/* Quick Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-          {/* View Prescriptions */}
+          {/* View Treatments */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Prescrições</CardTitle>
+              <CardTitle className="text-lg">Tratamentos</CardTitle>
             </CardHeader>
             <CardContent className="pb-2 text-sm text-gray-600">
-              Acesse suas prescrições médicas e orientações de uso
+              Acompanhe a evolução dos seus tratamentos
             </CardContent>
             <CardFooter>
               <Button variant="outline" className="w-full" asChild>
-                <Link to="/cliente/prescricoes">
-                  Ver prescrições
+                <Link to="/cliente/tratamentos">
+                  Ver tratamentos
                 </Link>
               </Button>
             </CardFooter>
