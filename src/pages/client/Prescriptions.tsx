@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -28,47 +29,71 @@ const ClientHistory = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const API_BASE_URL = 'http://localhost:3000';
+
+  // Mock data para evitar erros de fetch
+  const mockHistoryData: HistoryItem[] = [
+    {
+      id: '1',
+      type: 'anamnese',
+      title: 'Primeira Consulta - Avaliação Capilar',
+      date: '2024-03-15T10:00:00Z',
+      status: 'completed',
+      details: {
+        doctor: 'Dr. Carlos Silva',
+        observations: 'Paciente apresenta sinais de alopecia androgenética grau II. Histórico familiar positivo. Recomendado tratamento tópico e oral.'
+      }
+    },
+    {
+      id: '2',
+      type: 'prescription',
+      title: 'Prescrição Médica - Tratamento Capilar',
+      date: '2024-03-20T14:30:00Z',
+      status: 'completed',
+      details: {
+        doctor: 'Dr. Carlos Silva',
+        medications: [
+          'Minoxidil 5% - Aplicar 1ml 2x ao dia no couro cabeludo',
+          'Finasterida 1mg - 1 comprimido ao dia',
+          'Vitaminas capilares - 2 cápsulas ao dia'
+        ],
+        duration: '6 meses'
+      }
+    },
+    {
+      id: '3',
+      type: 'shipment',
+      title: 'Entrega de Medicamentos',
+      date: '2024-03-25T00:00:00Z',
+      status: 'completed',
+      details: {
+        address: 'Rua das Flores, 123, São Paulo - SP',
+        tracking: 'BR123456789'
+      }
+    },
+    {
+      id: '4',
+      type: 'follow-up',
+      title: 'Consulta de Acompanhamento',
+      date: '2024-04-15T15:00:00Z',
+      status: 'scheduled',
+      details: {
+        doctor: 'Dr. Carlos Silva',
+        notes: 'Avaliar progresso do tratamento e possíveis ajustes na medicação'
+      }
+    }
+  ];
 
   const fetchHistory = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Usuário não autenticado');
-      }
-
-      const response = await fetch(`${API_BASE_URL}/api/users/treatment-history`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      // Simular delay da API
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Erro na requisição: ${response.status}`);
-      }
+      // Usar dados mock em vez de fazer requisição real
+      setHistory(mockHistoryData);
       
-      const data = await response.json();
-      
-      if (!Array.isArray(data)) {
-        throw new Error('Formato de dados inválido da API');
-      }
-
-      // Validação básica dos dados
-      const validatedData = data.map((item: any) => ({
-        id: item.id || '',
-        type: item.type || 'unknown',
-        title: item.title || 'Sem título',
-        date: item.date || new Date().toISOString(),
-        status: item.status || 'completed',
-        details: item.details || {}
-      }));
-
-      setHistory(validatedData);
     } catch (err) {
       console.error('Erro ao carregar histórico:', err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
@@ -118,14 +143,14 @@ const ClientHistory = () => {
 
   if (loading) {
     return (
-      <div className="p-6">
+      <div>
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Histórico de Tratamento</h1>
-          <p className="text-gray-600">Acompanhe todas as etapas do seu tratamento</p>
+          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Prescrições e Tratamentos</h1>
+          <p className="text-gray-600">Acompanhe suas prescrições médicas e histórico de tratamento</p>
         </div>
         <div className="flex flex-col items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-bravo-blue mb-4" />
-          <p className="text-gray-600">Carregando seu histórico...</p>
+          <p className="text-gray-600">Carregando suas prescrições...</p>
         </div>
       </div>
     );
@@ -133,15 +158,15 @@ const ClientHistory = () => {
 
   if (error) {
     return (
-      <div className="p-6">
+      <div>
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Histórico de Tratamento</h1>
-          <p className="text-gray-600">Acompanhe todas as etapas do seu tratamento</p>
+          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Prescrições e Tratamentos</h1>
+          <p className="text-gray-600">Acompanhe suas prescrições médicas e histórico de tratamento</p>
         </div>
         <Card>
           <CardContent className="py-8 text-center">
             <AlertCircle className="h-8 w-8 mx-auto text-red-500 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Erro ao carregar histórico</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Erro ao carregar prescrições</h3>
             <p className="text-sm text-gray-500 mb-6">{error}</p>
             <Button 
               variant="outline" 
@@ -159,17 +184,17 @@ const ClientHistory = () => {
 
   if (history.length === 0) {
     return (
-      <div className="p-6">
+      <div>
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Histórico de Tratamento</h1>
-          <p className="text-gray-600">Acompanhe todas as etapas do seu tratamento</p>
+          <h1 className="text-2xl font-bold text-bravo-blue mb-2">Prescrições e Tratamentos</h1>
+          <p className="text-gray-600">Acompanhe suas prescrições médicas e histórico de tratamento</p>
         </div>
         <Card>
           <CardContent className="py-8 text-center">
             <Calendar className="h-8 w-8 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum registro encontrado</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma prescrição encontrada</h3>
             <p className="text-sm text-gray-500">
-              Seu histórico de tratamento aparecerá aqui assim que houver registros
+              Suas prescrições e histórico de tratamento aparecerão aqui
             </p>
           </CardContent>
         </Card>
@@ -177,14 +202,11 @@ const ClientHistory = () => {
     );
   }
 
-  const daysSinceStart = Math.floor((Date.now() - new Date('2023-03-01').getTime()) / (1000 * 60 * 60 * 24));
-  const nextConsultation = new Date('2023-04-15').toLocaleDateString('pt-BR');
-
   return (
-    <div className="p-6">
+    <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-bravo-blue mb-2">Histórico de Tratamento</h1>
-        <p className="text-gray-600">Acompanhe todas as etapas do seu tratamento</p>
+        <h1 className="text-2xl font-bold text-bravo-blue mb-2">Prescrições e Tratamentos</h1>
+        <p className="text-gray-600">Acompanhe suas prescrições médicas e histórico de tratamento</p>
       </div>
       
       <div className="relative">

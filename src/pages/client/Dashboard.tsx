@@ -83,7 +83,7 @@ const ClientDashboard = () => {
 
   if (loading) {
     return (
-      <div className="p-4">
+      <div>
         <div className="flex items-center justify-center h-64">
           <div className="flex items-center space-x-2">
             <Loader2 className="animate-spin" size={24} />
@@ -96,7 +96,7 @@ const ClientDashboard = () => {
 
   if (error) {
     return (
-      <div className="p-4">
+      <div>
         <Card className="border-red-200">
           <CardHeader>
             <div className="flex items-center space-x-2">
@@ -126,7 +126,7 @@ const ClientDashboard = () => {
   const StatusIcon = treatmentStatusInfo.icon;
 
   return (
-    <div className="p-4">
+    <div>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold text-bravo-blue">
