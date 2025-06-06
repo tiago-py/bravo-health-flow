@@ -1,15 +1,17 @@
-
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Clock, Download } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Clock, Download, X } from 'lucide-react';
 import { useState } from 'react';
 
 const DoctorEvaluations = () => {
   const [selectedPatients, setSelectedPatients] = useState<string[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Mock data for patients awaiting evaluation
   const pendingEvaluations = [
@@ -128,6 +130,11 @@ const DoctorEvaluations = () => {
     console.log('Download Excel para pacientes:', selectedPatientsData);
   };
 
+  const handleEvaluatePatient = (patient: any) => {
+    setSelectedPatient(patient);
+    setIsDialogOpen(true);
+  };
+
   const renderPatientList = (patients: typeof pendingEvaluations, showTypeFilter = false) => (
     <div className="space-y-4">
       {patients.length > 0 && (
@@ -177,10 +184,8 @@ const DoctorEvaluations = () => {
               </div>
             </div>
           </div>
-          <Button asChild>
-            <Link to={`/medico/paciente/${patient.id}`}>
-              Avaliar
-            </Link>
+          <Button onClick={() => handleEvaluatePatient(patient)}>
+            Avaliar
           </Button>
         </div>
       ))}
@@ -247,6 +252,88 @@ const DoctorEvaluations = () => {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Dialog de Avaliação */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Avaliar Paciente</DialogTitle>
+          </DialogHeader>
+          
+          {selectedPatient && (
+            <div className="space-y-6">
+              {/* Informações do Paciente */}
+              <div className="border-b pb-4">
+                <h3 className="text-lg font-semibold">{selectedPatient.name}</h3>
+                <div className="flex items-center space-x-4 mt-2">
+                  <span className="text-sm text-gray-600">{selectedPatient.age} anos</span>
+                  {getMedicationStatusBadge(selectedPatient.medicationStatus)}
+                  <Badge variant="outline">
+                    {selectedPatient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
+                  </Badge>
+                </div>
+                <div className="flex items-center text-sm text-gray-500 mt-2">
+                  <Clock size={14} className="mr-1" />
+                  <span>Enviado em {new Date(selectedPatient.date).toLocaleString('pt-BR')}</span>
+                </div>
+              </div>
+
+              {/* Área de Avaliação */}
+              <div className="space-y-4">
+                <h4 className="font-medium">Dados da Consulta</h4>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-4">
+                    Aqui você pode visualizar e avaliar os dados do paciente. 
+                    Esta é uma versão simplificada da avaliação.
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tipo de Tratamento
+                      </label>
+                      <p className="text-sm">
+                        {selectedPatient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Status Medicação
+                      </label>
+                      <p className="text-sm">
+                        {selectedPatient.medicationStatus === 'habito' ? 'Hábito' : 'Atenção'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t">
+                    <p className="text-xs text-gray-500">
+                      Para uma avaliação completa, acesse o sistema de prontuário.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botões de Ação */}
+              <div className="flex justify-end space-x-3 pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Fechar
+                </Button>
+                <Button onClick={() => {
+                  console.log('Avaliação salva para paciente:', selectedPatient.name);
+                  setIsDialogOpen(false);
+                }}>
+                  Salvar Avaliação
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
