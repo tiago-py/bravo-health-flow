@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { User, Calendar, Search, FileText, Download, Eye } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -196,90 +196,93 @@ const DoctorPrescriptions = () => {
         <CardContent>
           {filteredPrescriptions.length > 0 ? (
             <div className="space-y-4">
-              {/* Desktop Table */}
-              <div className="hidden lg:block overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Paciente</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Último Pagamento</TableHead>
-                      <TableHead>Última Prescrição</TableHead>
-                      <TableHead>Dias Decorridos</TableHead>
-                      <TableHead>Observações</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredPrescriptions.map(prescription => (
-                      <TableRow key={prescription.id}>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <User size={16} className="mr-2 text-gray-400" />
-                            <div>
-                              <div className="font-medium">{prescription.patientName}</div>
-                              <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {prescription.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center text-sm">
-                            <Calendar size={14} className="mr-1 text-gray-400" />
-                            {new Date(prescription.evaluationDate).toLocaleDateString('pt-BR')}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            {new Date(prescription.lastPayment).toLocaleDateString('pt-BR')}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            {new Date(prescription.lastPrescriptionForTreatment).toLocaleDateString('pt-BR')}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm font-medium">
-                            {prescription.daysSinceLastPrescription} dias
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="max-w-xs">
-                            <p className="text-sm text-gray-600 truncate" title={prescription.observations}>
-                              {prescription.observations}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleView(prescription.prescriptionFile)}
-                            >
-                              <Eye size={14} className="mr-1" />
-                              Ver
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDownload(prescription.prescriptionFile)}
-                            >
-                              <Download size={14} className="mr-1" />
-                              Download
-                            </Button>
-                          </div>
-                        </TableCell>
+              {/* Desktop Table with Horizontal Scroll */}
+              <div className="hidden lg:block">
+                <ScrollArea className="w-full whitespace-nowrap">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="min-w-[200px]">Paciente</TableHead>
+                        <TableHead className="min-w-[140px]">Tipo</TableHead>
+                        <TableHead className="min-w-[120px]">Data</TableHead>
+                        <TableHead className="min-w-[140px]">Último Pagamento</TableHead>
+                        <TableHead className="min-w-[140px]">Última Prescrição</TableHead>
+                        <TableHead className="min-w-[120px]">Dias Decorridos</TableHead>
+                        <TableHead className="min-w-[300px]">Observações</TableHead>
+                        <TableHead className="min-w-[200px]">Ações</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredPrescriptions.map(prescription => (
+                        <TableRow key={prescription.id}>
+                          <TableCell className="min-w-[200px]">
+                            <div className="flex items-center">
+                              <User size={16} className="mr-2 text-gray-400" />
+                              <div>
+                                <div className="font-medium">{prescription.patientName}</div>
+                                <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="min-w-[140px]">
+                            <Badge variant="outline">
+                              {prescription.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="min-w-[120px]">
+                            <div className="flex items-center text-sm">
+                              <Calendar size={14} className="mr-1 text-gray-400" />
+                              {new Date(prescription.evaluationDate).toLocaleDateString('pt-BR')}
+                            </div>
+                          </TableCell>
+                          <TableCell className="min-w-[140px]">
+                            <div className="text-sm">
+                              {new Date(prescription.lastPayment).toLocaleDateString('pt-BR')}
+                            </div>
+                          </TableCell>
+                          <TableCell className="min-w-[140px]">
+                            <div className="text-sm">
+                              {new Date(prescription.lastPrescriptionForTreatment).toLocaleDateString('pt-BR')}
+                            </div>
+                          </TableCell>
+                          <TableCell className="min-w-[120px]">
+                            <div className="text-sm font-medium">
+                              {prescription.daysSinceLastPrescription} dias
+                            </div>
+                          </TableCell>
+                          <TableCell className="min-w-[300px]">
+                            <div className="max-w-xs">
+                              <p className="text-sm text-gray-600 truncate" title={prescription.observations}>
+                                {prescription.observations}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="min-w-[200px]">
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleView(prescription.prescriptionFile)}
+                              >
+                                <Eye size={14} className="mr-1" />
+                                Ver
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDownload(prescription.prescriptionFile)}
+                              >
+                                <Download size={14} className="mr-1" />
+                                Download
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
               </div>
 
               {/* Mobile Cards */}
