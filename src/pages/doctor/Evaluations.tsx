@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,14 +20,6 @@ const DoctorEvaluations = () => {
       date: '2023-03-25T14:30:00',
       type: 'queda-capilar',
       medicationStatus: 'habito' as const
-    },
-    {
-      id: '2',
-      name: 'Marcos Oliveira',
-      age: 45,
-      date: '2023-03-25T10:15:00',
-      type: 'disfuncao-eretil',
-      medicationStatus: 'inabito' as const
     },
     {
       id: '3',
@@ -61,14 +54,6 @@ const DoctorEvaluations = () => {
       medicationStatus: 'atencao' as const
     },
     {
-      id: '10',
-      name: 'Thiago Alves',
-      age: 34,
-      date: '2023-03-22T17:20:00',
-      type: 'queda-capilar',
-      medicationStatus: 'inabito' as const
-    },
-    {
       id: '11',
       name: 'Rafael Pereira',
       age: 31,
@@ -78,18 +63,12 @@ const DoctorEvaluations = () => {
     },
   ];
 
-  const getMedicationStatusBadge = (status: 'habito' | 'inabito' | 'atencao') => {
+  const getMedicationStatusBadge = (status: 'habito' | 'atencao') => {
     switch (status) {
       case 'habito':
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
             Hábito
-          </Badge>
-        );
-      case 'inabito':
-        return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
-            Inábito
           </Badge>
         );
       case 'atencao':
@@ -131,8 +110,7 @@ const DoctorEvaluations = () => {
         patient.age.toString(),
         new Date(patient.date).toLocaleString('pt-BR'),
         patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil',
-        patient.medicationStatus === 'habito' ? 'Hábito' : 
-        patient.medicationStatus === 'inabito' ? 'Inábito' : 'Atenção'
+        patient.medicationStatus === 'habito' ? 'Hábito' : 'Atenção'
       ].join('\t'))
     ].join('\n');
 
@@ -242,6 +220,9 @@ const DoctorEvaluations = () => {
               <TabsTrigger value="habitos">
                 Hábitos ({pendingEvaluations.filter(p => p.medicationStatus === 'habito').length})
               </TabsTrigger>
+              <TabsTrigger value="atencao">
+                Atenção ({pendingEvaluations.filter(p => p.medicationStatus === 'atencao').length})
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="all">
@@ -258,6 +239,10 @@ const DoctorEvaluations = () => {
             
             <TabsContent value="habitos">
               {renderPatientList(pendingEvaluations.filter(p => p.medicationStatus === 'habito'))}
+            </TabsContent>
+            
+            <TabsContent value="atencao">
+              {renderPatientList(pendingEvaluations.filter(p => p.medicationStatus === 'atencao'))}
             </TabsContent>
           </Tabs>
         </CardContent>
