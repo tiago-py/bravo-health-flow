@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { User, Calendar, Search, FileText, Download, Eye } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -14,7 +14,7 @@ const DoctorPrescriptions = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   
-  // Mock prescriptions data with new fields
+  // Mock prescriptions data
   const allPrescriptions = [
     {
       id: '1',
@@ -23,10 +23,7 @@ const DoctorPrescriptions = () => {
       evaluationDate: '2023-03-25',
       type: 'queda-capilar',
       observations: 'Paciente apresenta alopecia androgenética grau 3. Indicado tratamento com finasterida e minoxidil.',
-      prescriptionFile: 'prescricao_joao_silva_25032023.pdf',
-      lastPayment: '2023-03-20',
-      lastPrescriptionForTreatment: '2023-02-15',
-      daysSinceLastPrescription: 38
+      prescriptionFile: 'prescricao_joao_silva_25032023.pdf'
     },
     {
       id: '2',
@@ -35,10 +32,7 @@ const DoctorPrescriptions = () => {
       evaluationDate: '2023-03-25',
       type: 'disfuncao-eretil',
       observations: 'Paciente relata dificuldades de ereção há 6 meses. Indicado tadalafila 5mg.',
-      prescriptionFile: 'prescricao_marcos_oliveira_25032023.pdf',
-      lastPayment: '2023-03-22',
-      lastPrescriptionForTreatment: '2023-01-10',
-      daysSinceLastPrescription: 74
+      prescriptionFile: 'prescricao_marcos_oliveira_25032023.pdf'
     },
     {
       id: '3',
@@ -47,10 +41,7 @@ const DoctorPrescriptions = () => {
       evaluationDate: '2023-03-24',
       type: 'queda-capilar',
       observations: 'Início de calvície masculina. Tratamento preventivo com finasterida.',
-      prescriptionFile: 'prescricao_andre_costa_24032023.pdf',
-      lastPayment: '2023-03-18',
-      lastPrescriptionForTreatment: '2023-03-24',
-      daysSinceLastPrescription: 1
+      prescriptionFile: 'prescricao_andre_costa_24032023.pdf'
     },
     {
       id: '4',
@@ -59,10 +50,7 @@ const DoctorPrescriptions = () => {
       evaluationDate: '2023-03-23',
       type: 'disfuncao-eretil',
       observations: 'DE moderada. Prescrito sildenafila 50mg conforme necessário.',
-      prescriptionFile: 'prescricao_carlos_eduardo_23032023.pdf',
-      lastPayment: '2023-03-21',
-      lastPrescriptionForTreatment: '2023-02-28',
-      daysSinceLastPrescription: 23
+      prescriptionFile: 'prescricao_carlos_eduardo_23032023.pdf'
     },
     {
       id: '5',
@@ -71,10 +59,7 @@ const DoctorPrescriptions = () => {
       evaluationDate: '2023-03-23',
       type: 'queda-capilar',
       observations: 'Calvície avançada. Combinação de finasterida 1mg e minoxidil 5%.',
-      prescriptionFile: 'prescricao_paulo_vieira_23032023.pdf',
-      lastPayment: '2023-03-19',
-      lastPrescriptionForTreatment: '2023-01-15',
-      daysSinceLastPrescription: 67
+      prescriptionFile: 'prescricao_paulo_vieira_23032023.pdf'
     },
   ];
   
@@ -196,93 +181,72 @@ const DoctorPrescriptions = () => {
         <CardContent>
           {filteredPrescriptions.length > 0 ? (
             <div className="space-y-4">
-              {/* Desktop Table with Horizontal Scroll */}
+              {/* Desktop Table */}
               <div className="hidden lg:block">
-                <ScrollArea className="w-full max-w-[760px]">
-                  <Table className="min-w-[1200px]">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="min-w-[200px]">Paciente</TableHead>
-                        <TableHead className="min-w-[140px]">Tipo</TableHead>
-                        <TableHead className="min-w-[120px]">Data</TableHead>
-                        <TableHead className="min-w-[140px]">Último Pagamento</TableHead>
-                        <TableHead className="min-w-[140px]">Última Prescrição</TableHead>
-                        <TableHead className="min-w-[120px]">Dias Decorridos</TableHead>
-                        <TableHead className="min-w-[300px]">Observações</TableHead>
-                        <TableHead className="min-w-[200px]">Ações</TableHead>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Paciente</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Data</TableHead>
+                      <TableHead>Observações</TableHead>
+                      <TableHead>Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredPrescriptions.map(prescription => (
+                      <TableRow key={prescription.id}>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <User size={16} className="mr-2 text-gray-400" />
+                            <div>
+                              <div className="font-medium">{prescription.patientName}</div>
+                              <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {prescription.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center text-sm">
+                            <Calendar size={14} className="mr-1 text-gray-400" />
+                            {new Date(prescription.evaluationDate).toLocaleDateString('pt-BR')}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="max-w-xs">
+                            <p className="text-sm text-gray-600 truncate" title={prescription.observations}>
+                              {prescription.observations}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleView(prescription.prescriptionFile)}
+                            >
+                              <Eye size={14} className="mr-1" />
+                              Ver
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDownload(prescription.prescriptionFile)}
+                            >
+                              <Download size={14} className="mr-1" />
+                              Download
+                            </Button>
+                          </div>
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredPrescriptions.map(prescription => (
-                        <TableRow key={prescription.id}>
-                          <TableCell className="min-w-[200px]">
-                            <div className="flex items-center">
-                              <User size={16} className="mr-2 text-gray-400" />
-                              <div>
-                                <div className="font-medium">{prescription.patientName}</div>
-                                <div className="text-sm text-gray-500">{prescription.patientAge} anos</div>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="min-w-[140px]">
-                            <Badge variant="outline">
-                              {prescription.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="min-w-[120px]">
-                            <div className="flex items-center text-sm">
-                              <Calendar size={14} className="mr-1 text-gray-400" />
-                              {new Date(prescription.evaluationDate).toLocaleDateString('pt-BR')}
-                            </div>
-                          </TableCell>
-                          <TableCell className="min-w-[140px]">
-                            <div className="text-sm">
-                              {new Date(prescription.lastPayment).toLocaleDateString('pt-BR')}
-                            </div>
-                          </TableCell>
-                          <TableCell className="min-w-[140px]">
-                            <div className="text-sm">
-                              {new Date(prescription.lastPrescriptionForTreatment).toLocaleDateString('pt-BR')}
-                            </div>
-                          </TableCell>
-                          <TableCell className="min-w-[120px]">
-                            <div className="text-sm font-medium">
-                              {prescription.daysSinceLastPrescription} dias
-                            </div>
-                          </TableCell>
-                          <TableCell className="min-w-[300px]">
-                            <div className="max-w-xs">
-                              <p className="text-sm text-gray-600 truncate" title={prescription.observations}>
-                                {prescription.observations}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell className="min-w-[200px]">
-                            <div className="flex items-center space-x-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleView(prescription.prescriptionFile)}
-                              >
-                                <Eye size={14} className="mr-1" />
-                                Ver
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDownload(prescription.prescriptionFile)}
-                              >
-                                <Download size={14} className="mr-1" />
-                                Download
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
 
               {/* Mobile Cards */}
@@ -304,23 +268,9 @@ const DoctorPrescriptions = () => {
                           </Badge>
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div>
-                            <span className="text-gray-500">Data:</span>
-                            <div className="font-medium">{new Date(prescription.evaluationDate).toLocaleDateString('pt-BR')}</div>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Último Pagamento:</span>
-                            <div className="font-medium">{new Date(prescription.lastPayment).toLocaleDateString('pt-BR')}</div>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Última Prescrição:</span>
-                            <div className="font-medium">{new Date(prescription.lastPrescriptionForTreatment).toLocaleDateString('pt-BR')}</div>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Dias Decorridos:</span>
-                            <div className="font-medium">{prescription.daysSinceLastPrescription} dias</div>
-                          </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Calendar size={14} className="mr-1 text-gray-400" />
+                          {new Date(prescription.evaluationDate).toLocaleDateString('pt-BR')}
                         </div>
                         
                         <p className="text-sm text-gray-600">{prescription.observations}</p>
