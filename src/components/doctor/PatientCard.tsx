@@ -2,7 +2,8 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Clock } from 'lucide-react';
+import { Clock, Upload, Check } from 'lucide-react';
+import { useState } from 'react';
 
 interface Patient {
   id: string;
@@ -11,6 +12,7 @@ interface Patient {
   date: string;
   type: 'queda-capilar' | 'disfuncao-eretil';
   medicationStatus: 'habito' | 'atencao';
+  isEvaluated?: boolean;
 }
 
 interface PatientCardProps {
@@ -45,6 +47,28 @@ const PatientCard = ({
   onSelectionChange, 
   onEvaluate 
 }: PatientCardProps) => {
+  const [isEvaluated, setIsEvaluated] = useState(patient.isEvaluated || false);
+
+  const handleUpload = () => {
+    // Mock file upload
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.jpg,.jpeg,.png';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        console.log('Upload da prescrição para paciente:', patient.name, 'arquivo:', file.name);
+        // Aqui seria implementada a lógica de upload
+      }
+    };
+    input.click();
+  };
+
+  const handleMarkAsEvaluated = () => {
+    setIsEvaluated(true);
+    console.log('Paciente marcado como avaliado:', patient.name);
+  };
+
   return (
     <div className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-gray-200 transition-all">
       <div className="flex items-center space-x-3">
@@ -62,6 +86,12 @@ const PatientCard = ({
                 {patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
               </Badge>
             )}
+            {isEvaluated && (
+              <div className="ml-2 flex items-center">
+                <Check size={16} className="text-green-600" />
+                <span className="text-xs text-green-600 ml-1">Avaliado</span>
+              </div>
+            )}
           </div>
           <div className="flex items-center text-sm text-gray-500 mt-1">
             <Clock size={14} className="mr-1" />
@@ -69,9 +99,26 @@ const PatientCard = ({
           </div>
         </div>
       </div>
-      <Button onClick={() => onEvaluate(patient)}>
-        Avaliar
-      </Button>
+      <div className="flex items-center space-x-2">
+        <Button variant="outline" size="sm" onClick={handleUpload}>
+          <Upload size={14} className="mr-1" />
+          Upload
+        </Button>
+        {!isEvaluated ? (
+          <Button variant="outline" size="sm" onClick={handleMarkAsEvaluated}>
+            <Check size={14} className="mr-1" />
+            Avaliado
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" disabled className="bg-green-50 text-green-600 border-green-200">
+            <Check size={14} className="mr-1" />
+            Avaliado
+          </Button>
+        )}
+        <Button onClick={() => onEvaluate(patient)}>
+          Avaliar
+        </Button>
+      </div>
     </div>
   );
 };
