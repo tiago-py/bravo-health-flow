@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, TrendingUp, Clock, Eye, Loader2, AlertCircle } from 'lucide-react';
+import { Calendar, TrendingUp, Clock, Eye, Loader2, AlertCircle, Plus, ArrowRight } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 
 interface Treatment {
@@ -96,6 +95,30 @@ const TreatmentsList = () => {
     }
   };
 
+  // Função para verificar tratamentos disponíveis
+  const getAvailableTreatments = () => {
+    const activeTreatmentTypes = treatments
+      .filter(treatment => treatment.status === 'active')
+      .map(treatment => treatment.type.toLowerCase());
+
+    const allTreatments = [
+      { 
+        type: 'Queda Capilar', 
+        path: '/anamnese/queda-capilar',
+        description: 'Tratamento completo para queda de cabelo e calvície'
+      },
+      { 
+        type: 'Disfunção Erétil', 
+        path: '/anamnese/disfuncao-eretil',
+        description: 'Tratamento para problemas de ereção e desempenho'
+      }
+    ];
+
+    return allTreatments.filter(treatment => 
+      !activeTreatmentTypes.includes(treatment.type.toLowerCase())
+    );
+  };
+
   if (loading) {
     return (
       <div>
@@ -147,14 +170,30 @@ const TreatmentsList = () => {
           <CardContent className="py-8 text-center">
             <Calendar className="h-8 w-8 mx-auto text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum tratamento encontrado</h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mb-6">
               Seus tratamentos aparecerão aqui quando iniciados
             </p>
+            <div className="space-y-3">
+              <Button asChild className="w-full">
+                <Link to="/anamnese/queda-capilar">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Iniciar Tratamento Capilar
+                </Link>
+              </Button>
+              <Button variant="outline" asChild className="w-full">
+                <Link to="/anamnese/disfuncao-eretil">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Iniciar Tratamento para Disfunção Erétil
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
     );
   }
+
+  const availableTreatments = getAvailableTreatments();
 
   return (
     <div>
@@ -163,7 +202,7 @@ const TreatmentsList = () => {
         <p className="text-gray-600">Gerencie e acompanhe todos os seus tratamentos</p>
       </div>
       
-      <div className="grid gap-6">
+      <div className="grid gap-6 mb-8">
         {treatments.map((treatment) => (
           <Card key={treatment.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
@@ -220,6 +259,41 @@ const TreatmentsList = () => {
           </Card>
         ))}
       </div>
+
+      {/* Seção para novos tratamentos */}
+      {availableTreatments.length > 0 && (
+        <Card className="border-dashed border-2 border-bravo-blue/20 bg-bravo-blue/5">
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl text-bravo-blue flex items-center justify-center">
+              <Plus className="h-6 w-6 mr-2" />
+              Expandir Cuidados
+            </CardTitle>
+            <CardDescription className="text-base">
+              Você pode iniciar outros tratamentos para cuidar ainda melhor da sua saúde
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              {availableTreatments.map((treatment) => (
+                <Card key={treatment.type} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">{treatment.type}</CardTitle>
+                    <CardDescription>{treatment.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <Button asChild className="w-full">
+                      <Link to={treatment.path}>
+                        Iniciar Avaliação
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
