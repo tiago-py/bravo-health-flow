@@ -198,8 +198,8 @@ const DoctorPrescriptions = () => {
             <div className="space-y-4">
               {/* Desktop Table with Horizontal Scroll */}
               <div className="hidden lg:block">
-                <ScrollArea className="w-full whitespace-nowrap">
-                  <Table>
+                <ScrollArea className="w-full max-w-[760px]">
+                  <Table className="min-w-[1200px]">
                     <TableHeader>
                       <TableRow>
                         <TableHead className="min-w-[200px]">Paciente</TableHead>
