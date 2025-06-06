@@ -1,27 +1,25 @@
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Clock, Download, X } from 'lucide-react';
 import { useState } from 'react';
+import PatientCard, { type Patient } from '@/components/doctor/PatientCard';
+import PatientListHeader from '@/components/doctor/PatientListHeader';
+import PatientEvaluationDialog from '@/components/doctor/PatientEvaluationDialog';
+import EvaluationTabs from '@/components/doctor/EvaluationTabs';
 
 const DoctorEvaluations = () => {
   const [selectedPatients, setSelectedPatients] = useState<string[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Mock data for patients awaiting evaluation
-  const pendingEvaluations = [
+  const pendingEvaluations: Patient[] = [
     {
       id: '1',
       name: 'João Silva',
       age: 32,
       date: '2023-03-25T14:30:00',
       type: 'queda-capilar',
-      medicationStatus: 'habito' as const
+      medicationStatus: 'habito'
     },
     {
       id: '3',
@@ -29,7 +27,7 @@ const DoctorEvaluations = () => {
       age: 28,
       date: '2023-03-24T16:45:00',
       type: 'queda-capilar',
-      medicationStatus: 'atencao' as const
+      medicationStatus: 'atencao'
     },
     {
       id: '4',
@@ -37,7 +35,7 @@ const DoctorEvaluations = () => {
       age: 37,
       date: '2023-03-24T09:20:00',
       type: 'disfuncao-eretil',
-      medicationStatus: 'habito' as const
+      medicationStatus: 'habito'
     },
     {
       id: '8',
@@ -45,7 +43,7 @@ const DoctorEvaluations = () => {
       age: 39,
       date: '2023-03-23T13:45:00',
       type: 'queda-capilar',
-      medicationStatus: 'habito' as const
+      medicationStatus: 'habito'
     },
     {
       id: '9',
@@ -53,7 +51,7 @@ const DoctorEvaluations = () => {
       age: 26,
       date: '2023-03-23T08:30:00',
       type: 'disfuncao-eretil',
-      medicationStatus: 'atencao' as const
+      medicationStatus: 'atencao'
     },
     {
       id: '11',
@@ -61,26 +59,9 @@ const DoctorEvaluations = () => {
       age: 31,
       date: '2023-03-22T11:15:00',
       type: 'disfuncao-eretil',
-      medicationStatus: 'habito' as const
+      medicationStatus: 'habito'
     },
   ];
-
-  const getMedicationStatusBadge = (status: 'habito' | 'atencao') => {
-    switch (status) {
-      case 'habito':
-        return (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-            Hábito
-          </Badge>
-        );
-      case 'atencao':
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
-            Atenção
-          </Badge>
-        );
-    }
-  };
 
   const handlePatientSelection = (patientId: string, checked: boolean) => {
     if (checked) {
@@ -90,7 +71,7 @@ const DoctorEvaluations = () => {
     }
   };
 
-  const handleSelectAll = (patients: typeof pendingEvaluations, checked: boolean) => {
+  const handleSelectAll = (patients: Patient[], checked: boolean) => {
     if (checked) {
       const patientIds = patients.map(p => p.id);
       setSelectedPatients(prev => [...new Set([...prev, ...patientIds])]);
@@ -130,64 +111,29 @@ const DoctorEvaluations = () => {
     console.log('Download Excel para pacientes:', selectedPatientsData);
   };
 
-  const handleEvaluatePatient = (patient: any) => {
+  const handleEvaluatePatient = (patient: Patient) => {
     setSelectedPatient(patient);
     setIsDialogOpen(true);
   };
 
-  const renderPatientList = (patients: typeof pendingEvaluations, showTypeFilter = false) => (
+  const renderPatientList = (patients: Patient[], showTypeFilter = false) => (
     <div className="space-y-4">
-      {patients.length > 0 && (
-        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              checked={patients.every(p => selectedPatients.includes(p.id))}
-              onCheckedChange={(checked) => handleSelectAll(patients, checked as boolean)}
-            />
-            <span className="text-sm font-medium">Selecionar todos</span>
-          </div>
-          {selectedPatients.length > 0 && (
-            <Button 
-              onClick={downloadExcel}
-              variant="outline"
-              size="sm"
-              className="flex items-center space-x-1"
-            >
-              <Download size={16} />
-              <span>Baixar Excel ({selectedPatients.length})</span>
-            </Button>
-          )}
-        </div>
-      )}
+      <PatientListHeader
+        patients={patients}
+        selectedPatients={selectedPatients}
+        onSelectAll={handleSelectAll}
+        onDownloadExcel={downloadExcel}
+      />
       
       {patients.map((patient) => (
-        <div key={patient.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-gray-200 transition-all">
-          <div className="flex items-center space-x-3">
-            <Checkbox
-              checked={selectedPatients.includes(patient.id)}
-              onCheckedChange={(checked) => handlePatientSelection(patient.id, checked as boolean)}
-            />
-            <div className="flex-1">
-              <div className="flex items-center">
-                <h3 className="font-medium">{patient.name}</h3>
-                <span className="text-sm text-gray-500 ml-2">{patient.age} anos</span>
-                {getMedicationStatusBadge(patient.medicationStatus)}
-                {showTypeFilter && (
-                  <Badge className="ml-2" variant="outline">
-                    {patient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
-                  </Badge>
-                )}
-              </div>
-              <div className="flex items-center text-sm text-gray-500 mt-1">
-                <Clock size={14} className="mr-1" />
-                <span>Enviado em {new Date(patient.date).toLocaleString('pt-BR')}</span>
-              </div>
-            </div>
-          </div>
-          <Button onClick={() => handleEvaluatePatient(patient)}>
-            Avaliar
-          </Button>
-        </div>
+        <PatientCard
+          key={patient.id}
+          patient={patient}
+          isSelected={selectedPatients.includes(patient.id)}
+          showTypeFilter={showTypeFilter}
+          onSelectionChange={handlePatientSelection}
+          onEvaluate={handleEvaluatePatient}
+        />
       ))}
     </div>
   );
@@ -213,127 +159,18 @@ const DoctorEvaluations = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="all">
-            <TabsList className="mb-4">
-              <TabsTrigger value="all">Todos ({pendingEvaluations.length})</TabsTrigger>
-              <TabsTrigger value="hair">
-                Queda Capilar ({pendingEvaluations.filter(p => p.type === 'queda-capilar').length})
-              </TabsTrigger>
-              <TabsTrigger value="ed">
-                Disfunção Erétil ({pendingEvaluations.filter(p => p.type === 'disfuncao-eretil').length})
-              </TabsTrigger>
-              <TabsTrigger value="habitos">
-                Hábitos ({pendingEvaluations.filter(p => p.medicationStatus === 'habito').length})
-              </TabsTrigger>
-              <TabsTrigger value="atencao">
-                Atenção ({pendingEvaluations.filter(p => p.medicationStatus === 'atencao').length})
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="all">
-              {renderPatientList(pendingEvaluations, true)}
-            </TabsContent>
-            
-            <TabsContent value="hair">
-              {renderPatientList(pendingEvaluations.filter(p => p.type === 'queda-capilar'))}
-            </TabsContent>
-            
-            <TabsContent value="ed">
-              {renderPatientList(pendingEvaluations.filter(p => p.type === 'disfuncao-eretil'))}
-            </TabsContent>
-            
-            <TabsContent value="habitos">
-              {renderPatientList(pendingEvaluations.filter(p => p.medicationStatus === 'habito'))}
-            </TabsContent>
-            
-            <TabsContent value="atencao">
-              {renderPatientList(pendingEvaluations.filter(p => p.medicationStatus === 'atencao'))}
-            </TabsContent>
-          </Tabs>
+          <EvaluationTabs
+            patients={pendingEvaluations}
+            renderPatientList={renderPatientList}
+          />
         </CardContent>
       </Card>
 
-      {/* Dialog de Avaliação */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Avaliar Paciente</DialogTitle>
-          </DialogHeader>
-          
-          {selectedPatient && (
-            <div className="space-y-6">
-              {/* Informações do Paciente */}
-              <div className="border-b pb-4">
-                <h3 className="text-lg font-semibold">{selectedPatient.name}</h3>
-                <div className="flex items-center space-x-4 mt-2">
-                  <span className="text-sm text-gray-600">{selectedPatient.age} anos</span>
-                  {getMedicationStatusBadge(selectedPatient.medicationStatus)}
-                  <Badge variant="outline">
-                    {selectedPatient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
-                  </Badge>
-                </div>
-                <div className="flex items-center text-sm text-gray-500 mt-2">
-                  <Clock size={14} className="mr-1" />
-                  <span>Enviado em {new Date(selectedPatient.date).toLocaleString('pt-BR')}</span>
-                </div>
-              </div>
-
-              {/* Área de Avaliação */}
-              <div className="space-y-4">
-                <h4 className="font-medium">Dados da Consulta</h4>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-4">
-                    Aqui você pode visualizar e avaliar os dados do paciente. 
-                    Esta é uma versão simplificada da avaliação.
-                  </p>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Tipo de Tratamento
-                      </label>
-                      <p className="text-sm">
-                        {selectedPatient.type === 'queda-capilar' ? 'Queda Capilar' : 'Disfunção Erétil'}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Status Medicação
-                      </label>
-                      <p className="text-sm">
-                        {selectedPatient.medicationStatus === 'habito' ? 'Hábito' : 'Atenção'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="text-xs text-gray-500">
-                      Para uma avaliação completa, acesse o sistema de prontuário.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Botões de Ação */}
-              <div className="flex justify-end space-x-3 pt-4 border-t">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Fechar
-                </Button>
-                <Button onClick={() => {
-                  console.log('Avaliação salva para paciente:', selectedPatient.name);
-                  setIsDialogOpen(false);
-                }}>
-                  Salvar Avaliação
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <PatientEvaluationDialog
+        patient={selectedPatient}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      />
     </div>
   );
 };
