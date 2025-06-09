@@ -19,7 +19,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Clock, Download } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3000';
 
 type MedicationStatus = 'habito' | 'inabito' | 'atencao';
 

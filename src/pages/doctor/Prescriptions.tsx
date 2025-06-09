@@ -14,7 +14,7 @@ const DoctorPrescriptions = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   
-  // Mock prescriptions data
+
   const allPrescriptions = [
     {
       id: '1',
