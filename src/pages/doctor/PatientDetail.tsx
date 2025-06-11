@@ -8,7 +8,7 @@ import { toast } from '@/components/ui/sonner';
 import { ArrowLeft, Upload, CheckSquare, FileText, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://bravo-backend-production.up.railway.app';
 
 const DoctorPatientDetail = () => {
   const { id } = useParams<{id: string}>();

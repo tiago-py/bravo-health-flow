@@ -47,7 +47,7 @@ interface ApiResponse<T> {
 }
 
 // API functions
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://bravo-backend-production.up.railway.app';
 
 const apiRequest = async <T>(endpoint: string, options?: RequestInit): Promise<T> => {
   try {

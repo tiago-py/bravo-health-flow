@@ -45,7 +45,7 @@ const TreatmentDetail = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
-  const API_BASE_URL = 'http://localhost:3000/api';
+  const API_BASE_URL = 'https://bravo-backend-production.up.railway.app/api';
 
   const fetchTreatmentEvolution = async (showLoadingToast = false) => {
     if (!user?.token || !id) {
