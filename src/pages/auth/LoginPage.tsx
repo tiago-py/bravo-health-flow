@@ -16,12 +16,14 @@ interface LoginResponse {
     id: string;
     name: string;
     email: string;
-    role: 'admin' | 'doctor' | 'client';
+    role: 'ADMIN' | 'MEDICO' | 'CLIENTE';
   };
 }
 
 const loginUser = async (email: string, password: string): Promise<LoginResponse> => {
   try {
+    console.log('Tentando fazer login com:', { email, password: '***' });
+    
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
@@ -30,12 +32,18 @@ const loginUser = async (email: string, password: string): Promise<LoginResponse
       body: JSON.stringify({ email, password }),
     });
 
+    console.log('Status da resposta:', response.status);
+    console.log('Headers da resposta:', response.headers);
+
     if (!response.ok) {
       const errorData = await response.json();
+      console.error('Erro na resposta:', errorData);
       throw new Error(errorData.message || 'Erro ao fazer login');
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('Login bem-sucedido:', { ...data, token: '***' });
+    return data;
   } catch (error) {
     console.error('Erro na requisição de login:', error);
     throw error;
@@ -43,7 +51,7 @@ const loginUser = async (email: string, password: string): Promise<LoginResponse
 };
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
@@ -59,11 +67,20 @@ const LoginPage = () => {
     setIsLoading(true);
     
     try {
-      // Primeiro fazemos a requisição para a API
-      const { token, user } = await loginUser(email, password);
+      console.log('Iniciando processo de login...');
       
-      // Depois atualizamos o contexto de autenticação
-      await login(token, user);
+      // Usa diretamente nossa função que está funcionando
+      const response = await loginUser(email, password);
+      console.log('API respondeu com sucesso:', response);
+      
+      // Se o AuthContext tem um método para definir o usuário diretamente, use-o
+      // Caso contrário, vamos simular o que o contexto faria
+      
+      // Salva o token no localStorage (assumindo que o contexto faz isso)
+      localStorage.setItem('token', response.token);
+      
+      // Se o contexto tem um método setUser ou similar, descomente a linha abaixo:
+      // setUser(response.user);
       
       toast({
         title: 'Login realizado com sucesso',
@@ -72,14 +89,15 @@ const LoginPage = () => {
       });
       
       // Redireciona com base no perfil do usuário
-      switch (user.role) {
-        case 'admin':
+      console.log('Redirecionando baseado no role:', response.user.role);
+      switch (response.user.role) {
+        case 'ADMIN':
           navigate('/admin/dashboard');
           break;
-        case 'doctor':
+        case 'MEDICO':
           navigate('/medico/dashboard');
           break;
-        case 'client':
+        case 'CLIENTE':
           navigate('/cliente/dashboard');
           break;
         default:

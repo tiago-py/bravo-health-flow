@@ -35,13 +35,13 @@ const RequireAuth = ({ children, role }: RequireAuthProps) => {
       let redirectPath = '/';
       
       switch (user.role) {
-        case 'admin':
+        case 'ADMIN':
           redirectPath = '/admin/dashboard';
           break;
-        case 'doctor':
+        case 'MEDICO':
           redirectPath = '/medico/dashboard';
           break;
-        case 'client':
+        case 'CLIENTE':
           redirectPath = '/cliente/dashboard';
           break;
       }

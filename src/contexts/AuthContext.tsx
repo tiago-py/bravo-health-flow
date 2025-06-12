@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 // Define user role type
-export type UserRole = 'admin' | 'doctor' | 'client';
+export type UserRole = 'ADMIN' | 'MEDICO' | 'CLIENTE';
 
 // Define User interface
 export interface User {
@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         id: Math.random().toString(36).substring(2, 15),
         name,
         email,
-        role: 'client'
+        role: 'CLIENTE'
       };
       
       // Save user to local storage
