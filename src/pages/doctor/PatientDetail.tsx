@@ -27,7 +27,7 @@ const DoctorPatientDetail = () => {
         setLoading(true);
         setError(null);
         
-        const response = await fetch(`${API_URL}/patients/${id}`);
+        const response = await fetch(`${API_URL}/api/doctors/patients/${id}`);
         if (!response.ok) {
           throw new Error('Erro ao carregar dados do paciente');
         }

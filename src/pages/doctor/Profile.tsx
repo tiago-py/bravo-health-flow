@@ -57,7 +57,7 @@ const DoctorProfile = () => {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Usuário não autenticado');
 
-        const response = await fetch(`${API_BASE_URL}/api/doctors/profile`, {
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,

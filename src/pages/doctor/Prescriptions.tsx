@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,62 +8,53 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { User, Calendar, Search, FileText, Download, Eye } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+interface Prescription {
+  id: string;
+  patientName: string;
+  patientAge: number;
+  evaluationDate: string;
+  type: string;
+  observations: string;
+  prescriptionFile: string;
+}
+
 const DoctorPrescriptions = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
-  
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const allPrescriptions = [
-    {
-      id: '1',
-      patientName: 'João Silva',
-      patientAge: 32,
-      evaluationDate: '2023-03-25',
-      type: 'queda-capilar',
-      observations: 'Paciente apresenta alopecia androgenética grau 3. Indicado tratamento com finasterida e minoxidil.',
-      prescriptionFile: 'prescricao_joao_silva_25032023.pdf'
-    },
-    {
-      id: '2',
-      patientName: 'Marcos Oliveira',
-      patientAge: 45,
-      evaluationDate: '2023-03-25',
-      type: 'disfuncao-eretil',
-      observations: 'Paciente relata dificuldades de ereção há 6 meses. Indicado tadalafila 5mg.',
-      prescriptionFile: 'prescricao_marcos_oliveira_25032023.pdf'
-    },
-    {
-      id: '3',
-      patientName: 'André Costa',
-      patientAge: 28,
-      evaluationDate: '2023-03-24',
-      type: 'queda-capilar',
-      observations: 'Início de calvície masculina. Tratamento preventivo com finasterida.',
-      prescriptionFile: 'prescricao_andre_costa_24032023.pdf'
-    },
-    {
-      id: '4',
-      patientName: 'Carlos Eduardo',
-      patientAge: 41,
-      evaluationDate: '2023-03-23',
-      type: 'disfuncao-eretil',
-      observations: 'DE moderada. Prescrito sildenafila 50mg conforme necessário.',
-      prescriptionFile: 'prescricao_carlos_eduardo_23032023.pdf'
-    },
-    {
-      id: '5',
-      patientName: 'Paulo Vieira',
-      patientAge: 35,
-      evaluationDate: '2023-03-23',
-      type: 'queda-capilar',
-      observations: 'Calvície avançada. Combinação de finasterida 1mg e minoxidil 5%.',
-      prescriptionFile: 'prescricao_paulo_vieira_23032023.pdf'
-    },
-  ];
-  
+  // Fetch prescriptions from API
+  useEffect(() => {
+    const fetchPrescriptions = async () => {
+      try {
+        const response = await fetch('https://bravo-backend-production.up.railway.app/api/doctor/patients', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Assumindo que você armazena o token JWT no localStorage
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Erro ao carregar prescrições');
+        }
+        
+        const data = await response.json();
+        setPrescriptions(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Ocorreu um erro desconhecido');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrescriptions();
+  }, []);
+
   // Filter prescriptions based on search query and filters
-  const filteredPrescriptions = allPrescriptions.filter(prescription => {
+  const filteredPrescriptions = prescriptions.filter(prescription => {
     // Search filter
     const matchesSearch = prescription.patientName.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -89,15 +79,76 @@ const DoctorPrescriptions = () => {
     return matchesSearch && matchesType && matchesDate;
   });
 
-  const handleDownload = (filename: string) => {
-    // Simulate PDF download
-    console.log('Downloading:', filename);
+  const handleDownload = async (filename: string) => {
+    try {
+      const response = await fetch(`https://bravo-backend-production.up.railway.app/api/export/exports/medication-approvals`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao baixar prescrição');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao baixar arquivo');
+    }
   };
 
-  const handleView = (filename: string) => {
-    // Simulate PDF view
-    console.log('Viewing:', filename);
+  const handleView = async (filename: string) => {
+    try {
+      const response = await fetch(`https://bravo-backend-production.up.railway.app/api/prescriptions/view/${filename}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao visualizar prescrição');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao visualizar arquivo');
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#58819d]"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-red-500 text-center">
+          <p className="text-xl font-bold">Erro ao carregar prescrições</p>
+          <p className="mt-2">{error}</p>
+          <Button 
+            variant="outline" 
+            className="mt-4"
+            onClick={() => window.location.reload()}
+          >
+            Tentar novamente
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -306,7 +357,9 @@ const DoctorPrescriptions = () => {
               <FileText size={48} className="mx-auto text-gray-300 mb-4" />
               <p className="text-gray-500 mb-2">Nenhuma prescrição encontrada</p>
               <p className="text-sm text-gray-400">
-                Nenhuma prescrição encontrada com os filtros selecionados.
+                {prescriptions.length === 0 
+                  ? 'Você ainda não possui prescrições cadastradas.' 
+                  : 'Nenhuma prescrição encontrada com os filtros selecionados.'}
               </p>
             </div>
           )}

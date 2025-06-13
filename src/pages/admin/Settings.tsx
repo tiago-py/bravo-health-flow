@@ -72,7 +72,7 @@ const updateSettings = async (settings: Settings['general'], token: string): Pro
 
 const changePassword = async (currentPassword: string, newPassword: string, token: string): Promise<void> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/change-password`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/reset-password`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

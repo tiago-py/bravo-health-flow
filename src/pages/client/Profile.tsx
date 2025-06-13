@@ -83,7 +83,7 @@ const ClientProfile = () => {
     const fetchUserData = async () => {
       try {
         // Fetch profile data
-        const profileResponse = await fetch(`${API_BASE_URL}/api/users/profile`, {
+        const profileResponse = await fetch(`${API_BASE_URL}/api/auth/profile`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -99,7 +99,7 @@ const ClientProfile = () => {
         });
 
         // Fetch address data
-        const addressResponse = await fetch(`${API_BASE_URL}/api/users/address`, {
+        const addressResponse = await fetch(`${API_BASE_URL}/api/auth/address`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -110,7 +110,7 @@ const ClientProfile = () => {
         setAddressInfo(addressData);
 
         // Fetch prescriptions
-        const prescriptionsResponse = await fetch(`${API_BASE_URL}/api/users/prescriptions`, {
+        const prescriptionsResponse = await fetch(`${API_BASE_URL}/api/users/treatments`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -188,7 +188,7 @@ const ClientProfile = () => {
   const saveAddressInfo = async () => {
     try {
       setUpdating(true);
-      const response = await fetch(`${API_BASE_URL}/api/users/address`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/address`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -258,7 +258,7 @@ const ClientProfile = () => {
 
   const handleDownload = async (prescriptionId: string, filename: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/prescriptions/${prescriptionId}/download`, {
+      const response = await fetch(`${API_BASE_URL}/api/documents/${prescriptionId}/`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

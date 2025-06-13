@@ -24,13 +24,16 @@ const DoctorHistory = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
 
+  // Get token from localStorage or another secure place
+  const token = localStorage.getItem('token') || '';
+
   const fetchPatients = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/doctors/patients`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${token}`, // descomente se necessário
+          'Authorization': `Bearer ${token}`,
         },
       });
 
@@ -49,7 +52,7 @@ const DoctorHistory = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${token}`, // descomente se necessário
+          'Authorization': `Bearer ${token}`,
         },
       });
 
