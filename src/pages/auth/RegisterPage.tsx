@@ -35,13 +35,13 @@ const RegisterPage = () => {
       id: 1,
       name: "Queda Capilar",
       mode: "hairLoss",
-      image: "/public/img/hairLoss.jpg"
+      image: "/img/hairLoss.jpg"
     },
     {
       id: 2,
       name: "Disfunção Erétil",
       mode: "erectileDysfunction",
-      image: "/public/img/erectileDysfunction.jpg"
+      image: "/img/erectileDysfunction.jpg"
     }
   ]
 
