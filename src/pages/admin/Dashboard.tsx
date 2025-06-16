@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ArrowRight, Clock, User, Users, FileText, DollarSign, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const API_URL = 'https://bravo-backend-production.up.railway.app';
+const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
 const AdminDashboard = () => {
   const { user } = useAuth();

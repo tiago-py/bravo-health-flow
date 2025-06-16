@@ -31,7 +31,7 @@ interface TreatmentEvolution {
   }[];
 }
 
-const API_BASE_URL = 'https://bravo-backend-production.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API_URL_BASE;
 
 const ClientTreatments = () => {
   const { user } = useAuth();
@@ -40,6 +40,7 @@ const ClientTreatments = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchTreatmentEvolution = async () => {
+    console.log(API_BASE_URL);
     try {
       setLoading(true);
       setError(null);

@@ -19,7 +19,7 @@ import {
   TabsTrigger
 } from '@/components/ui/tabs';
 
-const API_BASE_URL ='https://bravo-backend-production.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API_URL_BASE;
 
 interface DoctorProfileData {
   name: string;

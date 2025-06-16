@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const API_BASE_URL = 'https://bravo-backend-production.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
 
 export type UserRole = 'ADMIN' | 'MEDICO' | 'CLIENTE';

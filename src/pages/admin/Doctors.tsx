@@ -34,7 +34,7 @@ interface Doctor {
   joinedDate: string;
 }
 
-const API_URL = 'https://bravo-backend-production.up.railway.app/doctors';
+const API_URL = `${import.meta.env.VITE_API_URL_BASE}/doctors`;
 
 const AdminDoctors = () => {
   const [searchQuery, setSearchQuery] = useState('');

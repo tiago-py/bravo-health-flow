@@ -30,7 +30,7 @@ const DoctorPrescriptions = () => {
   useEffect(() => {
     const fetchPrescriptions = async () => {
       try {
-        const response = await fetch('https://bravo-backend-production.up.railway.app/api/doctor/patients', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL_BASE}/api/doctor/patients`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // Assumindo que você armazena o token JWT no localStorage
             'Content-Type': 'application/json'
@@ -81,7 +81,7 @@ const DoctorPrescriptions = () => {
 
   const handleDownload = async (filename: string) => {
     try {
-      const response = await fetch(`https://bravo-backend-production.up.railway.app/api/export/exports/medication-approvals`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL_BASE}/api/export/exports/medication-approvals`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -106,7 +106,7 @@ const DoctorPrescriptions = () => {
 
   const handleView = async (filename: string) => {
     try {
-      const response = await fetch(`https://bravo-backend-production.up.railway.app/api/prescriptions/view/${filename}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL_BASE}/api/prescriptions/view/${filename}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

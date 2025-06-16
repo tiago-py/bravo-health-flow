@@ -46,7 +46,7 @@ interface ApiResponse<T> {
   message?: string;
 }
 
-const API_BASE_URL = 'https://bravo-backend-production.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API_URL_BASE;
 
 const apiRequest = async <T,>(endpoint: string, options?: RequestInit): Promise<T> => {
   try {

@@ -41,7 +41,7 @@ interface Prescription {
 
 const ClientProfile = () => {
   const { user } = useAuth();
-  const API_BASE_URL = 'https://bravo-backend-production.up.railway.app';
+  const API_BASE_URL = import.meta.env.VITE_API_URL_BASE;
   
   // Personal information state
   const [personalInfo, setPersonalInfo] = useState({
