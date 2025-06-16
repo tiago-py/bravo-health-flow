@@ -44,21 +44,21 @@ export const quizMock: Quiz = {
                     id: "o1",
                     option: "Prevenir queda de cabelo",
                     isBlock: false,
-                    tag: "prevencao_queda",
+                    tag: "prevenir",
                     isAttention: false,
                 },
                 {
                     id: "o2",
                     option: "Estimular crescimento capilar",
                     isBlock: false,
-                    tag: "crescimento",
+                    tag: "minoxidil",
                     isAttention: false,
                 },
                 {
                     id: "o3",
                     option: "Melhorar a saúde do couro cabeludo",
                     isBlock: false,
-                    tag: "saude_couro_cabeludo",
+                    tag: "shampoo",
                     isAttention: false,
                 },
                 {
@@ -78,14 +78,14 @@ export const quizMock: Quiz = {
                     id: "o4",
                     option: "Sim",
                     isBlock: false,
-                    tag: "historico_calvicie",
+                    tag: "historical_family",
                     isAttention: false,
                 },
                 {
                     id: "o5",
                     option: "Não",
                     isBlock: false,
-                    tag: "sem_historico_calvicie",
+                    tag: "no_hf",
                     isAttention: false,
                 }
             ]

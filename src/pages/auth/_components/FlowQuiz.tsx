@@ -4,13 +4,18 @@ import { Button } from "@/components/ui/button";
 import { BlockedRegister } from "./BlockedRegister";
 import { FlowNotImplemented } from "./FlowNotImplemented";
 
-export const FlowQuiz = ({ finishQuiz, mode }: { finishQuiz: () => void, mode: "hairLoss" | "erectileDysfunction" }) => {
+interface FlowQuizProps {
+  finishQuiz: () => void;
+  mode: "hairLoss" | "erectileDysfunction";
+  getInformations: (option: string) => void;
+}
+
+export const FlowQuiz = ({ finishQuiz, mode, getInformations }: FlowQuizProps) => {
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [step, setStep] = useState(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [blocked, setBlocked] = useState<boolean>(false);
     const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: QuizOption }>({});
-    const [finished, setFinished] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchQuizCurrent = async () => {
@@ -49,6 +54,8 @@ export const FlowQuiz = ({ finishQuiz, mode }: { finishQuiz: () => void, mode: "
         if (selectedOption.isAttention) {
             localStorage.setItem('attention', 'ATTENTION');
         }
+
+        getInformations(selectedOption.tag);
 
         if (quiz && step < quiz.questions.length - 1) {
             setStep(prev => prev + 1);

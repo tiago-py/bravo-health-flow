@@ -30,6 +30,18 @@ const RegisterPage = () => {
   const [quizStarted, setQuizStarted] = useState<boolean>(false);
   const [modeQuiz, setModeQuiz] = useState<"hairLoss" | "erectileDysfunction">("hairLoss");
 
+  const [informationsQuiz, setInformationsQuiz] = useState(null);
+
+  const getInformations = (option: string) => {
+    setInformationsQuiz((prev) => {
+      const current = prev || { include: [] };
+      return {
+        ...current,
+        include: [...current.include, option],
+      };
+    });
+  };
+
   const modes: modesTypes[] = [
     {
       id: 1,
@@ -243,7 +255,7 @@ const RegisterPage = () => {
           </div>
         </div>
       ) : (
-        <FlowQuiz finishQuiz={finishQuizFunc} mode={modeQuiz} />
+        <FlowQuiz finishQuiz={finishQuizFunc} mode={modeQuiz} getInformations={getInformations} />
       )}
     </div>
   );
