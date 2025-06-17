@@ -19,7 +19,7 @@ interface modesTypes {
 }
 
 const RegisterPage = () => {
-  const { register, user } = useAuth();
+  const { register, user, validate } = useAuth();
   const navigate = useNavigate();
   
   const [name, setName] = useState('');
@@ -33,7 +33,7 @@ const RegisterPage = () => {
   const [finishQuiz, setFinishQuiz] = useState<boolean>(false);
   const [quizStarted, setQuizStarted] = useState<boolean>(false);
   const [modeQuiz, setModeQuiz] = useState<"hairLoss" | "erectileDysfunction">("hairLoss");
-  const [logged, setLogged] = useState<boolean>(false);
+  const [logged, setLogged] = useState<boolean>(true);
 
   const modes: modesTypes[] = [
     {
@@ -55,7 +55,7 @@ const RegisterPage = () => {
       const token = localStorage.getItem('token');
       if(token) {
         try {
-          await new Promise(res => setTimeout(res, 1000));
+          // const verifyValidate = await validate(token);
           setLogged(true);
           setQuizStarted(true)
           setFinishQuiz(true);
@@ -306,7 +306,7 @@ const RegisterPage = () => {
           )}
 
           <div>
-            <Recommendation mode={modeQuiz} />
+            <Recommendation logged={logged} mode={modeQuiz} />
           </div>
         </div>
       ) : (

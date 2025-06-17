@@ -21,6 +21,7 @@ interface AuthContextType {
   setUser: (user: User | null) => void;
   register: (userData: any) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
+  validate: (token: string) => Promise<{ validate: boolean, data: any }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`${VITE_API_URL_BASE}/api/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,9 +76,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     console.log('Recuperando senha (mock):', email);
   };
 
+  const validate = async (token: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/validate`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Token inválido');
+      }
+
+      const data = await response.json();
+
+      return { validate: true, data };
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, logout, register, forgotPassword, setUser }}
+      value={{ user, loading, login, logout, register, forgotPassword, setUser, validate }}
     >
       {children}
     </AuthContext.Provider>

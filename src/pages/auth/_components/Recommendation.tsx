@@ -3,7 +3,7 @@ import { Product, productsMock } from "./mocks/productMock";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export const Recommendation = ({ mode }: { mode: string }) => {
+export const Recommendation = ({ mode, logged }: { mode: string, logged: boolean }) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [card, setCard] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -111,7 +111,7 @@ export const Recommendation = ({ mode }: { mode: string }) => {
                 </div>
             </div>
 
-            <Button className="bg-green-600 hover:bg-green-600">Efetuar Pagamento</Button>
+            {logged && <Button className="bg-green-600 hover:bg-green-600">Efetuar Pagamento</Button>}
         </div>
     );
 };
