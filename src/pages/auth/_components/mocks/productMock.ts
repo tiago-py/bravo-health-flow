@@ -1,4 +1,4 @@
-type Product = {
+export type Product = {
     id: string;
     name: string;
     description?: string;
@@ -13,13 +13,13 @@ type Product = {
     updatedAt: Date;
 };
 
-const products: Product[] = [
+export const productsMock: Product[] = [
     {
         id: "p1",
         name: "Minoxidil",
         description: "1g - 40 caps",
         tags: ["minoxidil"],
-        imageUrl: "",
+        imageUrl: "/medicine/minoxidil.png",
         stripeProductId: "",
         stripePriceId: "",
         price: 10.90,
@@ -33,7 +33,7 @@ const products: Product[] = [
         name: "Finasterida",
         description: "5mg - 30 caps",
         tags: ["finasterida"],
-        imageUrl: "",
+        imageUrl: "/medicine/finasterida.png",
         stripeProductId: "",
         stripePriceId: "",
         price: 15.50,
@@ -47,7 +47,7 @@ const products: Product[] = [
         name: "Biotina",
         description: "10mg - 60 caps",
         tags: ["biotina"],
-        imageUrl: "",
+        imageUrl: "/medicine/biotina.png",
         stripeProductId: "",
         stripePriceId: "",
         price: 8.75,
@@ -55,5 +55,19 @@ const products: Product[] = [
         active: true,
         createdAt: new Date("2024-06-16T00:00:00Z"),
         updatedAt: new Date("2024-06-16T00:00:00Z")
-    }
+    },
+    {
+        id: "p4",
+        name: "Minoxidil 2.0",
+        description: "12mg - 60 caps",
+        tags: ["minoxidil"],
+        imageUrl: "/medicine/biotina.png",
+        stripeProductId: "",
+        stripePriceId: "",
+        price: 22.75,
+        currency: "BRL",
+        active: true,
+        createdAt: new Date("2024-06-16T00:00:00Z"),
+        updatedAt: new Date("2024-06-16T00:00:00Z")
+    },
 ];

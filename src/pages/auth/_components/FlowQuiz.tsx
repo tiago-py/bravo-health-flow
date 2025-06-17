@@ -7,17 +7,21 @@ import { FlowNotImplemented } from "./FlowNotImplemented";
 interface FlowQuizProps {
   finishQuiz: () => void;
   mode: "hairLoss" | "erectileDysfunction";
-  getInformations: (option: string) => void;
 }
 
-export const FlowQuiz = ({ finishQuiz, mode, getInformations }: FlowQuizProps) => {
+export const FlowQuiz = ({ finishQuiz, mode }: FlowQuizProps) => {
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [step, setStep] = useState(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [blocked, setBlocked] = useState<boolean>(false);
     const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: QuizOption }>({});
+    const [getInforQuiz, setGetInforQuiz] = useState<string[]>([]);
 
     useEffect(() => {
+        if (step === 0) {
+            localStorage.removeItem(`informationQuiz_${mode}`);
+        }
+
         const fetchQuizCurrent = async () => {
             try {
                 await new Promise((res) => setTimeout(res, 1000));
@@ -34,8 +38,8 @@ export const FlowQuiz = ({ finishQuiz, mode, getInformations }: FlowQuizProps) =
         };
 
         fetchQuizCurrent();
-    }, [mode]);
-
+    }, [mode, step]);
+    
     const handleOptionSelect = (questionId: string, option: QuizOption) => {
         setSelectedOptions(prev => ({ ...prev, [questionId]: option }));
     };
@@ -55,12 +59,15 @@ export const FlowQuiz = ({ finishQuiz, mode, getInformations }: FlowQuizProps) =
             localStorage.setItem('attention', 'ATTENTION');
         }
 
-        getInformations(selectedOption.tag);
+        const prevInfor = localStorage.getItem(`informationQuiz_${mode}`);
+        const prevArray = prevInfor ? JSON.parse(prevInfor) : [];
+        const currentInfor = [...prevArray, selectedOption];
+        localStorage.setItem(`informationQuiz_${mode}`, JSON.stringify(currentInfor));
 
         if (quiz && step < quiz.questions.length - 1) {
             setStep(prev => prev + 1);
         } else {
-            finishQuiz()
+            finishQuiz();
         }
     };
 

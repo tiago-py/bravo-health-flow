@@ -44,7 +44,7 @@ export const quizMock: Quiz = {
                     id: "o1",
                     option: "Prevenir queda de cabelo",
                     isBlock: false,
-                    tag: "prevenir",
+                    tag: "minoxidil",
                     isAttention: false,
                 },
                 {
@@ -65,7 +65,7 @@ export const quizMock: Quiz = {
                     id: "o4",
                     option: "Não tenho certeza.",
                     isBlock: false,
-                    tag: "nao_tenho_certeza",
+                    tag: "none",
                     isAttention: true,
                 }
             ]
@@ -78,14 +78,14 @@ export const quizMock: Quiz = {
                     id: "o4",
                     option: "Sim",
                     isBlock: false,
-                    tag: "historical_family",
+                    tag: "minoxidil",
                     isAttention: false,
                 },
                 {
                     id: "o5",
                     option: "Não",
                     isBlock: false,
-                    tag: "no_hf",
+                    tag: "none",
                     isAttention: false,
                 }
             ]
@@ -112,7 +112,7 @@ export const quizMock: Quiz = {
                     id: "o8",
                     option: "Nenhuma das anteriores",
                     isBlock: false,
-                    tag: "sem_condicao",
+                    tag: "bravo",
                     isAttention: false,
                 }
             ]
