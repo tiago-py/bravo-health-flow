@@ -3,6 +3,7 @@ export type Product = {
     name: string;
     description?: string;
     tags: string[];
+    enhance: boolean;
     imageUrl?: string;
     stripeProductId: string;
     stripePriceId: string;
@@ -24,6 +25,7 @@ export const productsMock: Product[] = [
         stripePriceId: "",
         price: 10.90,
         currency: "BRL",
+        enhance: false,
         active: true,
         createdAt: new Date("2024-06-16T00:00:00Z"),
         updatedAt: new Date("2024-06-16T00:00:00Z")
@@ -38,6 +40,7 @@ export const productsMock: Product[] = [
         stripePriceId: "",
         price: 15.50,
         currency: "BRL",
+        enhance: false,
         active: true,
         createdAt: new Date("2024-06-16T00:00:00Z"),
         updatedAt: new Date("2024-06-16T00:00:00Z")
@@ -52,13 +55,14 @@ export const productsMock: Product[] = [
         stripePriceId: "",
         price: 8.75,
         currency: "BRL",
+        enhance: false,
         active: true,
         createdAt: new Date("2024-06-16T00:00:00Z"),
         updatedAt: new Date("2024-06-16T00:00:00Z")
     },
     {
         id: "p4",
-        name: "Minoxidil 2.0",
+        name: "Minoxidil Hair Master",
         description: "12mg - 60 caps",
         tags: ["minoxidil"],
         imageUrl: "/medicine/biotina.png",
@@ -66,6 +70,7 @@ export const productsMock: Product[] = [
         stripePriceId: "",
         price: 22.75,
         currency: "BRL",
+        enhance: true,
         active: true,
         createdAt: new Date("2024-06-16T00:00:00Z"),
         updatedAt: new Date("2024-06-16T00:00:00Z")

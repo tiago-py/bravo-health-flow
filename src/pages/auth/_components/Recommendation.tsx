@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Product, productsMock } from "./mocks/productMock";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const Recommendation = ({ mode, logged }: { mode: string, logged: boolean }) => {
@@ -66,7 +65,7 @@ export const Recommendation = ({ mode, logged }: { mode: string, logged: boolean
                     <div key={v.id} className="shadow-[1px_1px_5px_1px] my-5 shadow-black/10 rounded-md p-3 flex items-center justify-between">
                         <div className="flex flex-col gap-3">
                             <div>
-                                <h1 className="text-lg">{v.name}</h1>
+                                <h1 className="text-lg">{v.name} {v.enhance ? <b className="text-sm font-bold text-green-600 bg-green-100/50 rounded-md p-2">Potencializar</b> : ""}</h1>
                                 <p className="text-sm">{v.description}</p>
                             </div>
 
@@ -83,14 +82,14 @@ export const Recommendation = ({ mode, logged }: { mode: string, logged: boolean
                 ))}
 
                 <div>
+                    <hr className="mt-5" />
+
                     <div className="flex items-center my-3 justify-between">
                         <h1>SubTotal</h1>
-                        <h2>
-                            R$ {card.reduce((acc, v) => acc + v.price + discount, 0).toFixed(2).toString().replace(".", ",")}
+                        <h2 className="text-sm">
+                            R$ {card.reduce((acc, v) => acc + v.price + discount, 0).toFixed(2).toString().replace(".", ",")} / Mês
                         </h2>
                     </div>
-
-                    <hr className="mt-5" />
 
                     <div className="my-3">
                         {card.map((v) => (
@@ -103,10 +102,45 @@ export const Recommendation = ({ mode, logged }: { mode: string, logged: boolean
                                     </div>
                                 </div>
                                 <div>
-                                    <h3>R$ {v.price.toFixed(2).toString().replace(".", ",")} / Mês</h3>
+                                    <h3 className="text-sm">R$ {v.price.toFixed(2).toString().replace(".", ",")} / Mês</h3>
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+                    <div className="flex items-center my-3 justify-between">
+                        <h3 className="text-sm">Entrega Mensal</h3>
+                        <h3 className="text-bravo-blue text-sm">
+                            Gratís
+                        </h3>
+                    </div>
+
+                    <div className="flex items-center my-3 justify-between">
+                        <h3 className="text-sm">30% OFF Bravo Desconto</h3>
+                        {(() => {
+                            const discountCupom = card.reduce((acc, v) => acc + (v.price * 0.3), 0);
+                            return (
+                                <h3 className="text-bravo-blue text-sm">
+                                    - R$ {discountCupom.toFixed(2).toString().replace(".", ",")}
+                                </h3>
+                            );
+                        })()}
+                    </div>
+
+                    <hr />
+
+                    <div>
+                        <div className="flex items-center my-3 justify-between">
+                            <h2 className="text-lg font-semibold">Total a pagar</h2>
+                            <h2 className="text-lg font-semibold text-bravo-blue">
+                                {(() => {
+                                    const subtotal = card.reduce((acc, v) => acc + v.price + discount, 0);
+                                    const discountCupom = card.reduce((acc, v) => acc + (v.price * 0.3), 0);
+                                    const total = subtotal - discountCupom;
+                                    return `R$ ${total.toFixed(2).toString().replace(".", ",")}`;
+                                })()}
+                            </h2>
+                        </div>
                     </div>
                 </div>
             </div>
