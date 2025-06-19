@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/use-toast';
 import { FlowQuiz } from './_components/FlowQuiz';
 import { Recommendation } from './_components/Recommendation';
 import { CheckCircle } from 'lucide-react';
+import { ListProducts } from './_components/ListProducts';
 
 interface modesTypes {
   id: string | number;
@@ -30,8 +31,9 @@ const RegisterPage = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [finishQuiz, setFinishQuiz] = useState<boolean>(false);
   const [quizStarted, setQuizStarted] = useState<boolean>(false);
+  const [finishQuiz, setFinishQuiz] = useState<boolean>(false);
+  const [finishRecommendation, setFinishRecommendation] = useState<boolean>(false);
   const [modeQuiz, setModeQuiz] = useState<"hairLoss" | "erectileDysfunction">("hairLoss");
   const [logged, setLogged] = useState<boolean>(true);
 
@@ -132,6 +134,10 @@ const RegisterPage = () => {
     setFinishQuiz(v => !v);
   }
 
+  const finishRecommendationFunc = () => {
+    setFinishRecommendation(v => !v);
+  }
+
   if (!quizStarted) {
     return (
       <div className='w-full h-screen flex items-center justify-center'>
@@ -162,7 +168,18 @@ const RegisterPage = () => {
 
   return (
     <div>
-      {finishQuiz ? (
+
+      {!finishQuiz && (
+        <FlowQuiz finishQuiz={finishQuizFunc} mode={modeQuiz} />
+      )}
+
+      {(finishQuiz && !finishRecommendation) && (
+        <div className='flex items-center justify-center p-5'>
+          <Recommendation mode={modeQuiz} finishRecommendation={finishRecommendationFunc} />
+        </div>
+      )}
+
+      {(finishQuiz && finishRecommendation) && (
         <div className="min-h-screen flex items-center gap-2 flex-wrap justify-center bg-bravo-beige p-4">
           {logged ? (
             <div className='max-w-md w-full'>
@@ -306,11 +323,9 @@ const RegisterPage = () => {
           )}
 
           <div>
-            <Recommendation logged={logged} mode={modeQuiz} />
+            <ListProducts />
           </div>
         </div>
-      ) : (
-        <FlowQuiz finishQuiz={finishQuizFunc} mode={modeQuiz} />
       )}
     </div>
   );

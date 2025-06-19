@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { Product, productsMock } from "./mocks/productMock";
 import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
 
-export const Recommendation = ({ mode, logged }: { mode: string, logged: boolean }) => {
+interface RecommendationProps {
+    mode: string;
+    finishRecommendation: () => void;
+}
+
+export const Recommendation = ({ mode, finishRecommendation }: RecommendationProps) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [card, setCard] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -55,8 +61,14 @@ export const Recommendation = ({ mode, logged }: { mode: string, logged: boolean
         );
     }
 
+    const handleFinishRecommendation = () => {
+        const jsonCard = JSON.stringify(card);
+        localStorage.setItem('productsCard', jsonCard);
+        finishRecommendation()
+    }
+
     return (
-        <div className="w-full bg-white p-5 rounded-md shadow-md">
+        <div className="max-w-[590px] w-full bg-white p-5 rounded-md shadow-md">
             <h1 className="text-xl">Tratamento Recomendado.</h1>
             <p className="text-sm mt-2 text-bravo-blue">Sua sugestão de plano contém tratamento prescrições, caso prescrito, e suporte clínico. <br /> Sujeito a avaliação médica.</p>
 
@@ -65,7 +77,10 @@ export const Recommendation = ({ mode, logged }: { mode: string, logged: boolean
                     <div key={v.id} className="shadow-[1px_1px_5px_1px] my-5 shadow-black/10 rounded-md p-3 flex items-center justify-between">
                         <div className="flex flex-col gap-3">
                             <div>
-                                <h1 className="text-lg">{v.name} {v.enhance ? <b className="text-sm font-bold text-green-600 bg-green-100/50 rounded-md p-2">Potencializar</b> : ""}</h1>
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <h1 className="text-lg flex items-center flex-wrap">{v.name}</h1>
+                                    {v.enhance ? <h5 className="text-sm font-bold text-green-600 bg-green-100/50 rounded-md p-2">Potencializar</h5> : ""}
+                                </div>
                                 <p className="text-sm">{v.description}</p>
                             </div>
 
@@ -145,7 +160,12 @@ export const Recommendation = ({ mode, logged }: { mode: string, logged: boolean
                 </div>
             </div>
 
-            {logged && <Button className="bg-green-600 hover:bg-green-600">Efetuar Pagamento</Button>}
+            <Button onClick={handleFinishRecommendation} className="w-full bg-green-600 hover:bg-green-600">Continue com esse plano</Button>
+
+            <div className="flex items-center gap-2 mt-6">
+                <AlertCircle />
+                <p className="text-sm font-light"><b>Se o médico entender que este não é o melhor tratamento para você</b>, seu pedido será cancelado e você será reembolsado.</p>
+            </div>
         </div>
     );
 };
