@@ -104,9 +104,6 @@ const RegisterPage = () => {
       if (!response.ok) {
         throw new Error(data.message || 'Erro ao criar conta');
       }
-
-      // Se a API retornar sucesso, também chama o register do contexto (se necessário)
-      // await register(name, email, password);
       
       toast({
         title: 'Cadastro realizado com sucesso',
