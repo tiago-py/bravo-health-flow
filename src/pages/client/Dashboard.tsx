@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,45 +15,48 @@ const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Mock data
-  const mockProfileData = {
-    name: 'João Silva Santos',
-    email: 'joao.silva@email.com',
-    phone: '(11) 99999-9999',
-    address: {
-      street: 'Rua das Flores, 123',
-      city: 'São Paulo',
-      state: 'SP',
-      zipCode: '01234-567'
-    }
-  };
-
-  const mockTreatmentData = {
-    current: {
-      id: '1',
-      type: 'Tratamento Capilar Premium',
-      plan: 'Plano Intensivo',
-      status: 'active',
-      progress: 65,
-      lastEvaluation: '2024-05-15T10:30:00Z',
-      nextShipment: '2024-06-10T00:00:00Z',
-      startDate: '2024-03-01T00:00:00Z',
-      duration: '6 meses'
-    }
-  };
-
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const API_BASE_URL = import.meta.env.VITE_API_URL_BASE;
+        
+        if (!API_BASE_URL) {
+          throw new Error('API base URL is not configured');
+        }
 
-        // Use mock data instead of real API calls
-        setProfileData(mockProfileData);
-        setTreatmentData(mockTreatmentData);
+        // Fetch profile data
+        const profileResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!profileResponse.ok) {
+          throw new Error('Failed to fetch profile data');
+        }
+
+        const profileData = await profileResponse.json();
+        setProfileData(profileData);
+
+        // Fetch treatment data
+        const treatmentResponse = await fetch(`${API_BASE_URL}/api/client/treatments/current`, {
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!treatmentResponse.ok) {
+          throw new Error('Failed to fetch treatment data');
+        }
+
+        const treatmentData = await treatmentResponse.json();
+        setTreatmentData(treatmentData);
+
       } catch (err) {
         setError(err.message);
         console.error('Error loading dashboard data:', err);
@@ -63,8 +65,10 @@ const ClientDashboard = () => {
       }
     };
 
-    loadData();
-  }, []);
+    if (user?.token) {
+      loadData();
+    }
+  }, [user]);
 
   if (loading) {
     return (

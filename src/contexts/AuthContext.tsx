@@ -7,6 +7,9 @@ export type UserRole = 'ADMIN' | 'MEDICO' | 'CLIENTE';
 
 export type User = {
   id: string;
+  token: string;
+  cpf: string;
+  telefone: string;
   name: string;
   email: string;
   role: UserRole;
