@@ -11,6 +11,7 @@ import { FlowQuiz } from './_components/FlowQuiz';
 import { Recommendation } from './_components/Recommendation';
 import { CheckCircle } from 'lucide-react';
 import { ListProducts } from './_components/ListProducts';
+import { set } from 'date-fns';
 
 interface modesTypes {
   id: string | number;
@@ -20,7 +21,7 @@ interface modesTypes {
 }
 
 const RegisterPage = () => {
-  const { register, user, validate } = useAuth();
+  const { register, user, validate, setUser } = useAuth();
   const navigate = useNavigate();
   
   const [name, setName] = useState('');
@@ -111,6 +112,17 @@ const RegisterPage = () => {
         duration: 3000,
       });
       
+      const token = localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      if(localStorage.getItem('token')) {
+          setLogged(true);
+          setQuizStarted(true)
+          setFinishQuiz(true);
+      };
+
+      setUser(data.user);
+
       // navigate('/cliente/dashboard');
       
     } catch (error) {
@@ -184,7 +196,7 @@ const RegisterPage = () => {
                 <CheckCircle />
                 <h2>Você está ativo.</h2>
               </div>
-              <h1 className='text-xl'>Olá, Rafael Francisco Souza Do Nascimento.</h1>
+              <h1 className='text-xl'>Olá, {user.name}</h1>
             </div>
           ) : (
             <div className="max-w-md w-full">
