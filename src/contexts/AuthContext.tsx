@@ -18,6 +18,7 @@ export type User = {
 
 interface AuthContextType {
   user: User | null;
+  updateUser: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -30,7 +31,11 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => {
+  const [user, setUser ] = useState<User | null>(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const [updateUser ] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
   });
@@ -102,7 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, logout, register, forgotPassword, setUser, validate }}
+      value={{ user, updateUser, loading, login, logout, register, forgotPassword, setUser, validate }}
     >
       {children}
     </AuthContext.Provider>

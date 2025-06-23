@@ -35,11 +35,11 @@ const DoctorDashboard = () => {
     async function fetchDashboardData() {
       try {
         // Requisição para as estatísticas
-        const statsRes = await fetch(`${API_BASE_URL}/api/doctor/stats`);
+        const statsRes = await fetch(`${API_BASE_URL}/api/doctor/profile`);
         const statsData: Stat[] = await statsRes.json();
 
         // Requisição para avaliações recentes
-        const evalRes = await fetch(`${API_BASE_URL}/api/doctor/recent-evaluations`);
+        const evalRes = await fetch(`${API_BASE_URL}/api/doctor/treatments`);
         const evalData: Evaluation[] = await evalRes.json();
 
         // Atualiza estado

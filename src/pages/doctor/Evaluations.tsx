@@ -48,7 +48,7 @@ const DoctorEvaluations = () => {
         }
 
         const response = await fetch(
-          `${API_BASE_URL}/api/doctor/evaluations/pending`,
+          `${API_BASE_URL}/api/doctor/treatments/`,
           {
             method: 'GET',
             headers: {

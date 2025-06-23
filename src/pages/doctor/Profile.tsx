@@ -30,7 +30,7 @@ interface DoctorProfileData {
 }
 
 const DoctorProfile = () => {
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
 
   const [profileInfo, setProfileInfo] = useState<DoctorProfileData>({
     name: '',
@@ -57,7 +57,7 @@ const DoctorProfile = () => {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Usuário não autenticado');
 
-        const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+        const response = await fetch(`${API_BASE_URL}/api/doctors/profile`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,16 +79,6 @@ const DoctorProfile = () => {
           phone: data.phone || '',
         });
 
-        updateUser({
-          ...user,
-          name: data.name,
-          email: data.email,
-          doctorProfile: {
-            crm: data.crm,
-            specialty: data.specialty,
-            phone: data.phone,
-          },
-        });
 
       } catch (err) {
         console.error('Erro ao buscar perfil:', err);
@@ -137,15 +127,6 @@ const DoctorProfile = () => {
 
       const updatedData = await response.json();
 
-      updateUser({
-        ...user,
-        name: updatedData.name,
-        doctorProfile: {
-          crm: updatedData.crm,
-          specialty: updatedData.specialty,
-          phone: updatedData.phone,
-        },
-      });
 
       toast.success('Informações profissionais salvas com sucesso!');
     } catch (err) {

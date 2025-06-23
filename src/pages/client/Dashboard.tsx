@@ -43,7 +43,7 @@ const ClientDashboard = () => {
         setProfileData(profileData);
 
         // Fetch treatment data
-        const treatmentResponse = await fetch(`${API_BASE_URL}/api/client/treatments/current`, {
+        const treatmentResponse = await fetch(`${API_BASE_URL}/api/client/treatments`, {
           headers: {
             'Authorization': `Bearer ${user.token}`,
             'Content-Type': 'application/json'

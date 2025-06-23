@@ -40,7 +40,7 @@ const ClientHistory = () => {
         throw new Error('API base URL is not configured');
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/client/history`, {
+      const response = await fetch(`${API_BASE_URL}/api/client/treatments`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json'
