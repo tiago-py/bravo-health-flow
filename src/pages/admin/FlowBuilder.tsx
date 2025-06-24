@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import FlowCanvas from '@/components/flow-builder/FlowCanvas';
 import FlowSettings from '@/components/flow-builder/FlowSettings';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { v4 as uuidv4 } from 'uuid';
 
 interface FlowItem {
   id: string;
@@ -34,6 +34,8 @@ export interface FlowBlock {
   next?: string | null;
 }
 
+const LOCAL_STORAGE_KEY = 'flowBuilderData';
+
 const FlowBuilder = () => {
   const navigate = useNavigate();
   const [flows, setFlows] = useState<FlowItem[]>([]);
@@ -41,44 +43,42 @@ const FlowBuilder = () => {
   const [isCreatingFlow, setIsCreatingFlow] = useState(false);
   const [newFlow, setNewFlow] = useState({ name: '', description: '', isActive: true });
   const [currentTab, setCurrentTab] = useState('flows');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const API_BASE_URL = import.meta.env.VITE_API_URL_BASE;
 
-  // Fetch flows on component mount
+  // Load flows from localStorage on component mount
   useEffect(() => {
-    const fetchFlows = async () => {
+    const loadFlows = () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/api/flows`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch flows');
+        const savedFlows = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (savedFlows) {
+          setFlows(JSON.parse(savedFlows));
         }
-
-        const data = await response.json();
-        setFlows(data);
       } catch (error) {
-        console.error('Error fetching flows:', error);
+        console.error('Error loading flows from localStorage:', error);
         toast.error('Failed to load flows');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFlows();
+    loadFlows();
   }, []);
+
+  // Save flows to localStorage whenever they change
+  useEffect(() => {
+    if (flows.length > 0) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(flows));
+    }
+  }, [flows]);
 
   const handleEditFlow = (flow: FlowItem) => {
     setActiveFlow(flow);
     setCurrentTab('editor');
   };
 
-  const handleCreateFlow = async () => {
+  const handleCreateFlow = () => {
     if (!newFlow.name.trim()) {
       toast.error('Please provide a flow name');
       return;
@@ -86,24 +86,17 @@ const FlowBuilder = () => {
 
     try {
       setSaving(true);
-      const response = await fetch(`${API_BASE_URL}/api/flows`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          ...newFlow,
-          tags: []
-        })
-      });
+      const newFlowItem: FlowItem = {
+        id: uuidv4(),
+        name: newFlow.name,
+        description: newFlow.description,
+        isActive: newFlow.isActive,
+        blocks: [],
+        tags: [],
+        lastUpdated: new Date().toISOString()
+      };
 
-      if (!response.ok) {
-        throw new Error('Failed to create flow');
-      }
-
-      const createdFlow = await response.json();
-      setFlows([...flows, createdFlow]);
+      setFlows([...flows, newFlowItem]);
       setNewFlow({ name: '', description: '', isActive: true });
       setIsCreatingFlow(false);
       toast.success('Flow created successfully');
@@ -115,20 +108,9 @@ const FlowBuilder = () => {
     }
   };
 
-  const handleDeleteFlow = async (id: string) => {
+  const handleDeleteFlow = (id: string) => {
     try {
       setSaving(true);
-      const response = await fetch(`${API_BASE_URL}/api/flows/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete flow');
-      }
-
       setFlows(flows.filter(flow => flow.id !== id));
       toast.success('Flow deleted successfully');
     } catch (error) {
@@ -139,21 +121,15 @@ const FlowBuilder = () => {
     }
   };
 
-  const handleDuplicateFlow = async (flow: FlowItem) => {
+  const handleDuplicateFlow = (flow: FlowItem) => {
     try {
       setSaving(true);
-      const response = await fetch(`${API_BASE_URL}/api/flows/${flow.id}/duplicate`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to duplicate flow');
-      }
-
-      const duplicatedFlow = await response.json();
+      const duplicatedFlow = {
+        ...flow,
+        id: uuidv4(),
+        name: `${flow.name} (Copy)`,
+        lastUpdated: new Date().toISOString()
+      };
       setFlows([...flows, duplicatedFlow]);
       toast.success('Flow duplicated successfully');
     } catch (error) {
@@ -164,22 +140,9 @@ const FlowBuilder = () => {
     }
   };
 
-  const handleToggleFlowStatus = async (id: string, isActive: boolean) => {
+  const handleToggleFlowStatus = (id: string, isActive: boolean) => {
     try {
       setSaving(true);
-      const response = await fetch(`${API_BASE_URL}/api/flows/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ isActive })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update flow status');
-      }
-
       setFlows(flows.map(flow => 
         flow.id === id ? { ...flow, isActive } : flow
       ));
@@ -197,25 +160,16 @@ const FlowBuilder = () => {
     setCurrentTab('flows');
   };
 
-  const handleSaveFlow = async () => {
+  const handleSaveFlow = () => {
     if (!activeFlow) return;
 
     try {
       setSaving(true);
-      const response = await fetch(`${API_BASE_URL}/api/flows/${activeFlow.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(activeFlow)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save flow');
-      }
-
-      const updatedFlow = await response.json();
+      const updatedFlow = {
+        ...activeFlow,
+        lastUpdated: new Date().toISOString()
+      };
+      
       setFlows(flows.map(flow => 
         flow.id === updatedFlow.id ? updatedFlow : flow
       ));
@@ -367,7 +321,7 @@ const FlowBuilder = () => {
                   <CardContent>
                     <div className="space-y-3">
                       <div>
-                        <p className="text-sm text-gray-500">Last updated: {flow.lastUpdated}</p>
+                        <p className="text-sm text-gray-500">Last updated: {new Date(flow.lastUpdated).toLocaleString()}</p>
                         <p className="text-sm text-gray-500">Blocks: {flow.blocks.length}</p>
                         <div className="flex flex-wrap gap-1 mt-2">
                           {flow.tags.slice(0, 3).map(tag => (
